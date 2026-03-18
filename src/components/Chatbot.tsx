@@ -201,33 +201,32 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         **Câu hỏi user:** ${input}
       `;
       
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: messages.concat(userMessage), // Gửi lịch sử
-          context: context + '\n\n' + systemInstruction // Gửi context + instruction đầy đủ
-        })
-      });
+      const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', // hoặc 'gpt-4o' nếu muốn mạnh hơn
+      messages: [
+        { role: 'system', content: systemInstruction },
+        ...messages.concat(userMessage) // Gửi lịch sử chat
+      ],
+      temperature: 0.5,
+      max_tokens: 1500,
+    });
 
-      const data = await response.json();
-      const aiMessage: Message = { role: 'ai', content: data.text || 'Không nhận được phản hồi từ AI.' };
-      setMessages(prev => [...prev, aiMessage]);
+    const aiMessage: Message = { role: 'ai', content: completion.choices[0]?.message?.content || 'Không nhận được phản hồi từ AI.' };
+    setMessages(prev => [...prev, aiMessage]);
 
-    } catch (error) {
-      console.error('Lỗi kết nối OpenAI:', error);
-      const errorMsg = language === 'vi' ? 'Lỗi kết nối AI. Vui lòng thử lại sau.' : 'AI connection error. Please try again later.';
-      const errorMessage: Message = { role: 'ai', content: errorMsg };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  } catch (error: any) {
+    console.error('Lỗi kết nối OpenAI:', error);
+    const errorMsg = language === 'vi' ? 'Lỗi kết nối AI. Vui lòng thử lại sau.' : 'AI connection error. Please try again later.';
+    const errorMessage: Message = { role: 'ai', content: errorMsg };
+    setMessages(prev => [...prev, errorMessage]);
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Phần return giữ nguyên hoàn toàn như cũ của anh (UI, indicators, guide, input...)
   return (
     <div className="flex flex-col h-[80vh]">
