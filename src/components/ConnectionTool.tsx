@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle } from 'lucide-react';
-import { analyzeConnectionLogic } from '../numerologyUtils';
+import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '../types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
