@@ -6,7 +6,7 @@ import {
 import * as Utils from '@/utils/numerologyUtils';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { fetchMeanings, getMeaning } from '@/services/googleSheetService';
-import ResultCard from './ResultCard';
+import ResultCard from '@/ResultCard';
 interface CalculatorProps {
   setSharedResults: (results: CalculationResult | null) => void;
   language: 'vi' | 'en';
