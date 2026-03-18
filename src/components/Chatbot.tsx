@@ -12,13 +12,13 @@ interface ChatbotProps {
 }
 
 interface Message {
-  role: 'user' | 'ai';
+  role: 'user' | 'assistant'; // Đổi "ai" thành "assistant" để khớp OpenAI SDK
   content: string;
 }
 
 const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, language }) => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'ai', content: language === 'vi' ? 'Xin chào! Tôi là trợ lý Thần Số Học AI. Tôi có thể giúp bạn giải đáp thắc mắc về các chỉ số của bạn hoặc định hướng công việc phù hợp. Bạn muốn hỏi gì?' : 'Hello! I am the Numerology AI Assistant. I can help you with questions about your indicators or career guidance. What would you like to ask?' }
+    { role: 'assistant', content: language === 'vi' ? 'Xin chào! Tôi là trợ lý Thần Số Học AI. Tôi có thể giúp bạn giải đáp thắc mắc về các chỉ số của bạn hoặc định hướng công việc phù hợp. Bạn muốn hỏi gì?' : 'Hello! I am the Numerology AI Assistant. I can help you with questions about your indicators or career guidance. What would you like to ask?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +37,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
   const handleSend = async () => {
     if (!input.trim()) {
       const errorMsg = language === 'vi' ? 'Vui lòng nhập câu hỏi.' : 'Please enter a question.';
-      const errorMessage: Message = { role: 'ai', content: errorMsg };
+      const errorMessage: Message = { role: 'assistant', content: errorMsg };
       setMessages(prev => [...prev, errorMessage]);
       return;
     }
@@ -184,22 +184,22 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
       });
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini', // hoặc 'gpt-4o' nếu muốn mạnh hơn
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemInstruction },
-          ...messages.concat(userMessage) // Gửi lịch sử chat
+          ...messages.concat(userMessage) // Gửi lịch sử chat (role đã chuẩn "user"/"assistant")
         ],
         temperature: 0.5,
         max_tokens: 1500,
       });
 
-      const aiMessage: Message = { role: 'ai', content: completion.choices[0]?.message?.content || 'Không nhận được phản hồi từ AI.' };
+      const aiMessage: Message = { role: 'assistant', content: completion.choices[0]?.message?.content || 'Không nhận được phản hồi từ AI.' };
       setMessages(prev => [...prev, aiMessage]);
 
     } catch (error: any) {
       console.error('Lỗi kết nối OpenAI:', error);
       const errorMsg = language === 'vi' ? 'Lỗi kết nối AI. Vui lòng thử lại sau.' : 'AI connection error. Please try again later.';
-      const errorMessage: Message = { role: 'ai', content: errorMsg };
+      const errorMessage: Message = { role: 'assistant', content: errorMsg };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
