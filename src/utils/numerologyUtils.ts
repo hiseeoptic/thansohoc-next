@@ -1,4 +1,4 @@
-import { ConnectionAnalysisResult } from './types';
+import { ConnectionAnalysisResult } from '@/types';
 
 // Helper to check if string contains only letters
 export const isValidName = (name: string): boolean => {
