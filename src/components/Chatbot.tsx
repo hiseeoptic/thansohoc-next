@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
 import { Send, X, Bot, User, ChevronUp, ChevronDown } from 'lucide-react';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
 interface ChatbotProps {
   sharedResults: CalculationResult | null;
