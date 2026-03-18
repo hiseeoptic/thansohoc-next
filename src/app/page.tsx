@@ -29,6 +29,7 @@ export default function Home() {
         <h1 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-300 to-blue-400 tracking-tight">
           Mystic Numerology
         </h1>
+
         <button
           onClick={toggleLanguage}
           className="p-2 bg-blue-600 rounded-lg text-white hover:bg-blue-500 flex items-center gap-1 transition"
@@ -39,7 +40,7 @@ export default function Home() {
         </button>
       </header>
 
-      {/* Navigation Tabs */}
+      {/* Tabs */}
       <div className="flex justify-center gap-4 my-8 px-4">
         <button
           onClick={() => setActiveTab('calc')}
