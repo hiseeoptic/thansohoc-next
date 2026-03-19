@@ -31,7 +31,7 @@ export async function generateChatResponse(
         ...messages,
       ],
       temperature: 0.5,
-      max_tokens: 1500,
+      
       // Nếu muốn streaming (text hiện dần), bật dòng dưới và xử lý stream ở client
       // stream: true,
     });
@@ -77,7 +77,7 @@ export async function generateAnalyzeResponse(prompt: string) {
         { role: 'user', content: prompt },
       ],
       temperature: 0.4,
-      max_tokens: 2500,
+      
     });
 
     const content = completion.choices[0]?.message?.content;
