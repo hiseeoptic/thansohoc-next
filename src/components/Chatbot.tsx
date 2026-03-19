@@ -179,26 +179,37 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
       `;
 
            // Gọi Server Action thay vì fetch /api/chat
+      console.log('🚀 [Chatbot] Gọi Server Action...');
+
       const result = await generateChatResponse(
-        messages.concat(userMessage), // Gửi lịch sử chat
-        systemInstruction             // Gửi system instruction đầy đủ
+        messages.concat(userMessage),  // Gửi lịch sử chat
+        systemInstruction              // Gửi system instruction
       );
+
+      console.log('📥 [Chatbot] Kết quả Server Action:', result);
 
       if (result.error) {
         throw new Error(result.error);
       }
 
-      const aiMessage: Message = result.error
-  ? { role: 'assistant', content: result.error }
-  : { role: 'assistant', content: result.content ?? 'Không nhận được phản hồi từ AI.' };
-      
+      if (!result.content) {
+        throw new Error('Không nhận được nội dung từ AI');
+      }
+
+      const aiMessage: Message = { role: 'assistant', content: result.content };
+      setMessages(prev => [...prev, aiMessage]);
+      console.log('✅ [Chatbot] Đã thêm tin nhắn AI thành công');
+
     } catch (error: any) {
-      console.error('Lỗi kết nối OpenAI:', error);
-      const errorMsg = language === 'vi' ? 'Lỗi kết nối AI. Vui lòng thử lại sau.' : 'AI connection error. Please try again later.';
+      console.error('❌ [Chatbot] Lỗi handleSend:', error);
+      const errorMsg = language === 'vi' 
+        ? `Lỗi kết nối AI: ${error.message || 'Vui lòng thử lại sau.'}` 
+        : `AI connection error: ${error.message || 'Please try again later.'}`;
       const errorMessage: Message = { role: 'assistant', content: errorMsg };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      console.log('🔄 [Chatbot] isLoading reset');
     }
   };
 
