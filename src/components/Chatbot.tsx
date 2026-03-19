@@ -178,24 +178,19 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         **Câu hỏi user:** ${input}
       `;
 
-      // Gọi OpenAI trực tiếp server-side
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-      });
+           // Gọi Server Action thay vì fetch /api/chat
+      const result = await generateChatResponse(
+        messages.concat(userMessage), // Gửi lịch sử chat
+        systemInstruction             // Gửi system instruction đầy đủ
+      );
 
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemInstruction },
-          ...messages.concat(userMessage) // Gửi lịch sử chat (role đã chuẩn "user"/"assistant")
-        ],
-        temperature: 0.5,
-        max_tokens: 1500,
-      });
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
-      const aiMessage: Message = { role: 'assistant', content: completion.choices[0]?.message?.content || 'Không nhận được phản hồi từ AI.' };
+      const aiMessage: Message = { role: 'assistant', content: result.content };
       setMessages(prev => [...prev, aiMessage]);
-
+      
     } catch (error: any) {
       console.error('Lỗi kết nối OpenAI:', error);
       const errorMsg = language === 'vi' ? 'Lỗi kết nối AI. Vui lòng thử lại sau.' : 'AI connection error. Please try again later.';
