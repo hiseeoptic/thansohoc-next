@@ -188,8 +188,9 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         throw new Error(result.error);
       }
 
-      const aiMessage: Message = { role: 'assistant', content: result.content };
-      setMessages(prev => [...prev, aiMessage]);
+      const aiMessage: Message = result.error
+  ? { role: 'assistant', content: result.error }
+  : { role: 'assistant', content: result.content ?? 'Không nhận được phản hồi từ AI.' };
       
     } catch (error: any) {
       console.error('Lỗi kết nối OpenAI:', error);
