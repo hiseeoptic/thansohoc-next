@@ -3,7 +3,7 @@ import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
 import { Send, X, Bot, User, ChevronUp, ChevronDown } from 'lucide-react';
 import { OpenAI } from 'openai';
-
+import { generateChatResponse } from '@/actions/openai';
 interface ChatbotProps {
   sharedResults: CalculationResult | null;
   sheetData: SheetMeaning[];
