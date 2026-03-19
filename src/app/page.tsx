@@ -1,4 +1,4 @@
-
+'use client';
 import React, { useState, useEffect } from 'react';
 import Calculator from '@/components/Calculator';
 import ConnectionTool from '@/components/ConnectionTool';
