@@ -5,6 +5,7 @@ import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult }
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
+import { generateAnalyzeResponse } from '@/actions/openai';
 interface ConnectionToolProps {
   sheetData: SheetMeaning[];
   sharedResults: CalculationResult | null;
