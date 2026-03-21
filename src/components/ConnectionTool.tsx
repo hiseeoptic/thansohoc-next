@@ -6,6 +6,7 @@ import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
+import styles from './ConnectionTool.module.css';
 interface ConnectionToolProps {
   sheetData: SheetMeaning[];
   sharedResults: CalculationResult | null;
@@ -1005,75 +1006,7 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
     </div>
   );
 }
-    <style jsx global>{`
-        .ai-content-styled h3 {
-          color: #fca5a5;
-          font-size: 1.4rem;
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          font-weight: 800;
-          border-bottom: 1px solid rgba(255,255,255,0.1);
-          padding-bottom: 0.5rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-        .ai-content-styled h4 {
-          color: #93c5fd;
-          font-size: 1.15rem;
-          margin-top: 1.5rem;
-          margin-bottom: 0.75rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-        }
-        .ai-content-styled h4::before {
-    content: '◈';
-    display: inline-block;
-    margin-right: 8px;
-    color: #60a5fa;
-    font-size: 0.9em;
-  }
-  .ai-content-styled p {
-    margin-bottom: 1rem;
-    color: #e5e7eb;
-    line-height: 1.8;
-    text-align: justify;
-  }
-  .ai-content-styled ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin-bottom: 1.5rem;
-    background: rgba(255,255,255,0.03);
-    border-radius: 0.5rem;
-    padding: 1rem;
-  }
-  .ai-content-styled li {
-    margin-bottom: 0.8rem;
-    padding-left: 1.5rem;
-    position: relative;
-    color: #d1d5db;
-  }
-  .ai-content-styled li:last-child {
-    margin-bottom: 0;
-  }
-  .ai-content-styled li::before {
-    content: '•';
-    position: absolute;
-    left: 0.25rem;
-    color: #818cf8;
-    font-weight: bold;
-    font-size: 1.2em;
-    line-height: 1;
-  }
-  .ai-content-styled strong {
-    color: #fbbf24;
-    font-weight: 700;
-  }
-  .ai-content-styled em {
-    color: #a5b4fc;
-    font-style: italic;
-  }
-      `}</style>
+   
     </div>
   </div>
 );
