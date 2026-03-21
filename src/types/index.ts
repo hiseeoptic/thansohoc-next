@@ -46,11 +46,9 @@ export enum NumberType {
 }
 
 export interface ConnectionAnalysisResult {
-  relationship: 
-    | "Đồng hướng" | "Tương phản" | "Bổ sung" | "Trung tính" | "Lỗi"
-    | "Harmonious" | "Challenging" | "Complementary" | "Neutral" | "Error";
+  relationship: "Đồng hướng" | "Tương phản" | "Bổ sung" | "Trung tính" | "Lỗi";
   keywords: string;
   advice: string;
   growth: string;
-  aiContent?: string;
+  aiContent?: string; // HTML content from AI
 }
