@@ -59,23 +59,25 @@ export async function generateChatResponse(
   }
 }
 
-export async function generateAnalyzeResponse(prompt: string, language: 'vi' | 'en' = 'vi') {
+export async function generateAnalyzeResponse(prompt: string) {
   try {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not configured on the server');
     }
 
-    const systemContent = language === 'en'
-      ? 'You are a Behavioral Psychologist and HR Strategy Consultant. Analyze deeply in professional, natural English using real-life examples from career, relationships, finance, and personal growth.'
-      : 'Bạn là chuyên gia Tâm lý học Hành vi và Cố vấn Chiến lược Nhân sự. Phân tích sâu, chi tiết, dùng tiếng Việt, bám sát rule engine và dữ liệu cung cấp, sử dụng ví dụ thực tế từ công việc, gia đình, tài chính, phát triển bản thân.';
+    console.log('[Analyze Response] Starting OpenAI call...');
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: systemContent },
+        {
+          role: 'system',
+          content: 'Bạn là chuyên gia Thần Số Học hành vi. Phân tích sâu, chi tiết, dùng tiếng Việt, bám sát rule engine và dữ liệu cung cấp.',
+        },
         { role: 'user', content: prompt },
       ],
       temperature: 0.4,
+      
     });
 
     const content = completion.choices[0]?.message?.content;
@@ -83,6 +85,8 @@ export async function generateAnalyzeResponse(prompt: string, language: 'vi' | '
     if (!content) {
       throw new Error('No content received from OpenAI');
     }
+
+    console.log('[Analyze Response] Success');
 
     return { content };
   } catch (error: any) {
