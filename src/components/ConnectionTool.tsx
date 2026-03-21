@@ -985,79 +985,75 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
     </div>
   );
 }
-      {/* CSS for AI Content specific styling */}
-      <style>{`
-        .ai-content-styled h3 {
-            color: #fca5a5; /* red-300ish/pink */
-            font-size: 1.4rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .ai-content-styled h4 {
-            color: #93c5fd; /* blue-300 */
-            font-size: 1.15rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-        }
-        .ai-content-styled h4::before {
-            content: '◈';
-            display: inline-block;
-            margin-right: 8px;
-            color: #60a5fa;
-            font-size: 0.9em;
-        }
-        .ai-content-styled p {
-            margin-bottom: 1rem;
-            color: #e5e7eb; /* gray-200 */
-            line-height: 1.8;
-            text-align: justify;
-        }
-        .ai-content-styled ul {
-            list-style-type: none;
-            padding-left: 0;
-            margin-bottom: 1.5rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 0.5rem;
-            padding: 1rem;
-        }
-        .ai-content-styled li {
-            margin-bottom: 0.8rem;
-            padding-left: 1.5rem;
-            position: relative;
-            color: #d1d5db;
-        }
-        .ai-content-styled li:last-child {
-            margin-bottom: 0;
-        }
-        .ai-content-styled li::before {
-            content: '•';
-            position: absolute;
-            left: 0.25rem;
-            color: #818cf8; /* indigo-400 */
-            font-weight: bold;
-            font-size: 1.2em;
-            line-height: 1;
-        }
-        .ai-content-styled strong {
-            color: #fff;
-            font-weight: 700;
-            color: #fbbf24; /* amber-300 */
-        }
-        .ai-content-styled em {
-            color: #a5b4fc;
-            font-style: italic;
-        }
-      `}</style>
-    </div>
-  );
-};
+    // === CSS được đẩy ra ngoài return để tránh lỗi parser ===
+<style>{`
+  .ai-content-styled h3 {
+    color: #fca5a5;
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .ai-content-styled h4 {
+    color: #93c5fd;
+    font-size: 1.15rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+  .ai-content-styled h4::before {
+    content: '◈';
+    display: inline-block;
+    margin-right: 8px;
+    color: #60a5fa;
+    font-size: 0.9em;
+  }
+  .ai-content-styled p {
+    margin-bottom: 1rem;
+    color: #e5e7eb;
+    line-height: 1.8;
+    text-align: justify;
+  }
+  .ai-content-styled ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .ai-content-styled li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: #d1d5db;
+  }
+  .ai-content-styled li:last-child {
+    margin-bottom: 0;
+  }
+  .ai-content-styled li::before {
+    content: '•';
+    position: absolute;
+    left: 0.25rem;
+    color: #818cf8;
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1;
+  }
+  .ai-content-styled strong {
+    color: #fbbf24;
+    font-weight: 700;
+  }
+  .ai-content-styled em {
+    color: #a5b4fc;
+    font-style: italic;
+  }
+`}</style>
 
 export default ConnectionTool;
