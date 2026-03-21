@@ -249,7 +249,7 @@ export const calculatePeaksAndChallenges = (birthdate: string, lifePath: number)
     };
 };
 
-export const analyzeConnectionLogic = (nums: { type: string, value: number }[]): ConnectionAnalysisResult => {
+export const analyzeConnectionLogic = (nums: { type: string, value: number }[], language: 'vi' | 'en' = 'vi'): ConnectionAnalysisResult => {
   // Simplified logic based on PDF "Principles of Energy Analysis"
   // Groups:
   // 1-5-7: Mind/Individual (Yang)
@@ -332,7 +332,18 @@ export const analyzeConnectionLogic = (nums: { type: string, value: number }[]):
       };
       return map[v] || v;
   });
+// Thêm mapping tiếng Anh cho relationship
+const relationshipMap: Record<string, string> = {
+  "Đồng hướng": "Harmonious",
+  "Tương phản": "Challenging",
+  "Bổ sung": "Complementary",
+  "Trung tính": "Neutral",
+  "Lỗi": "Error"
+};
 
+const finalRelationship = language === 'en'
+  ? (relationshipMap[relationship] || relationship)
+  : relationship;
   return {
     relationship,
     keywords: keywordsList.join(" + "),
