@@ -6,7 +6,6 @@ import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
-import styles from './ConnectionTool.module.css';
 interface ConnectionToolProps {
   sheetData: SheetMeaning[];
   sharedResults: CalculationResult | null;
@@ -112,45 +111,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
 
   // State chatbot
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-// === TRANSLATION OBJECT ===
-const t = {
-  vi: {
-    title: "Matrix Analysis Pro",
-    subtitle: "AI Engine v4.0: Rule-Based Logic & Behavioral Psychology",
-    mode2: "2 Chỉ Số",
-    mode3: "3 Chỉ Số",
-    guideTitle: "Hướng dẫn chọn chỉ số để kết nối",
-    guide1: "Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân của bạn.",
-    guide2: "Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi của bạn.",
-    guideNote: "Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.",
-    subLabel: "Nhập Mã Thuê Bao:",
-    subPlaceholder: "Nhập mã (ví dụ: 123123)",
-    activateBtn: "Kích Hoạt Phân Tích Chuyên Sâu",
-    loadingText: "Đang kích hoạt Deep Engine & Mapping dữ liệu...",
-    layerText: "Lớp số",
-    enterNumber: "Nhập số",
-    chatbotBtn: "Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)",
-    fetching: "Đang đọc dữ liệu từ Google Sheet..."
-  },
-  en: {
-    title: "Matrix Analysis Pro",
-    subtitle: "AI Engine v4.0: Rule-Based Logic & Behavioral Psychology",
-    mode2: "2 Numbers",
-    mode3: "3 Numbers",
-    guideTitle: "Guide to Selecting Numbers for Connection",
-    guide1: "Combine <strong>Life Path + Heart Desire + Mission</strong> (or any 2 out of 3) to understand life trends, success model, and personal development roadmap.",
-    guide2: "Combine <strong>Heart Desire + Attitude + Personality + Maturity</strong> (or at least Heart Desire + 1 other) to understand core personality, reaction mechanism under pressure, and behavioral growth direction.",
-    guideNote: "Choose the right combo for deep AI analysis.",
-    subLabel: "Enter Subscription Code:",
-    subPlaceholder: "Enter code (e.g.: 123123)",
-    activateBtn: "Activate Deep Analysis",
-    loadingText: "Activating Deep Engine & Mapping data...",
-    layerText: "Layer",
-    enterNumber: "Enter number",
-    chatbotBtn: "Ask Deep Questions About Results (AI Chatbot)",
-    fetching: "Loading data from Google Sheet..."
-  }
-}[language];
+
   // *** Thêm useEffect để kiểm tra và fetch nếu sheetData rỗng khi component mount ***
   useEffect(() => {
     if (sheetData.length === 0) {
@@ -298,10 +259,7 @@ const t = {
     typeKey: i.typeKey,
     value: parseInt(i.value) || 0
   }));
-// === THÊM ĐOẠN NÀY (langInstruction) ===
-  const langInstruction = language === 'vi'
-    ? 'Trả lời toàn bộ phân tích (tất cả h3, p, ul...) bằng tiếng Việt tự nhiên.'
-    : 'Answer the ENTIRE analysis (all h3, p, ul...) in natural, professional English.';
+
   if (activeInputs.some(i => i.value === 0)) return;
 
   setIsAnalyzing(true);
@@ -347,30 +305,25 @@ const t = {
           }
       }
 
+      // *** Bước 2: Tiếp tục phân tích chỉ khi sheetData đã sẵn sàng ***
       const contextData = activeInputs.map(input => {
-        const meaning = getMeaning(currentSheetData, input.typeKey, input.value, language); // ← SỬA: language thay vì 'vi'
-        return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`; 
-    }).join('\n\n');
+          const meaning = getMeaning(currentSheetData, input.typeKey, input.value, 'vi');
+          return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`; 
+      }).join('\n\n');
 
-    // ... (inputDescriptions giữ nguyên)
+      const inputDescriptions = activeInputs.map(i => `${i.type} (${i.value})`).join(" + ");
+        let prompt = "";
+        const commonInstructions = `
+            Đóng vai: Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự. Sử dụng kiến thức tâm lý học để phân tích tính cách, hành vi, xu hướng thể hiện tình cảm, và cách cải thiện, với trọng tâm vào các khía cạnh thực tế của con người như động lực cảm xúc, thói quen ứng xử, và chiến lược hóa giải mâu thuẫn nội tại.
+            
+            **DỮ LIỆU THAM CHIẾU (CONTEXT):**
+            ${contextData}
 
-    // === SỬA commonInstructions (thêm langInstruction) ===
-    const commonInstructions = `
-         Đóng vai: Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự. Sử dụng kiến thức tâm lý học để phân tích tính cách, hành vi, xu hướng thể hiện tình cảm, và cách cải thiện, với trọng tâm vào các khía cạnh thực tế của con người như động lực cảm xúc, thói quen ứng xử, và chiến lược hóa giải mâu thuẫn nội tại.
-
-        **DỮ LIỆU THAM CHIẾU (CONTEXT):**
-        ${contextData}
-
-        ${ruleEngine.getPromptModifiers(comboInfo.comboType, comboInfo.isSpecial, comboInfo.axisCount)}
-
-        ${langInstruction}   // ← THÊM DÒNG NÀY (chỉ 1 dòng)
-
-        **YÊU CẦU ĐỊNH DẠNG:**
-        - Trả về HTML sạch ...
-    - Trả về HTML sạch (h3, h4, ul, li, p, strong). KHÔNG dùng markdown (\`\`\`).
-
+            ${ruleEngine.getPromptModifiers(comboInfo.comboType, comboInfo.isSpecial, comboInfo.axisCount)}
+            
+            **YÊU CẦU ĐỊNH DẠNG:**
+            - Trả về HTML sạch (h3, h4, ul, li, p, strong). KHÔNG dùng markdown (\`\`\`).
             - Bắt buộc phân tích sâu: Trích xuất đặc điểm từ context, diễn giải ý nghĩa, liên kết các ý, mở rộng với ví dụ thực tế (công việc, gia đình, tài chính, mối quan hệ), phân tích hậu quả/lợi ích, đảm bảo nội dung đủ ý, logic, không hời hợt. Mỗi phần phải tự diễn giải đầy đủ dựa trên dữ liệu.
-
         `;
 
         if (comboInfo.comboType === 'coreMissionLife') {
@@ -387,7 +340,7 @@ const t = {
 Dựa trên dữ liệu gốc của các số, trích xuất các đặc điểm chính và phân tích sự kết hợp tạo ra mẫu người có tính cách gốc là gì? Diễn giải sâu sắc với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ, nhấn mạnh cách các đặc điểm này hình thành nên bản chất cốt lõi.
 
 <ul>
-<li><strong>Nhóm động lực tâm lý chủ đạo:</strong> Trích xuất từ dữ liệu gốc, bộ số này thiên về Hành động (1–8), Cảm xúc (2–6), Sáng tạo (3–5) hay Trí tuệ (7–9) hay logic cẩn thận (4)? Phân tích nhóm chiếm ưu thế quyết định khí chất lõi như thế nào, với ví dụ cụ thể về hành vi trong môi trường công sở hoặc gia đình, và hậu quả nếu nhóm này bị lệch.</li>
+<li><strong>Nhóm động lực tâm lý chủ đạo:</strong> Trích xuất từ dữ liệu gốc, bộ số này thiên về Hành động (1–8), Cảm xúc (2–6), Sáng tạo (3–5) hay Trí tuệ (7–9)? Phân tích nhóm chiếm ưu thế quyết định khí chất lõi như thế nào, với ví dụ cụ thể về hành vi trong môi trường công sở hoặc gia đình, và hậu quả nếu nhóm này bị lệch.</li>
  
 <li><strong>Động cơ cốt lõi:</strong> Từ dữ liệu gốc, họ sống vì điều gì? Thành tựu – Tự do – Giá trị – Sự công nhận – Sự an toàn – Cống hiến? Diễn giải sâu cách nhiên liệu bên trong này chi phối quyết định, đưa ví dụ thực tế như cách họ chọn nghề nghiệp hoặc xử lý khủng hoảng, và cách nó ảnh hưởng đến động lực lâu dài.</li>
  
@@ -819,196 +772,253 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
   };
 
   return (
-  <div className="max-w-4xl mx-auto p-4 md:p-6 pb-20">
-    <div className="glass-panel p-6 rounded-2xl shadow-xl border border-blue-400/20">
-   <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-  <div className="text-left">
-    <h2 className="text-2xl font-bold text-blue-200 flex items-center gap-2">
-      <BrainCircuit className="text-blue-400" /> 
-      Matrix Analysis Pro
-    </h2>
-    <p className="text-gray-400 text-xs mt-1">
-      AI Engine v4.0: Rule-Based Logic & Behavioral Psychology
-    </p>
-  </div>
-  
-  <div className="flex bg-black/40 rounded-lg p-1 border border-blue-500/30">
-    <button
-      onClick={() => { setMode(2); setAnalysis(null); }}
-      className={`px-5 py-2 rounded-l-lg text-sm font-medium transition-all ${
-        mode === 2 
-          ? 'bg-blue-600 text-white shadow-md' 
-          : 'text-gray-300 hover:bg-blue-900/30 hover:text-white'
-      }`}
-    >
-      {language === 'vi' ? '2 Chỉ Số' : '2 Numbers'}
-    </button>
-    
-    <button
-      onClick={() => { setMode(3); setAnalysis(null); }}
-      className={`px-5 py-2 rounded-r-lg text-sm font-medium transition-all ${
-        mode === 3 
-          ? 'bg-blue-600 text-white shadow-md' 
-          : 'text-gray-300 hover:bg-blue-900/30 hover:text-white'
-      }`}
-    >
-      {language === 'vi' ? '3 Chỉ Số' : '3 Numbers'}
-    </button>
-  </div>
-</div>
-
-      {/* Hướng dẫn kết nối chỉ số */}
-      <div className="mb-6 p-4 bg-black/20 rounded-lg border border-blue-500/20 text-gray-300 text-sm leading-relaxed">
-        <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
-          <Layers size={16} /> {t.guideTitle}
-        </h4>
-        <ul className="list-disc pl-5 space-y-2">
-          <li dangerouslySetInnerHTML={{ __html: t.guide1 }} />
-          <li dangerouslySetInnerHTML={{ __html: t.guide2 }} />
-        </ul>
-        <p className="mt-2 italic text-gray-400">{t.guideNote}</p>
-      </div>
-
-      {/* Input số điện thoại / mã thuê bao */}
-      <div className="mb-6">
-        <label className="block text-gray-300 mb-2 font-medium">{t.subLabel}</label>
-        <input
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value.trim())}
-          className="w-full bg-black/30 text-white p-4 rounded-xl border border-white/10 focus:border-blue-500 text-lg"
-          placeholder={t.subPlaceholder}
-        />
-        {subscriptionMessage && (
-          <p className={`mt-3 font-medium ${isValidSubscription ? 'text-green-400' : 'text-red-400'}`}>
-            {subscriptionMessage}
-          </p>
-        )}
-      </div>
-
-      {/* Input Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative">
-        {inputs.slice(0, mode).map((input, idx) => (
-          <div key={idx} className="bg-gradient-to-b from-white/10 to-white/5 p-5 rounded-2xl border border-white/10 relative group hover:border-blue-400/30 transition-all">
-            <div className="absolute -top-3 left-4 bg-gray-900 px-3 py-0.5 text-xs font-bold text-blue-300 rounded-full border border-blue-500/30">
-              {t.layerText} {idx + 1}
-            </div>
-
-            <div className="mt-2 space-y-3">
-              <select
-                value={input.type}
-                onChange={(e) => handleInputChange(idx, 'type', e.target.value)}
-                className="w-full bg-black/20 text-blue-100 text-sm font-medium p-2.5 rounded-lg border border-white/5 focus:border-blue-500/50 outline-none appearance-none"
-              >
-                {Object.values(NumberType).map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-
-              <div className="relative">
-                <input
-                  type="number"
-                  placeholder="0"
-                  value={input.value}
-                  onChange={(e) => handleInputChange(idx, 'value', e.target.value)}
-                  className="w-full bg-transparent text-center text-4xl font-bold text-white p-2 focus:outline-none border-b border-white/10 focus:border-blue-400 transition-colors placeholder-white/10"
-                />
-                <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">
-                  {t.enterNumber}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Decorative Connectors */}
-        <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -z-10"></div>
-      </div>
-
-      {/* Action Button */}
-      <button
-        onClick={handleDeepAnalyze}
-        disabled={isAnalyzing || !isValidSubscription}
-        className={`w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all duration-500 ${isAnalyzing ? 'opacity-70 cursor-wait' : ''}`}
-      >
-        <div className="flex items-center justify-center gap-3 relative z-10">
-          {isAnalyzing ? (
-            <>
-              <RefreshCw size={20} className="animate-spin" />
-              <span>{t.loadingText}</span>
-            </>
-          ) : (
-            <>
-              <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
-              <span>{t.activateBtn}</span>
-            </>
-          )}
-        </div>
-      </button>
-
-      {/* Results Area */}
-      {analysis && (
-        <div className="mt-10 animate-fadeIn space-y-8">
-          {isFetchingSheet && (
-            <div className="text-center mb-4 text-yellow-400 flex items-center justify-center gap-2">
-              <RefreshCw size={16} className="animate-spin" />
-              <span>{t.fetchingSheet}</span>
-            </div>
-          )}
-
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-200 mb-3">
-              <Zap size={16} className="fill-blue-400 text-blue-400" />
-              <span className="font-bold tracking-wide uppercase">{analysis.relationship}</span>
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{analysis.keywords}</h3>
-          </div>
-
-         {analysis?.aiContent && (
-          <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 leading-relaxed text-gray-200 shadow-2xl">
-            <div className="prose prose-invert prose-blue max-w-none">
-              <div className="ai-content-styled" dangerouslySetInnerHTML={{ __html: analysis.aiContent }} />
-            </div>
-          </div>
-        )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-emerald-900/10 p-6 rounded-2xl border border-emerald-500/20">
-                <p>Hệ thống đang chờ kết nối...</p>
-              </div>
-            </div>
-      
-
-          <div className="mt-8">
-            <button
-              onClick={() => setIsChatbotOpen(true)}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 border border-emerald-400/30"
+    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-20">
+      <div className="glass-panel p-6 rounded-2xl shadow-xl border border-blue-400/20">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+           <div className="text-left">
+             <h2 className="text-2xl font-bold text-blue-200 flex items-center gap-2">
+                <BrainCircuit className="text-blue-400" /> Matrix Analysis Pro
+             </h2>
+             <p className="text-gray-400 text-xs mt-1">AI Engine v4.0: Rule-Based Logic & Behavioral Psychology</p>
+           </div>
+          
+          <div className="flex bg-black/40 rounded-lg p-1">
+            <button 
+                onClick={() => { setMode(2); setAnalysis(null); }}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 2 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
-              <MessageCircle size={22} />
-              <span>{t.chatbotBtn}</span>
+                2 Chỉ Số
+            </button>
+            <button 
+                onClick={() => { setMode(3); setAnalysis(null); }}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 3 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            >
+                3 Chỉ Số
             </button>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Hướng dẫn kết nối chỉ số (Menu hướng dẫn mới) */}
+        <div className="mb-6 p-4 bg-black/20 rounded-lg border border-blue-500/20 text-gray-300 text-sm leading-relaxed">
+          <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
+            <Layers size={16} /> Hướng dẫn chọn chỉ số để kết nối
+          </h4>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</li>
+            <li>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</li>
+          </ul>
+          <p className="mt-2 italic text-gray-400">Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.</p>
+        </div>
+
+        {/* *** Thêm input số điện thoại (mật khẩu) *** */}
+        {/* Giải thích: Input để nhập số điện thoại, dùng làm mật khẩu kiểm tra thuê bao. */}
+        <div className="mb-6">
+  <label className="block text-gray-300 mb-2 font-medium">Nhập Mã Thuê Bao:</label>
+  <input
+    type="text"
+    value={phone}
+    onChange={(e) => setPhone(e.target.value.trim())}
+    className="w-full bg-black/30 text-white p-4 rounded-xl border border-white/10 focus:border-blue-500 text-lg"
+    placeholder="Nhập mã (ví dụ: 123123)"
+  />
+  {subscriptionMessage && (
+    <p className={`mt-3 font-medium ${isValidSubscription ? 'text-green-400' : 'text-red-400'}`}>
+      {subscriptionMessage}
+    </p>
+  )}
+</div>
+
+        {/* Input Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative">
+             {inputs.slice(0, mode).map((input, idx) => (
+               <div key={idx} className="bg-gradient-to-b from-white/10 to-white/5 p-5 rounded-2xl border border-white/10 relative group hover:border-blue-400/30 transition-all">
+                  <div className="absolute -top-3 left-4 bg-gray-900 px-3 py-0.5 text-xs font-bold text-blue-300 rounded-full border border-blue-500/30">
+                    Lớp số {idx + 1}
+                  </div>
+                  
+                  <div className="mt-2 space-y-3">
+                    <select 
+                        value={input.type}
+                        onChange={(e) => handleInputChange(idx, 'type', e.target.value)}
+                        className="w-full bg-black/20 text-blue-100 text-sm font-medium p-2.5 rounded-lg border border-white/5 focus:border-blue-500/50 outline-none appearance-none"
+                    >
+                        {Object.values(NumberType).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    
+                    <div className="relative">
+                        <input 
+                            type="number" 
+                            placeholder="0" 
+                            value={input.value}
+                            onChange={(e) => handleInputChange(idx, 'value', e.target.value)}
+                            className="w-full bg-transparent text-center text-4xl font-bold text-white p-2 focus:outline-none border-b border-white/10 focus:border-blue-400 transition-colors placeholder-white/10"
+                        />
+                        <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">Nhập số</div>
+                    </div>
+                  </div>
+               </div>
+             ))}
+             
+             {/* Decorative Connectors */}
+             <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -z-10"></div>
+        </div>
+
+        {/* Action Button */}
+        <button 
+            onClick={handleDeepAnalyze}
+            disabled={isAnalyzing}
+            className={`w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all duration-500 ${isAnalyzing ? 'opacity-70 cursor-wait' : ''}`}
+        >
+            <div className="flex items-center justify-center gap-3 relative z-10">
+                {isAnalyzing ? (
+                    <>
+                        <RefreshCw size={20} className="animate-spin" />
+                        <span>Đang kích hoạt Deep Engine & Mapping dữ liệu...</span>
+                    </>
+                ) : (
+                    <>
+                        <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
+                        <span>Kích Hoạt Phân Tích Chuyên Sâu</span>
+                    </>
+                )}
+            </div>
+        </button>
+
+        {/* Results Area */}
+        {analysis && (
+            <div className="mt-10 animate-fadeIn space-y-8">
+                {/* *** Thêm indicator nếu đang fetch sheet *** */}
+                {isFetchingSheet && (
+                  <div className="text-center mb-4 text-yellow-400 flex items-center justify-center gap-2">
+                    <RefreshCw size={16} className="animate-spin" />
+                    <span>Đang đọc dữ liệu từ Google Sheet...</span>
+                  </div>
+                )}
+
+                {/* Header Result */}
+                <div className="text-center">
+                    <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-200 mb-3">
+                        <Zap size={16} className="fill-blue-400 text-blue-400" />
+                        <span className="font-bold tracking-wide uppercase">{analysis.relationship}</span>
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{analysis.keywords}</h3>
+                </div>
+
+                {/* AI Content - Matrix Analysis */}
+                {analysis.aiContent ? (
+                    <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 leading-relaxed text-gray-200 shadow-2xl">
+                        <div className="prose prose-invert prose-blue max-w-none">
+                            <div className="ai-content-styled" dangerouslySetInnerHTML={{ __html: analysis.aiContent }} />
+                        </div>
+                    </div>
+                ) : (
+                    /* Fallback Static Content */
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-emerald-900/10 p-6 rounded-2xl border border-emerald-500/20">
+                           <p>Hệ thống đang chờ kết nối...</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Chatbot Button Trigger */}
+                <div className="mt-8">
+                   <button
+                    onClick={() => setIsChatbotOpen(true)}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 border border-emerald-400/30"
+                   >
+                     <MessageCircle size={22} />
+                     <span>Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)</span>
+                   </button>
+                </div>
+            </div>
+        )}
+      </div>
 
    {isChatbotOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="w-full max-w-2xl">
-            <Chatbot
-              sharedResults={sharedResults}
-              sheetData={sheetData}
-              onClose={() => setIsChatbotOpen(false)}
-              language={language}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-   
+  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+    <div className="w-full max-w-2xl">
+      <Chatbot 
+        sharedResults={sharedResults} 
+        sheetData={sheetData} 
+        onClose={() => setIsChatbotOpen(false)} 
+        language={language} // Thêm truyền language từ props của ConnectionTool
+      />
     </div>
   </div>
-);
+)}
+      {/* CSS for AI Content specific styling */}
+      <style>{`
+        .ai-content-styled h3 {
+            color: #fca5a5; /* red-300ish/pink */
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ai-content-styled h4 {
+            color: #93c5fd; /* blue-300 */
+            font-size: 1.15rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        .ai-content-styled h4::before {
+            content: '◈';
+            display: inline-block;
+            margin-right: 8px;
+            color: #60a5fa;
+            font-size: 0.9em;
+        }
+        .ai-content-styled p {
+            margin-bottom: 1rem;
+            color: #e5e7eb; /* gray-200 */
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .ai-content-styled ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .ai-content-styled li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #d1d5db;
+        }
+        .ai-content-styled li:last-child {
+            margin-bottom: 0;
+        }
+        .ai-content-styled li::before {
+            content: '•';
+            position: absolute;
+            left: 0.25rem;
+            color: #818cf8; /* indigo-400 */
+            font-weight: bold;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+        .ai-content-styled strong {
+            color: #fff;
+            font-weight: 700;
+            color: #fbbf24; /* amber-300 */
+        }
+        .ai-content-styled em {
+            color: #a5b4fc;
+            font-style: italic;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 export default ConnectionTool;
