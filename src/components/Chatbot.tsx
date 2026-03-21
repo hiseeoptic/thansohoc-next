@@ -60,7 +60,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         - Trí Tuệ (Intelligence): ${sharedResults.intelligenceNumber}
         - Năm cá nhân hiện tại: ${sharedResults.personalYear}
        
-        Sử dụng các thông tin trên để phân tích sâu hơn khi trả lời.
+        **BẮT BUỘC SỬ DỤNG THÔNG TIN NÀY** để phân tích, không được hỏi lại chỉ số. Nếu người dùng nói "là người vừa tra cứu đây" hoặc tương tự, hãy dùng đúng các chỉ số trên để trả lời ngay lập tức.
       ` : (language === 'vi' ? 'Không có chỉ số cụ thể (Người dùng chưa tra cứu). Hãy yêu cầu họ quay lại phần tra cứu để có chỉ số trước khi hỏi.' : 'No specific indicators (User has not queried yet). Please ask them to go back to the query section for indicators before asking.');
 
       // Lấy lịch sử chat gần nhất (10 tin nhắn)
@@ -178,12 +178,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         **Câu hỏi user:** ${input}
       `;
 
-           // Gọi Server Action thay vì fetch /api/chat
-      console.log('🚀 [Chatbot] Gọi Server Action...');
+      // === THAY THẾ PHẦN GỌI API BẰNG ĐOẠN NÀY ===
+      console.log('[Chatbot] Gọi Server Action với context:', context);
+      console.log('[Chatbot] System Instruction length:', systemInstruction.length);
 
       const result = await generateChatResponse(
-        messages.concat(userMessage),  // Gửi lịch sử chat
-        systemInstruction              // Gửi system instruction
+        messages.concat(userMessage),
+        systemInstruction + '\n\n' + context  // Đưa context vào cuối để AI đọc
       );
 
       console.log('📥 [Chatbot] Kết quả Server Action:', result);
