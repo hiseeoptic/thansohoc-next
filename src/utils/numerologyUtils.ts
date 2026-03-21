@@ -332,15 +332,17 @@ export const analyzeConnectionLogic = (nums: { type: string, value: number }[], 
       };
       return map[v] || v;
   });
-// Thêm mapping tiếng Anh cho relationship
-const relationshipMap: Record<string, string> = {
+// Thay vì Record<string, string>
+const relationshipMap: Record<
+  "Đồng hướng" | "Tương phản" | "Bổ sung" | "Trung tính" | "Lỗi",
+  "Harmonious" | "Challenging" | "Complementary" | "Neutral" | "Error"
+> = {
   "Đồng hướng": "Harmonious",
   "Tương phản": "Challenging",
   "Bổ sung": "Complementary",
   "Trung tính": "Neutral",
   "Lỗi": "Error"
 };
-
 const finalRelationship = language === 'en'
   ? (relationshipMap[relationship] || relationship)
   : relationship;
