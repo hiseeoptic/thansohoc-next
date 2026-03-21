@@ -345,7 +345,7 @@ const finalRelationship = language === 'en'
   ? (relationshipMap[relationship] || relationship)
   : relationship;
   return {
-    relationship,
+    relationship: finalRelationship,
     keywords: keywordsList.join(" + "),
     advice,
     growth
