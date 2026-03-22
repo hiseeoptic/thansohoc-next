@@ -6,6 +6,8 @@ import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
+import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
+
 interface ConnectionToolProps {
   sheetData: SheetMeaning[];
   sharedResults: CalculationResult | null;
