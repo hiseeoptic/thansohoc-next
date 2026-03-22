@@ -81,6 +81,12 @@ const ruleEngine = {
       5. **Variant Specific:** ${comboType === 'innerPersonalityAxis' ? `Tập trung vào trục Nội Tâm – Nhân Cách – Thái Độ – Trưởng Thành với ${axisCount} chỉ số. Nếu thiếu chỉ số, điều chỉnh phân tích cho phù hợp.` : ''}
       6. **Bám sát Khung Sườn:** TUYỆT ĐỐI bám sát khung phân tích được chỉ định, không thêm, bớt hoặc thay đổi cấu trúc. Mở rộng chi tiết dựa trên dữ liệu gốc và ví dụ thực tế, nhưng giữ nhất quán khi phân tích cùng bộ số nhiều lần. Không sáng tạo thêm phần mới ngoài khung.
       7. **Ép Phân Tích Sâu Bám Sát Dàn Ý:** BẮT BUỘC phải trích xuất đặc điểm chính từ dữ liệu gốc (context), sau đó diễn giải sâu sắc, mở rộng với ví dụ thực tế cụ thể từ cuộc sống (công việc, gia đình, tài chính, mối quan hệ), phân tích hậu quả/lợi ích/ý nghĩa, liên kết các ý logic, đảm bảo nội dung đủ ý, không hời hợt. Mỗi điểm con phải tự diễn giải đầy đủ, không chỉ liệt kê mà phải phân tích dựa trên dữ liệu để tạo chiều sâu.
+      8. **Bám sát Bộ Chỉ Số Đang Phân Tích:** Toàn bộ output (tất cả các phần h3, h4, ul, li) PHẢI dựa 100% vào đặc điểm cốt lõi của các con số đang được tra cứu (Life Path, Heart Desire, Mission, Personality, Maturity, Attitude, Intelligence…).
+       - Bắt buộc trích dẫn rõ ràng từng số: “Theo đặc điểm của số ${lifePath} là …”, “Số ${heartDesire} cho thấy …”, “Khi kết hợp số ${mission} với ${personality} dẫn đến …”.
+       - Tuyệt đối không được viết chung chung kiểu “người số X thường…” hoặc “thường thì con số này…”.
+    9. **Xử Lý Thiếu Dữ Liệu:** Nếu không có đủ dữ liệu cụ thể từ Google Sheet cho bất kỳ phần nào, chỉ được trả lời đúng một câu: “Dữ liệu hiện tại chưa đủ để phân tích chi tiết phần này”. KHÔNG ĐƯỢC tự chế, suy diễn hoặc thêm nội dung ngoài context.
+    10. **Tính Nhất Quán Toàn Bộ:** Giữ giọng văn, phong cách và mức độ sâu sắc nhất quán xuyên suốt toàn bộ phân tích. Mọi ví dụ thực tế phải liên kết trực tiếp với đặc điểm của bộ chỉ số đang phân tích.
+    **Lưu ý cuối cùng:** Tất cả 10 quy tắc trên có hiệu lực tuyệt đối với toàn bộ output. Vi phạm bất kỳ quy tắc nào cũng coi như kết quả không hợp lệ.
     `;
   }
 };
