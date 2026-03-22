@@ -70,8 +70,7 @@ const ruleEngine = {
 
   getPromptModifiers: (comboType: string, isSpecial: boolean, axisCount?: number) => {
     return `
-  getPromptModifiers: (comboType: string, isSpecial: boolean, axisCount?: number) => {
-  return `
+
     **CHỈ THỊ KIỂM SOÁT NỘI DUNG (RULE ENGINE - STRICT MODE):**
 
     1. **Độ dài & Chi tiết:** ${isSpecial ? 'BẮT BUỘC mỗi phần phân tích chính (thẻ h3) phải dài ít nhất 150-200 từ.' : 'Giữ phân tích ngắn gọn, súc tích, đi thẳng vào vấn đề.'} Hãy đưa ra ví dụ thực tế cụ thể (trong công sở, gia đình, quản lý tài chính...).
