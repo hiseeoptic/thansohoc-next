@@ -70,19 +70,27 @@ const ruleEngine = {
 
   getPromptModifiers: (comboType: string, isSpecial: boolean, axisCount?: number) => {
     return `
-      **CHỈ THỊ KIỂM SOÁT NỘI DUNG (RULE ENGINE - STRICT MODE):**
-      1. **Độ dài & Chi tiết:** ${isSpecial ? 'BẮT BUỘC mỗi phần phân tích chính (thẻ h3) phải dài ít nhất 150-200 từ.' : 'Giữ phân tích ngắn gọn, súc tích, đi thẳng vào vấn đề.'} Hãy đưa ra ví dụ thực tế cụ thể (trong công sở, gia đình, quản lý tài chính...).
-      2. **Cấm Thuật Ngữ Tâm Linh:** TUYỆT ĐỐI KHÔNG dùng các từ: 'năng lượng', 'tần số', 'rung động', 'vũ trụ', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
-      3. **Thay Thế Bằng Ngôn Ngữ Hành Vi:**
-         - Thay 'năng lượng' -> 'động lực tâm lý', 'xu hướng hành vi'.
-         - Thay 'chữa lành' -> 'giải quyết mâu thuẫn', 'xây dựng niềm tin'.
-         - Thay 'phụng sự' -> 'cống hiến', 'tạo giá trị xã hội', 'hỗ trợ cộng đồng'.
-      4. **Giọng văn:** Thực tế (Practical), Sắc sảo, Tâm lý học hành vi (Behavioral Psychology).
-      5. **Variant Specific:** ${comboType === 'innerPersonalityAxis' ? `Tập trung vào trục Nội Tâm – Nhân Cách – Thái Độ – Trưởng Thành với ${axisCount} chỉ số. Nếu thiếu chỉ số, điều chỉnh phân tích cho phù hợp.` : ''}
-      6. **Bám sát Khung Sườn:** TUYỆT ĐỐI bám sát khung phân tích được chỉ định, không thêm, bớt hoặc thay đổi cấu trúc. Mở rộng chi tiết dựa trên dữ liệu gốc và ví dụ thực tế, nhưng giữ nhất quán khi phân tích cùng bộ số nhiều lần. Không sáng tạo thêm phần mới ngoài khung.
-      7. **Ép Phân Tích Sâu Bám Sát Dàn Ý:** BẮT BUỘC phải trích xuất đặc điểm chính từ dữ liệu gốc (context), sau đó diễn giải sâu sắc, mở rộng với ví dụ thực tế cụ thể từ cuộc sống (công việc, gia đình, tài chính, mối quan hệ), phân tích hậu quả/lợi ích/ý nghĩa, liên kết các ý logic, đảm bảo nội dung đủ ý, không hời hợt. Mỗi điểm con phải tự diễn giải đầy đủ, không chỉ liệt kê mà phải phân tích dựa trên dữ liệu để tạo chiều sâu.
-    `;
-  }
+     **CHỈ THỊ KIỂM SOÁT NỘI DUNG (RULE ENGINE - STRICT MODE):**
+    1. **Độ dài & Chi tiết:** ${isSpecial ? 'BẮT BUỘC mỗi phần phân tích chính (thẻ h3) phải dài ít nhất 150-200 từ.' : 'Giữ phân tích ngắn gọn, súc tích, đi thẳng vào vấn đề.'} Hãy đưa ra ví dụ thực tế cụ thể (trong công sở, gia đình, quản lý tài chính...).
+    2. **Cấm Thuật Ngữ Tâm Linh:** TUYỆT ĐỐI KHÔNG dùng các từ: 'năng lượng', 'tần số', 'rung động', 'vũ trụ', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
+    3. **Thay Thế Bằng Ngôn Ngữ Hành Vi:**
+       - Thay 'năng lượng' -> 'động lực tâm lý', 'xu hướng hành vi'.
+       - Thay 'chữa lành' -> 'giải quyết mâu thuẫn', 'xây dựng niềm tin'.
+       - Thay 'phụng sự' -> 'cống hiến', 'tạo giá trị xã hội', 'hỗ trợ cộng đồng'.
+    4. **Giọng văn:** Thực tế (Practical), Sắc sảo, Tâm lý học hành vi (Behavioral Psychology).
+    5. **Variant Specific:** ${comboType === 'innerPersonalityAxis' ? `Tập trung vào trục Nội Tâm – Nhân Cách – Thái Độ – Trưởng Thành với ${axisCount} chỉ số. Nếu thiếu chỉ số, điều chỉnh phân tích cho phù hợp.` : ''}
+    6. **Bám sát Khung Sườn:** TUYỆT ĐỐI bám sát khung phân tích được chỉ định, không thêm, bớt hoặc thay đổi cấu trúc. Mở rộng chi tiết dựa trên dữ liệu gốc và ví dụ thực tế, nhưng giữ nhất quán khi phân tích cùng bộ số nhiều lần. Không sáng tạo thêm phần mới ngoài khung.
+    7. **Ép Phân Tích Sâu Bám Sát Dàn Ý:** BẮT BUỘC phải trích xuất đặc điểm chính từ dữ liệu gốc (context), sau đó diễn giải sâu sắc, mở rộng với ví dụ thực tế cụ thể từ cuộc sống (công việc, gia đình, tài chính, mối quan hệ), phân tích hậu quả/lợi ích/ý nghĩa, liên kết các ý logic, đảm bảo nội dung đủ ý, không hời hợt. Mỗi điểm con phải tự diễn giải đầy đủ, không chỉ liệt kê mà phải phân tích dựa trên dữ liệu để tạo chiều sâu.
+
+    **=== BỔ SUNG MỚI (QUY TẮC BẮT BUỘC VỚI PHẦN GIAO TIẾP & THUYẾT PHỤC) ===**
+    8. **Bám sát Bộ Chỉ Số Đang Phân Tích:** Toàn bộ nội dung PHẢI dựa 100% vào đặc điểm của các con số đang được tra cứu (Life Path, Heart Desire, Mission, Personality, Maturity, …) từ dữ liệu Google Sheet trong context. 
+       - Phải trích dẫn rõ ràng: “Theo đặc điểm của số ${lifePath} là …”, “Số ${heartDesire} cho thấy …”, “Kết hợp số ${mission} và ${personality} dẫn đến …”.
+       - Không được viết chung chung kiểu “người số X thường…” hoặc “thường thì…”.
+    9. **Xử Lý Thiếu Dữ Liệu:** Nếu không có đủ dữ liệu cụ thể từ Google Sheet cho một phần nào đó, chỉ được trả lời đúng một câu: “Dữ liệu hiện tại chưa đủ để phân tích chi tiết phần này”. Tuyệt đối KHÔNG được tự chế, suy diễn hoặc thêm nội dung ngoài context.
+
+    **Lưu ý cuối cùng:** Tất cả các quy tắc trên đều có hiệu lực tuyệt đối. Vi phạm bất kỳ quy tắc nào cũng coi như output không hợp lệ.
+  `;
+}
 };
 
 const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheetData, sharedResults, language }) => {
