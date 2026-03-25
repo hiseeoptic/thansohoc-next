@@ -369,7 +369,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
             // PROMPT CŨ CHO TRỤC ĐƯỜNG ĐỜI + NỘI TÂM + SỨ MỆNH
             prompt = `
                 ${commonInstructions}
-${karmicLessonInstruction}
+
                <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
 <ul>
 
