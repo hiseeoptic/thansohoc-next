@@ -95,9 +95,30 @@ const ruleEngine = {
 
 10. **Tính Nhất Quán Toàn Bộ:**  
     Giữ giọng văn, phong cách và mức độ sâu sắc nhất quán xuyên suốt toàn bộ phân tích. Mọi ví dụ thực tế phải liên kết trực tiếp với đặc điểm của bộ chỉ số đang phân tích.
+11. **BẮT BUỘC PHẢI CÓ PHẦN BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH**
+       - Phần này phải nằm **sau phần Lộ trình phát triển**.
+       - Dùng đúng cấu trúc HTML sau (không được thay đổi thẻ):
 
+<h4>🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h4>
+<ul>
+    <li><strong>Tổng kết nghiệp tính cách (Karmic Personality Pattern):</strong> ...</li>
+    <li><strong>Những điều được (Phước phần):</strong> ...</li>
+    <li><strong>Những điều chưa được (Nghiệp cần chuyển hóa):</strong> ...</li>
+    <li><strong>Nếu không chuyển hóa (sau 30 tuổi):</strong> ...</li>
+    <li><strong>Nếu chuyển hóa tích cực (Awakening Path):</strong> ...</li>
+    <li><strong>Chu kỳ nhân – duyên – quả:</strong> ...</li>
+    <li><strong>Bài học cốt lõi của linh hồn:</strong> ...</li>
+    <li>🔥 <strong>Insight sâu nhất:</strong> ...</li>
+</ul>
+
+    **QUY TẮC NGHIÊM NGẶT CHO AI:**
+    - Phải phân tích **tổ hợp số** (ví dụ: 1+5, 3+5, 2+8, 4+5...) một cách sâu sắc và cụ thể.
+    - Sử dụng góc nhìn nhân-duyên-quả một cách tinh tế, thực tế (không mê tín, không dùng từ năng lượng, rung động, kiếp trước).
+    - Nhấn mạnh: “Cách sống mới tạo nghiệp”, “Người tỉnh thức dùng con số để phát triển”.
+    - Phải đưa ra ví dụ cụ thể, dễ hiểu, sát với thực tế cuộc sống (công việc, gia đình, tài chính, mối quan hệ).
+    - Không được bỏ qua hoặc viết ngắn phần này.
 **Lưu ý cuối cùng:**  
-Tất cả 10 quy tắc trên có hiệu lực tuyệt đối với toàn bộ output. Vi phạm bất kỳ quy tắc nào cũng coi như kết quả không hợp lệ.
+Tất cả 11 quy tắc trên có hiệu lực tuyệt đối với toàn bộ output. Vi phạm bất kỳ quy tắc nào cũng coi như kết quả không hợp lệ.
     `;
   }
 };
@@ -348,7 +369,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
             // PROMPT CŨ CHO TRỤC ĐƯỜNG ĐỜI + NỘI TÂM + SỨ MỆNH
             prompt = `
                 ${commonInstructions}
-
+${karmicLessonInstruction}
                <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
 <ul>
 
