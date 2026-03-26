@@ -356,6 +356,23 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
           return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`;
       }).join('\n\n');
 
+// === PHẦN KIẾN THỨC SÂU VỀ CÁC CON SỐ (THÊM VÀO ĐÂY) ===
+const deepContext = activeInputs.map(input => {
+  const profile = deepNumberKnowledge[input.value.toString()] || deepNumberKnowledge[input.value];
+  if (!profile) return '';
+
+  return `### KIẾN THỨC SÂU VỀ SỐ ${input.value} (${profile.name}):
+**Hành tinh:** ${profile.planet}
+**Từ khóa:** ${profile.keywords.join(', ')}
+**Ưu điểm:** ${profile.advantages}
+**Thách thức:** ${profile.challenges}
+**Cân bằng:** ${profile.balance}
+**Gợi ý nghề nghiệp:** ${profile.careerSuggestions}`;
+}).join('\n\n');
+
+// Kết hợp contextData cũ + deepContext mới
+const fullContext = contextData + '\n\n' + deepContext;
+    
       // 2. LẤY RULE ENGINE (Phần này rất quan trọng)
       const modifiers = ruleEngine.getPromptModifiers(
         comboInfo.comboType, 
