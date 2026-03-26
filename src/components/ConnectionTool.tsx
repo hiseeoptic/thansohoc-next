@@ -96,21 +96,11 @@ const ruleEngine = {
 10. **Tính Nhất Quán Toàn Bộ:**  
     Giữ giọng văn, phong cách và mức độ sâu sắc nhất quán xuyên suốt toàn bộ phân tích. Mọi ví dụ thực tế phải liên kết trực tiếp với đặc điểm của bộ chỉ số đang phân tích.
 11. **=== QUY TẮC BẮT BUỘC CHO PHẦN BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH ===**
-    - Phần này **PHẢI nằm sau phần Lộ trình phát triển**.
+    - Phần này **PHẢI nằm trước phần Lộ trình phát triển**.
     - Phải dùng **đúng cấu trúc HTML** dưới đây, không được thay đổi thẻ.
     - Khi phân tích tổ hợp số (ví dụ: 1+5, 3+5, 2+8, 4+5...), AI **PHẢI phân tích kĩ lưỡng, chặt chẽ**, không được chung chung.
 
 <h4>🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h4>
-<ul>
-    <li><strong>Tổng kết nghiệp tính cách (Karmic Personality Pattern):</strong> ...</li>
-    <li><strong>Những điều được (Phước phần):</strong> ...</li>
-    <li><strong>Những điều chưa được (Nghiệp cần chuyển hóa):</strong> ...</li>
-    <li><strong>Nếu không chuyển hóa (sau 30 tuổi):</strong> ...</li>
-    <li><strong>Nếu chuyển hóa tích cực (Awakening Path):</strong> ...</li>
-    <li><strong>Chu kỳ nhân – duyên – quả:</strong> ...</li>
-    <li><strong>Bài học cốt lõi của linh hồn:</strong> ...</li>
-    <li>🔥 <strong>Insight sâu nhất:</strong> ...</li>
-</ul>
 
     **QUY TẮC PHÂN TÍCH TỔ HỢP SỐ (BẮT BUỘC):**
     - AI phải nhận diện **năng lượng lõi** của từng số trước (ví dụ: 3 = biểu đạt + cảm xúc, 5 = tự do + trải nghiệm...).
@@ -358,26 +348,62 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
       }
 
       // *** Bước 2: Tiếp tục phân tích chỉ khi sheetData đã sẵn sàng ***
+           // *** Bước 2: Tiếp tục phân tích chỉ khi sheetData đã sẵn sàng ***
+
+      // 1. Tạo dữ liệu gốc từ Google Sheet
       const contextData = activeInputs.map(input => {
           const meaning = getMeaning(currentSheetData, input.typeKey, input.value, 'vi');
-          return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`; 
+          return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`;
       }).join('\n\n');
 
-      const inputDescriptions = activeInputs.map(i => `${i.type} (${i.value})`).join(" + ");
-        let prompt = "";
-        const commonInstructions = `
-            Đóng vai: Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự. Sử dụng kiến thức tâm lý học để phân tích tính cách, hành vi, xu hướng thể hiện tình cảm, và cách cải thiện, với trọng tâm vào các khía cạnh thực tế của con người như động lực cảm xúc, thói quen ứng xử, và chiến lược hóa giải mâu thuẫn nội tại.
-            
+      // 2. LẤY RULE ENGINE (Phần này rất quan trọng)
+      const modifiers = ruleEngine.getPromptModifiers(
+        comboInfo.comboType, 
+        comboInfo.isSpecial, 
+        comboInfo.axisCount || 0
+      );
+
+      // 3. Tạo commonInstructions + Rule Engine
+      const commonInstructions = `
+            Đóng vai: Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự. 
+            Sử dụng kiến thức tâm lý học để phân tích tính cách, hành vi, xu hướng thể hiện tình cảm, và cách cải thiện, 
+            với trọng tâm vào các khía cạnh thực tế của con người như động lực cảm xúc, thói quen ứng xử, và chiến lược hóa giải mâu thuẫn nội tại.
+
             **DỮ LIỆU THAM CHIẾU (CONTEXT):**
             ${contextData}
 
-            ${ruleEngine.getPromptModifiers(comboInfo.comboType, comboInfo.isSpecial, comboInfo.axisCount)}
-            
-            **YÊU CẦU ĐỊNH DẠNG:**
-            - Trả về HTML sạch (h3, h4, ul, li, p, strong). KHÔNG dùng markdown (\`\`\`).
-            - Bắt buộc phân tích sâu: Trích xuất đặc điểm từ context, diễn giải ý nghĩa, liên kết các ý, mở rộng với ví dụ thực tế (công việc, gia đình, tài chính, mối quan hệ), phân tích hậu quả/lợi ích, đảm bảo nội dung đủ ý, logic, không hời hợt. Mỗi phần phải tự diễn giải đầy đủ dựa trên dữ liệu.
-        `;
+            ${modifiers}   // ← Rule Engine được chèn vào đây
 
+            **YÊU CẦU ĐỊNH DẠNG:**
+            - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
+            - Bắt buộc phân tích sâu, trích dẫn rõ từng số, đưa ví dụ thực tế, không chung chung.
+            - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
+      `;
+
+      let prompt = "";
+
+      // Phần tạo prompt theo từng loại combo
+      if (comboInfo.comboType === 'coreMissionLife') {
+          prompt = `
+${commonInstructions}
+
+Hãy phân tích **theo đúng khung sườn 4 phần h3** (từ 1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI đến 4. ỨNG DỤNG THỰC TẾ), 
+sau đó thêm phần **🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH** ngay sau phần 4.
+Phân tích phải rất sâu, dựa hoàn toàn vào tổ hợp số đang tra cứu (${activeInputs.map(i => i.value).join(' + ')}).
+          `;
+      } else if (comboInfo.comboType === 'innerPersonalityAxis') {
+          prompt = `
+${commonInstructions}
+
+Hãy phân tích theo khung sườn chuyên sâu cho trục Nội Tâm – Nhân Cách – Thái Độ – Trưởng Thành.
+          `;
+      } else {
+          prompt = `
+${commonInstructions}
+
+Hãy phân tích theo khung phân tích cơ bản.
+          `;
+      }
         if (comboInfo.comboType === 'coreMissionLife') {
             // PROMPT CŨ CHO TRỤC ĐƯỜNG ĐỜI + NỘI TÂM + SỨ MỆNH
             prompt = `
