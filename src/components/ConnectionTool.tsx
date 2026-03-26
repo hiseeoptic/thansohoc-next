@@ -286,41 +286,128 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   };
 
   const handleDeepAnalyze = async () => {
-  // *** Kiểm tra thuê bao trước khi phân tích ***
-  if (!phone) {
-    setSubscriptionMessage('Vui lòng nhập mã thuê bao để xác thực.');
-    return;
-  }
-  const isValid = checkSubscription(phone);
-  if (!isValid) {
-    return; // Dừng nếu hết hạn hoặc không tồn tại (message đã set)
-  }
-
-  const activeInputs = inputs.slice(0, mode).map(i => ({
-    type: i.type,
-    typeKey: i.typeKey,
-    value: parseInt(i.value) || 0
-  }));
-
-  if (activeInputs.some(i => i.value === 0)) return;
-
-  setIsAnalyzing(true);
-
-  // 1. Get Basic Logic (Always run as base/fallback)
-  const basicAnalysis = analyzeConnectionLogic(activeInputs);
-  
-  // 2. Validate Inputs & Determine Combo Type via Rule Engine
-  let comboInfo = { comboType: 'basic', isSpecial: false, axisCount: 0 };
-  try {
-      comboInfo = ruleEngine.validateInputs(activeInputs);
-  } catch (error: any) {
-      setIsAnalyzing(false);
-      setAnalysis({
-          ...basicAnalysis,
-          aiContent: `<p class='text-red-400 font-bold'>⚠️ ${error.message}</p>`
-      });
+    if (!phone) {
+      setSubscriptionMessage('Vui lòng nhập mã thuê bao để xác thực.');
       return;
-  }
+    }
+    const isValid = checkSubscription(phone);
+    if (!isValid) return;
+
+    const activeInputs = inputs.slice(0, mode).map(i => ({
+      type: i.type,
+      typeKey: i.typeKey,
+      value: parseInt(i.value) || 0
+    }));
+
+    if (activeInputs.some(i => i.value === 0)) return;
+
+    setIsAnalyzing(true);
+
+    const basicAnalysis = analyzeConnectionLogic(activeInputs);
+
+    let comboInfo = { comboType: 'basic', isSpecial: false, axisCount: 0 };
+    try {
+      comboInfo = ruleEngine.validateInputs(activeInputs);
+    } catch (error: any) {
+      setIsAnalyzing(false);
+      setAnalysis({ ...basicAnalysis, aiContent: `<p class='text-red-400 font-bold'>⚠️ ${error.message}</p>` });
+      return;
+    }
+
+    try {
+      let currentSheetData = sheetData;
+      if (currentSheetData.length === 0) {
+        setIsFetchingSheet(true);
+        currentSheetData = await fetchMeanings();
+        setSheetData(currentSheetData);
+        setIsFetchingSheet(false);
+      }
+
+      // 1. Chuẩn bị context đầy đủ (không cắt ngắn)
+      const contextData = activeInputs.map(input => {
+        const meaning = getMeaning(currentSheetData, input.typeKey, input.value, 'vi');
+        return `### DỮ LIỆU GỐC CỦA ${input.type} SỐ ${input.value}:\n${meaning}`;
+      }).join('\n\n');
+
+      const deepContext = activeInputs.map(input => {
+        const profile = deepNumberKnowledge[input.value.toString()] || deepNumberKnowledge[input.value];
+        if (!profile) return '';
+        return `### KIẾN THỨC SÂU VỀ SỐ ${input.value} (${profile.name}):
+**Hành tinh:** ${profile.planet}
+**Từ khóa:** ${profile.keywords.join(', ')}
+**Ưu điểm:** ${profile.advantages}
+**Thách thức:** ${profile.challenges}
+**Cân bằng:** ${profile.balance}
+**Gợi ý nghề nghiệp:** ${profile.careerSuggestions}`;
+      }).join('\n\n');
+
+      const fullContext = contextData + '\n\n' + deepContext;
+
+      // 2. Prompt ngắn gọn + CoT mạnh
+      const prompt = `
+Bạn là chuyên gia phân tích thần số học hành vi.
+
+Dữ liệu tham chiếu:
+${fullContext}
+
+**Nhiệm vụ:**
+Phân tích tổ hợp số (${activeInputs.map(i => i.value).join(' + ')}) theo đúng khung sườn 4 phần h3 + phần Bài Học Nhân-Duyên-Quả + Lộ trình phát triển.
+
+**Quy trình suy nghĩ bắt buộc (bạn phải làm theo thứ tự):**
+1. Đọc kỹ toàn bộ dữ liệu gốc và kiến thức sâu.
+2. Liệt kê động lực lõi của từng số.
+3. Phân tích tổ hợp: đồng hướng / bổ trợ / xung đột? Tạo ra bản sắc mới gì?
+4. Đưa ví dụ thực tế cụ thể cho từng phần (công việc, gia đình, tài chính, mối quan hệ).
+5. Viết output theo đúng khung sườn HTML.
+
+**Yêu cầu output:**
+- Phải trích dẫn rõ từng số.
+- Phải có ví dụ thực tế.
+- Không chung chung, không copy-paste khung.
+- Phải sâu và logic.
+
+Bắt đầu suy nghĩ và trả lời ngay.
+`;
+
+      let responseText = '';
+      let attempt = 0;
+      const maxAttempts = 2;
+
+      while (attempt < maxAttempts) {
+        attempt++;
+        const result = await generateAnalyzeResponse(prompt);
+
+        if (result.error) throw new Error(result.error);
+
+        responseText = result.content || '';
+
+        // 3. VALIDATOR đơn giản
+        const hasNumberCitation = /số \d+|Số \d+/.test(responseText);
+        const hasSpecificExample = /ví dụ|ví dụ như|trong công việc|trong gia đình|trong mối quan hệ/.test(responseText);
+        const isLongEnough = responseText.length > 1500;
+
+        if (hasNumberCitation && hasSpecificExample && isLongEnough) {
+          break; // Đạt chuẩn → thoát loop
+        }
+
+        // Nếu không đạt → gọi lại với feedback
+        prompt = `${prompt}\n\nLần trước output chưa đủ sâu. Hãy phân tích kỹ hơn, trích dẫn rõ từng số, đưa ví dụ thực tế cụ thể, và phân tích tổ hợp số sâu sắc hơn.`;
+      }
+
+      setAnalysis({
+        ...basicAnalysis,
+        aiContent: responseText
+      });
+    } catch (error: any) {
+      console.error('OpenAI Analyze error:', error);
+      setAnalysis({
+        ...basicAnalysis,
+        aiContent: `<p class='text-red-400 font-bold'>⚠️ Lỗi: ${error.message || 'Vui lòng thử lại sau'}</p>`
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   try {
       // *** Bước 1: Bắt buộc kiểm tra và fetch sheetData nếu chưa có ***
