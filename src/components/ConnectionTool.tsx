@@ -642,30 +642,21 @@ Phân tích vai trò tự nhiên trong tập thể với ví dụ cụ thể, nh
 - Cao → đúng vai trò → phát huy tối đa giá trị
 </li>
  
-<li>
-    <strong>Định hướng nội tại:</strong> Dựa trên dữ liệu, thiên về cá nhân hay cộng đồng? Thực tế hay lý tưởng? Ổn định hay bứt phá?<br>
-    → Khi kết hợp:
-    <ul>
-        <li>Có thể đồng hướng → rõ ràng, nhất quán</li>
-        <li>Hoặc đối lập → giằng co, mâu thuẫn nội tại</li>
-    </ul>
-    Ví dụ:
-    <ul>
-        <li>9 + 1 → cá nhân vs cộng đồng</li>
-        <li>4 + 5 → ổn định vs thay đổi</li>
-    </ul>
+<li><strong>Định hướng nội tại:</strong> Dựa trên dữ liệu, thiên về cá nhân hay cộng đồng? Thực tế hay lý tưởng? Ổn định hay bứt phá? 
 
-    🔥 <strong>Chuyển hóa định hướng nội tại:</strong>
-    <ul>
-        <li>
-            <strong>Trạng thái Thấp (Chưa chuyển hóa / Lệch hướng):</strong><br>
-            Khi người này chưa nhận thức và chuyển hóa, định hướng nội tại của tổ hợp số sẽ biểu hiện tiêu cực ra sao? Họ dễ rơi vào giằng xé, mất cân bằng, hoặc lệch hẳn về một cực (quá cá nhân, quá lý tưởng, quá sợ thay đổi…). Diễn giải cụ thể hậu quả trong cuộc sống thực tế.
-        </li>
-        <li>
-            <strong>Trạng thái Cao (Sau chuyển hóa / Tích hợp):</strong><br>
-            Khi người này nhận thức rõ và chuyển hóa tốt, định hướng nội tại sẽ trở nên hài hòa, mạnh mẽ và linh hoạt như thế nào? Họ sẽ sử dụng sự kết hợp giữa các cực đối lập một cách khôn ngoan để tạo ra phiên bản cao nhất của bản thân.
-        </li>
-    </ul>
+→ Khi kết hợp:
+- Có thể đồng hướng → rõ ràng  
+- Hoặc đối lập → giằng co  
+
+Ví dụ:
+- 9 + 1 → cá nhân vs cộng đồng  
+- 4 + 5 → ổn định vs thay đổi  
+
+Diễn giải hướng sống dài hạn với ví dụ về lựa chọn nghề nghiệp hoặc mối quan hệ.
+
+🔥 <strong>Chuyển hóa:</strong>
+- Thấp → mất phương hướng  
+- Cao → tạo ra con đường riêng phù hợp với bản chất
 </li>
  
 <li><strong>Mức độ đồng bộ nội – ngoại:</strong> Từ dữ liệu gốc, nội tâm có trùng khớp với cách họ thể hiện ra ngoài không? 
