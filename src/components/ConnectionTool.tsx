@@ -568,8 +568,8 @@ Ví dụ:
 Diễn giải hướng sống dài hạn với ví dụ về lựa chọn nghề nghiệp hoặc mối quan hệ.
 
 🔥 <strong>Chuyển hóa:</strong>
-- Thấp → mất phương hướng  
-- Cao → tạo ra con đường riêng phù hợp với bản chất
+- Khi Thấp thì thế nào 
+- Khi cao thì như thế nào
 </li>
  
 <li><strong>Mức độ đồng bộ nội – ngoại:</strong> Từ dữ liệu gốc, nội tâm có trùng khớp với cách họ thể hiện ra ngoài không? 
