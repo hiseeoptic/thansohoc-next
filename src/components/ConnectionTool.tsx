@@ -4,7 +4,6 @@ import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
-import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 
@@ -382,19 +381,38 @@ const fullContext = contextData + '\n\n' + deepContext;
 
       // 3. Tạo commonInstructions + Rule Engine
       const commonInstructions = `
-            Đóng vai: Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự. 
-            Sử dụng kiến thức tâm lý học để phân tích tính cách, hành vi, xu hướng thể hiện tình cảm, và cách cải thiện, 
-            với trọng tâm vào các khía cạnh thực tế của con người như động lực cảm xúc, thói quen ứng xử, và chiến lược hóa giải mâu thuẫn nội tại.
+=== NHIỆM VỤ ===
+Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự.
+Phân tích tính cách, hành vi, xu hướng thể hiện tình cảm dựa HOÀN TOÀN vào dữ liệu được cung cấp.
 
-            **DỮ LIỆU THAM CHIẾU (CONTEXT):**
-            ${contextData}
+=== QUY TẮC BẮT BUỘC (ĐỌC TRƯỚC KHI PHÂN TÍCH) ===
 
-            ${modifiers}   // ← Rule Engine được chèn vào đây
+**R1 - DỮ LIỆU LÀ NGUỒN DUY NHẤT:** Mọi nhận định PHẢI trích xuất từ DỮ LIỆU THAM CHIẾU bên dưới. Nếu thiếu dữ liệu → chỉ nói "Dữ liệu hiện tại chưa đủ để phân tích chi tiết phần này". KHÔNG tự chế.
 
-            **YÊU CẦU ĐỊNH DẠNG:**
-            - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
-            - Bắt buộc phân tích sâu, trích dẫn rõ từng số, đưa ví dụ thực tế, không chung chung.
-            - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
+**R2 - TRÍCH DẪN RÕ RÀNG:** PHẢI viết: "Theo đặc điểm số X: [trích dữ liệu]...", "Số Y có thách thức là [trích]...", "Khi kết hợp số A (đặc điểm: ...) với số B (đặc điểm: ...) tạo ra...". KHÔNG ĐƯỢC viết "người này thường..." hay "con số này cho thấy..." mà không chỉ rõ số nào.
+
+**R3 - PHÂN TÍCH TỔ HỢP 4 BƯỚC (BẮT BUỘC):**
+Bước 1: Xác định đặc điểm lõi của TỪNG số (trích từ dữ liệu)
+Bước 2: So sánh: cùng nhóm (khuếch đại) hay khác nhóm (bổ trợ/xung đột)?
+Bước 3: Khi kết hợp tạo ra "bản sắc mới" gì? Biểu hiện thực tế?
+Bước 4: Nếu lệch hướng → biểu hiện tiêu cực cụ thể?
+→ KHÔNG ĐƯỢC bỏ qua bước nào. Mỗi bước phải có ví dụ thực tế.
+
+**R4 - VÍ DỤ THỰC TẾ:** Mỗi điểm phân tích PHẢI có ít nhất 1 ví dụ cụ thể từ cuộc sống (công sở, gia đình, tài chính, mối quan hệ). KHÔNG chỉ liệt kê.
+
+**R5 - ĐỘ DÀI:** Mỗi phần h3 phải ít nhất 150-200 từ. Mỗi li phải có diễn giải, không chỉ 1 câu.
+
+${modifiers}
+
+=== DỮ LIỆU THAM CHIẾU (CONTEXT - ĐÂY LÀ NGUỒN DỮ LIỆU DUY NHẤT) ===
+${fullContext}
+
+=== YÊU CẦU ĐỊNH DẠNG OUTPUT ===
+- Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown (**, ##, -).
+- BÁM SÁT ĐÚNG khung sườn (cấu trúc h3/h4) trong prompt bên dưới. KHÔNG thêm, bớt phần.
+- TUYỆT ĐỐI tuân thủ toàn bộ quy tắc R1-R5.
+
+=== BẮT ĐẦU PHÂN TÍCH THEO KHUNG SAU ===
       `;
 
       let prompt = "";
