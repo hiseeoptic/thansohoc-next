@@ -120,8 +120,14 @@ const ruleEngine = {
     - Không được viết chung chung.
     - Phải phân tích **tổ hợp số** kĩ lưỡng và chặt chẽ.
     - Luôn nhấn mạnh: “Cách sống mới tạo nghiệp”, “Người tỉnh thức dùng con số để phát triển”.
-**Lưu ý cuối cùng:**  
-Tất cả 11 quy tắc trên có hiệu lực tuyệt đối với toàn bộ output. Vi phạm bất kỳ quy tắc nào cũng coi như kết quả không hợp lệ.
+12. **CHỐNG COPY TEMPLATE (QUAN TRỌNG NHẤT):**
+    - TUYỆT ĐỐI KHÔNG viết lại y nguyên nội dung prompt/template (VD: "Số A tạo xu hướng (…)", "Cân bằng (…)", "Phản ứng → quan sát").
+    - Nếu trong prompt có placeholder như (…), "___", "Số A/B" → bạn PHẢI thay bằng nội dung phân tích thực sự dựa trên con số cụ thể đang tra cứu.
+    - Mỗi câu bạn viết PHẢI chứa ít nhất 1 con số cụ thể đang phân tích (VD: "Số 5 tạo xu hướng tìm kiếm trải nghiệm mới..." thay vì "Số A tạo xu hướng...").
+    - Nếu kết quả output giống template hơn 50% → kết quả KHÔNG HỢP LỆ.
+
+**Lưu ý cuối cùng:**
+Tất cả 12 quy tắc trên có hiệu lực tuyệt đối với toàn bộ output. Vi phạm bất kỳ quy tắc nào cũng coi như kết quả không hợp lệ.
     `;
   }
 };
@@ -1160,268 +1166,99 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
     </li>
 </ul>
 <h3>🔥 ENGINE PHÂN TÍCH KẾT NỐI CHỈ SỐ (AI CORE SYSTEM)</h3>
-<ul>
 
+<p><strong>⚠️ CHỈ THỊ QUAN TRỌNG — ĐÂY LÀ LỆNH PHÂN TÍCH, KHÔNG PHẢI TEMPLATE ĐỂ COPY:</strong></p>
+<p>Bạn KHÔNG ĐƯỢC viết lại hay paraphrase nội dung bên dưới. Bạn PHẢI dùng nó như KHUNG TƯ DUY để tự phân tích dựa trên các số cụ thể: ${activeInputs.map(i => i.value).join(', ')}.</p>
+<p>Mỗi điểm phân tích PHẢI: (1) gọi tên năng lượng lõi cụ thể của số đang tra cứu dựa trên KIẾN THỨC SÂU đã cung cấp, (2) phân tích sự tương tác giữa các năng lượng đó, (3) đưa ví dụ hành vi thực tế cụ thể (công việc, tình cảm, tài chính, gia đình).</p>
+
+<ul>
 <li>
-<strong>1. Lõi hệ thống nhận diện (Energy Recognition Engine):</strong>
-
-AI KHÔNG được học theo kiểu:
-→ “3 + 5 = đào hoa”
-
-MÀ phải phân tích theo bản chất năng lượng:
-
-<ul>
-<li>Số A đại diện cho năng lượng gì? (cảm xúc / hành động / trí tuệ / tự do / kiểm soát...)</li>
-<li>Số B đại diện cho năng lượng gì?</li>
-<li>Nếu có số C → đóng vai trò gì trong hành trình?</li>
-</ul>
-
-→ Sau đó AI tự suy luận:
-
-<ul>
-<li>Hai năng lượng này bổ trợ hay xung đột?</li>
-<li>Khi kết hợp → tạo ra một “bản sắc mới”</li>
-<li>Không còn là từng số riêng lẻ</li>
-</ul>
-
-→ Ví dụ:
-<ul>
-<li>3 = biểu đạt – cảm xúc – xã hội</li>
-<li>5 = tự do – trải nghiệm – không ràng buộc</li>
-<li>→ Kết hợp: lan tỏa mạnh → nhưng nếu lệch → phóng túng</li>
-</ul>
-
+<strong>Bước 1 — Nhận diện năng lượng lõi:</strong>
+<p>Dựa trên dữ liệu KIẾN THỨC SÂU (keywords, advantages, challenges), hãy xác định CỤ THỂ năng lượng lõi của từng số đang tra cứu. Ví dụ: nếu số là 3 → tra keywords thấy “Sáng tạo, Biểu đạt, Giao tiếp” → năng lượng lõi = biểu đạt + cảm xúc + xã hội. KHÔNG ĐƯỢC viết chung chung “Số A đại diện cho năng lượng gì” — PHẢI gọi tên cụ thể.</p>
 </li>
 
 <li>
-<strong>2. Framework phân tích chuẩn (Core Analysis Framework):</strong>
-
-<ul>
-
-<li><strong>Bước 1: Nhận diện năng lượng từng số</strong>
-<ul>
-<li>Số A = năng lượng lõi gì?</li>
-<li>Số B = năng lượng lõi gì?</li>
-<li>Số C (nếu có) = định hướng gì?</li>
-</ul>
+<strong>Bước 2 — Phân loại mối quan hệ giữa các số:</strong>
+<p>Sau khi có năng lượng lõi từng số, PHẢI xác định quan hệ: Đồng hướng (cùng nhóm → khuếch đại, VD: cả hai đều thiên cảm xúc), Bổ trợ (khác nhóm nhưng hỗ trợ, VD: trí tuệ + hành động), hay Tương phản (đối lập → xung đột nhưng tiềm năng tiến hóa cao, VD: ổn định vs tự do). Giải thích CỤ THỂ tại sao mối quan hệ đó xảy ra với bộ số đang phân tích.</p>
 </li>
 
-<li><strong>Bước 2: Phân loại mối quan hệ</strong>
-<ul>
-<li>Đồng hướng → cùng nhóm → khuếch đại</li>
-<li>Bổ trợ → khác nhóm → phát triển</li>
-<li>Tương phản → đối lập → xung đột nhưng tiến hóa</li>
-</ul>
+<li>
+<strong>Bước 3 — Tạo trục năng lượng kết hợp:</strong>
+<p>Tạo trục dạng “X ↔ Y” dựa trên năng lượng thực sự của bộ số. VD: Nếu số 4+5 → “Ổn định ↔ Tự do”; nếu số 2+8 → “Kết nối ↔ Quyền lực”. PHẢI giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào trong đời sống thực.</p>
 </li>
 
-<li><strong>Bước 3: Tạo trục năng lượng</strong>
+<li>
+<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 100 TỪ):</strong>
 <ul>
-<li>X + Y → “___ ↔ ___”</li>
-<li>X + Y + Z → “Động lực → Biểu hiện → Hành trình”</li>
-</ul>
-</li>
-
-<li><strong>Bước 4: Sinh 5 lớp phân tích bắt buộc</strong>
-<ul>
-<li>Core → Bản chất mới</li>
-<li>Mechanism → Cách vận hành tâm lý</li>
-<li>Power → Sức mạnh</li>
-<li>Shadow → Lệch hướng</li>
-<li>Evolution → Phát triển</li>
-</ul>
-</li>
-
-<li><strong>Bước 5: Sinh kịch bản 3 trạng thái</strong>
-<ul>
-<li>Khi đúng → phiên bản cao</li>
-<li>Khi lệch → phiên bản thấp</li>
-<li>Khi trưởng thành → phiên bản cân bằng</li>
-</ul>
-</li>
-
+<li><strong>Core (Bản chất mới):</strong> Khi kết hợp các năng lượng lõi, “con người mới” này có bản chất gì? Họ khác gì so với từng số riêng lẻ? Đưa ví dụ cụ thể: cách họ ra quyết định, cách họ yêu, cách họ làm việc.</li>
+<li><strong>Mechanism (Cơ chế vận hành tâm lý):</strong> Khi bình thường, số nào chi phối? Khi stress, số nào lấn át? Phản ứng cụ thể trong tình huống: mâu thuẫn công sở, áp lực tài chính, xung đột gia đình.</li>
+<li><strong>Power (Sức mạnh):</strong> Tổ hợp này tạo ra lợi thế gì mà từng số riêng lẻ không có? Ứng dụng cụ thể trong kinh doanh, lãnh đạo, sáng tạo, hay kết nối.</li>
+<li><strong>Shadow (Lệch hướng):</strong> Khi mất cân bằng, tổ hợp này dẫn đến hành vi tiêu cực gì? PHẢI cụ thể: đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức, sa đà tệ nạn... tùy theo bộ số thực tế.</li>
+<li><strong>Evolution (Phát triển):</strong> Kỹ năng cụ thể cần rèn luyện để chuyển từ phiên bản thấp sang cao. Thói quen hàng ngày cần xây dựng. Ví dụ thực tế từ người đã trưởng thành với bộ số tương tự.</li>
 </ul>
 </li>
 
 <li>
-<strong>3. Pattern tăng cường (Enhancement Layer – KHÔNG hard-code):</strong>
-
-→ Chỉ dùng để làm sắc nét phân tích, KHÔNG dùng thay logic
-
+<strong>Bước 5 — Sinh kịch bản 3 trạng thái (PHẢI VIẾT CỤ THỂ, KHÔNG CHUNG CHUNG):</strong>
 <ul>
-
-<li><strong>Lệch hướng từng số:</strong>
-<ul>
-<li>1 → kiểm soát, độc đoán</li>
-<li>2 → lệ thuộc cảm xúc</li>
-<li>3 → hời hợt, thiếu chiều sâu</li>
-<li>4 → bảo thủ</li>
-<li>5 → sa đà, nghiện</li>
-<li>6 → kiểm soát tình cảm</li>
-<li>7 → cô lập</li>
-<li>8 → tham vọng cực đoan</li>
-<li>9 → lý tưởng hóa</li>
+<li><strong>Khi đúng hướng (phiên bản cao):</strong> Họ trở thành ai? Hành vi cụ thể? Thành tựu đạt được? Ví dụ: “Người số X+Y khi trưởng thành sẽ là nhà lãnh đạo có tầm nhìn chiến lược, vừa quyết đoán vừa biết lắng nghe, thành công trong vai trò CEO/founder vì...”</li>
+<li><strong>Khi lệch (phiên bản thấp):</strong> Họ rơi vào vòng xoáy gì? Hành vi tự phá hoại cụ thể? Ví dụ: “Người số X+Y khi lệch sẽ liều lĩnh đầu tư, dễ mất tiền lớn, quan hệ tình cảm không bền vì...”</li>
+<li><strong>Khi trưởng thành (cân bằng):</strong> Họ học được gì? Chuyển hóa cụ thể nào? Ví dụ: “Biến sự nhạy cảm thành trực giác kinh doanh, biến tham vọng thành tầm nhìn phục vụ...”</li>
 </ul>
 </li>
+</ul>
 
-<li><strong>Combo dễ lệch:</strong>
+<h3>🔥 ỨNG DỤNG THỰC TẾ TỪ TỔ HỢP SỐ</h3>
+<p><strong>⚠️ PHẢI phân tích CỤ THỂ cho bộ số ${activeInputs.map(i => i.value).join(' + ')}, KHÔNG viết chung chung:</strong></p>
 <ul>
-<li>3 + 5 → đào hoa, cảm xúc, dễ ngoại tình</li>
-<li>1 + 5 → liều lĩnh, đầu tư mạo hiểm</li>
-<li>2 + 5 → yêu sai người</li>
-<li>2 + 8 → bị áp chế</li>
-<li>4 + 5 → giằng xé nội tâm</li>
-<li>7 + 5 → nghĩ nhiều, không hành động</li>
-</ul>
-</li>
-
+<li><strong>Hành vi thực tế:</strong> Với tổ hợp này, họ có xu hướng làm nghề gì? Hành động ra sao trong công việc hàng ngày? Ra quyết định dựa trên logic hay cảm xúc? Phân tích dựa trên keywords và challenges của từng số trong bộ.</li>
+<li><strong>Ứng dụng kinh doanh:</strong> Tổ hợp này ra quyết định nhanh hay chậm? Thiên về bán hàng trực tiếp hay xây hệ thống? Dễ mạo hiểm hay thận trọng? Đưa ví dụ ngành nghề cụ thể phù hợp.</li>
+<li><strong>Ứng dụng giáo dục:</strong> Tổ hợp này học tốt qua trải nghiệm hay lý thuyết? Cần môi trường học tập như thế nào? Giáo viên/mentor nên tiếp cận ra sao?</li>
+<li><strong>Sale / Coach:</strong> Khi tư vấn người mang tổ hợp này: cách nói chuyện cụ thể nào hiệu quả? Điểm kích hoạt cảm xúc nào khiến họ mở lòng? Điều gì tuyệt đối KHÔNG nên nói/làm?</li>
 </ul>
 
-</li>
-
-<li>
-<strong>4. Flow bắt buộc AI phải đi theo:</strong>
-
-<pre>
-1. Nhận diện năng lượng từng số
-2. So sánh (đồng / bổ trợ / xung đột)
-3. Tạo trục năng lượng
-4. Phân tích:
-   - Sức mạnh
-   - Xung đột
-   - Hành vi
-5. Sinh kịch bản:
-   - Khi đúng
-   - Khi lệch
-   - Khi trưởng thành
-</pre>
-
-</li>
-
-<li>
-<strong>5. Lớp nâng cấp bắt buộc cho app:</strong>
-
-<ul>
-
-<li><strong>Hành vi thực tế:</strong>
-<ul>
-<li>Không chỉ nói tính cách</li>
-<li>Phải nói: họ làm nghề gì, hành động ra sao</li>
-</ul>
-</li>
-
-<li><strong>Ứng dụng kinh doanh:</strong>
-<ul>
-<li>Ra quyết định nhanh hay chậm?</li>
-<li>Thiên về bán hàng hay xây hệ thống?</li>
-</ul>
-</li>
-
-<li><strong>Ứng dụng giáo dục:</strong>
-<ul>
-<li>Học qua trải nghiệm hay lý thuyết?</li>
-</ul>
-</li>
-
-<li><strong>Sale / Coach:</strong>
-<ul>
-<li>Cách nói chuyện phù hợp</li>
-<li>Điểm kích hoạt cảm xúc</li>
-<li>Điều cần tránh</li>
-</ul>
-</li>
-
-</ul>
-
-</li>
-
-<li>
-<strong>6. Tỷ trọng hệ thống:</strong>
-
-<ul>
-<li>80% → logic phân tích năng lượng</li>
-<li>20% → pattern tăng cường</li>
-</ul>
-
-→ Nếu đảo ngược → app sẽ bị “đọc sẵn”, không thông minh
-
-</li>
-
-<li>
 <h4>🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h4>
+<p><strong>⚠️ ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT — PHẢI PHÂN TÍCH DỰA TRÊN TỔ HỢP SỐ ${activeInputs.map(i => i.value).join(' + ')}, KHÔNG ĐƯỢC VIẾT CHUNG CHUNG HAY COPY TEMPLATE:</strong></p>
 <ul>
 
 <li>
 <strong>Tổng kết nghiệp tính cách:</strong>
-→ Số A tạo xu hướng (…)
-→ Số B tạo xu hướng (…)
-
-→ Khi kết hợp:
-<ul>
-<li>Tích cực → phiên bản cao</li>
-<li>Tiêu cực → phiên bản thấp</li>
-</ul>
-
-→ Đây là thói quen tâm thức lặp lại
+<p>Dựa trên KIẾN THỨC SÂU: Số ${activeInputs[0]?.value} có keywords gì, challenges gì → tạo xu hướng tâm lý cụ thể nào? Số ${activeInputs[1]?.value || 'tiếp theo'} tạo xu hướng gì? Khi kết hợp → phiên bản cao (tích cực) biểu hiện CỤ THỂ ra sao trong đời sống? Phiên bản thấp (tiêu cực) dẫn đến hành vi gì? PHẢI đưa ví dụ tình huống thực: công việc, tình cảm, tài chính. Giải thích tại sao đây là thói quen tâm thức lặp lại — họ lặp lại pattern gì cụ thể?</p>
 </li>
 
 <li>
-<strong>Phước phần:</strong>
-<ul>
-<li>Tài năng – cơ hội – thế mạnh</li>
-<li>Nếu dùng đúng → phát triển nhanh</li>
-</ul>
+<strong>Phước phần (tài năng bẩm sinh từ tổ hợp này):</strong>
+<p>Tổ hợp ${activeInputs.map(i => i.value).join(' + ')} mang lại tài năng bẩm sinh cụ thể gì? (dựa trên advantages của từng số) Cơ hội nào mở ra khi dùng đúng? Thế mạnh cạnh tranh so với người khác là gì? Nếu dùng đúng, họ phát triển nhanh ở lĩnh vực nào? Đưa ví dụ nghề nghiệp, vai trò xã hội cụ thể.</p>
 </li>
 
 <li>
-<strong>Nghiệp cần chuyển hóa:</strong>
-<ul>
-<li>Kiểm soát / lệ thuộc / sợ hãi / thiếu kỷ luật</li>
-<li>Lặp lại sai lầm – tự phá cơ hội</li>
-</ul>
+<strong>Nghiệp cần chuyển hóa (dựa trên challenges của bộ số):</strong>
+<p>Từ challenges trong KIẾN THỨC SÂU, tổ hợp này dễ rơi vào bẫy tâm lý gì? Kiểm soát quá mức? Lệ thuộc cảm xúc? Sợ hãi thay đổi? Thiếu kỷ luật? PHẢI phân tích CỤ THỂ cho bộ số đang tra: VD nếu 3+5 → dễ đào hoa, quan hệ ngoài luồng, sống cảm xúc thiếu trách nhiệm; nếu 1+5 → liều lĩnh mạo hiểm, dễ mất tiền lớn; nếu 2+8 → dễ bị áp chế trong quan hệ. Mô tả cách sai lầm lặp lại — tự phá cơ hội như thế nào?</p>
 </li>
 
 <li>
-<strong>Nếu không chuyển hóa:</strong>
-<ul>
-<li>Mệt mỏi – mất phương hướng</li>
-<li>Quan hệ đổ vỡ – thất bại lặp lại</li>
-</ul>
+<strong>Nếu không chuyển hóa — hậu quả cụ thể:</strong>
+<p>Với tổ hợp ${activeInputs.map(i => i.value).join(' + ')}, nếu không nhận ra pattern tiêu cực: Sức khỏe tâm lý bị ảnh hưởng cụ thể ra sao? (kiệt sức, trầm cảm, mất phương hướng?) Quan hệ đổ vỡ theo kiểu nào? (bị bỏ rơi, tự đẩy người khác ra, kiểm soát quá mức?) Thất bại lặp lại ở đâu? (sự nghiệp, tài chính, tình cảm?) Đưa ví dụ kịch bản đời sống thực.</p>
 </li>
 
 <li>
-<strong>Nếu chuyển hóa:</strong>
-<ul>
-<li>Phản ứng → quan sát</li>
-<li>Sợ hãi → chấp nhận</li>
-<li>Kiểm soát → thấu hiểu</li>
-</ul>
+<strong>Nếu chuyển hóa — con đường cụ thể:</strong>
+<p>Với bộ số này, chuyển hóa CỤ THỂ nghĩa là gì? Không phải nói chung “phản ứng → quan sát” mà PHẢI nói: “Khi số X khiến bạn muốn [hành vi cũ cụ thể], hãy chuyển sang [hành vi mới cụ thể]”. Ví dụ: “Khi năng lượng số 5 kích hoạt sự bồng bột muốn bỏ việc, hãy dùng năng lượng số 4 để lập kế hoạch 30 ngày trước khi quyết định”. Mỗi chuyển hóa phải có hành động thực tế kèm theo.</p>
 </li>
 
 <li>
-<strong>Chu kỳ nhân – duyên – quả:</strong>
-<ul>
-<li>Nhân → suy nghĩ – hành vi</li>
-<li>Duyên → môi trường kích hoạt</li>
-<li>Quả → kết quả cuộc đời</li>
-</ul>
+<strong>Chu kỳ nhân – duyên – quả (phân tích cho bộ số cụ thể):</strong>
+<p><strong>Nhân:</strong> Với tổ hợp này, suy nghĩ/niềm tin gốc rễ nào chi phối hành vi? (VD: “Tôi phải kiểm soát mọi thứ” từ số 1, “Tôi cần tự do tuyệt đối” từ số 5). <strong>Duyên:</strong> Môi trường/tình huống nào kích hoạt pattern tiêu cực? (VD: áp lực deadline, xung đột với sếp, bị từ chối trong tình cảm). <strong>Quả:</strong> Kết quả cuộc đời cụ thể khi pattern này lặp đi lặp lại? Phải liên kết trực tiếp với challenges của bộ số.</p>
 </li>
 
 <li>
-<strong>Bài học linh hồn:</strong>
-<ul>
-<li>Cân bằng (…)</li>
-<li>Vượt qua nỗi sợ (…)</li>
-<li>Phát triển phẩm chất (…)</li>
-</ul>
+<strong>Bài học phát triển (dựa trên balance của từng số trong bộ):</strong>
+<p>Dựa trên phần “balance” trong KIẾN THỨC SÂU của từng số, bài học lớn nhất cho tổ hợp này là gì? Cân bằng giữa điều gì và điều gì CỤ THỂ? Vượt qua nỗi sợ nào CỤ THỂ? Phát triển phẩm chất nào CỤ THỂ? Mỗi bài học phải kèm theo hành động thực tế có thể áp dụng ngay.</p>
 </li>
 
 <li>
-🔥 <strong>Insight:</strong>
-<ul>
-<li>Con số không quyết định</li>
-<li>Nhận thức quyết định</li>
-<li>Tỉnh thức → tạo phước</li>
-</ul>
+<strong>🔥 Insight tổng kết:</strong>
+<p>Kết luận bằng 2-3 câu sắc sảo, cá nhân hóa cho bộ số ${activeInputs.map(i => i.value).join(' + ')}. Nhấn mạnh: con số không quyết định — nhận thức quyết định. Người tỉnh thức dùng hiểu biết về con số để phát triển chứ không bị con số định nghĩa. Câu này PHẢI liên kết cụ thể với năng lượng của bộ số đang phân tích, KHÔNG phải câu chung chung áp dụng cho mọi bộ số.</p>
 </li>
 
 </ul>
@@ -1621,7 +1458,13 @@ MÀ phải phân tích theo bản chất năng lượng:
 
 9. PHẦN "BÀI HỌC NHÂN – DUYÊN – QUẢ": Phân tích tổ hợp số KĨ LƯỠNG — phải đưa ví dụ cụ thể khi lệch (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, tệ nạn...). Nhấn mạnh: Nhân (suy nghĩ+hành vi) → Duyên (môi trường kích hoạt) → Quả (kết quả cuộc đời).
 
-10. KHÔNG viết chung chung kiểu "người số X thường..." — PHẢI phân tích dựa trên TỔ HỢP cụ thể đang tra cứu.`;
+10. KHÔNG viết chung chung kiểu "người số X thường..." — PHẢI phân tích dựa trên TỔ HỢP cụ thể đang tra cứu.
+
+11. CHỐNG COPY TEMPLATE: Nếu trong prompt có placeholder (…), "___", "Số A/B" → PHẢI thay bằng phân tích thực sự với con số cụ thể. KHÔNG BAO GIỜ viết lại y nguyên nội dung prompt. Mỗi câu output PHẢI chứa ít nhất 1 con số cụ thể đang phân tích. Output giống template >50% = KHÔNG HỢP LỆ.
+
+12. SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU: Khi phân tích mỗi số, PHẢI trích dẫn từ phần keywords, advantages, challenges, balance, careerSuggestions trong dữ liệu đã cung cấp. VD: "Theo KIẾN THỨC SÂU, số 5 có keywords: Tự do, Phiêu lưu, Thay đổi — cho thấy năng lượng lõi thiên về trải nghiệm và không ràng buộc. Kết hợp với số 3 (Sáng tạo, Biểu đạt, Giao tiếp) tạo thành..."
+
+13. ĐỘ DÀI TỐI THIỂU: Mỗi điểm phân tích (li) phải dài ít nhất 80 từ. Phần "Bài học Nhân–Duyên–Quả" phải dài ít nhất 400 từ tổng cộng. KHÔNG được viết ngắn gọn ở phần này.`;
 
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
