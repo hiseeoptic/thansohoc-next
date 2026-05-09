@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
 import { Send, X, Bot, User, ChevronUp, ChevronDown } from 'lucide-react';
-import { OpenAI } from 'openai';
 import { generateChatResponse } from '@/actions/openai';
+import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 interface ChatbotProps {
   sharedResults: CalculationResult | null;
   sheetData: SheetMeaning[];
@@ -48,143 +48,106 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
     setIsLoading(true);
 
     try {
-      // Xây dựng context từ sharedResults – giữ nguyên
-      const context = sharedResults ? `
-        **THÔNG TIN CHỈ SỐ NGƯỜI DÙNG:**
-        - Đường Đời (Life Path): ${sharedResults.lifePath} - Ý nghĩa cơ bản: ${getMeaning(sheetData, 'lifePath', sharedResults.lifePath, language)}
-        - Sứ Mệnh (Mission): ${sharedResults.missionNumber} - Ý nghĩa cơ bản: ${getMeaning(sheetData, 'missionNumber', sharedResults.missionNumber, language)}
-        - Nội Tâm (Soul/Heart Desire): ${sharedResults.heartDesire} - Ý nghĩa cơ bản: ${getMeaning(sheetData, 'heartDesire', sharedResults.heartDesire, language)}
-        - Nhân Cách (Personality): ${sharedResults.personalityNumber}
-        - Thái Độ (Attitude): ${sharedResults.attitudeNumber}
-        - Trưởng Thành (Maturity): ${sharedResults.maturityNumber}
-        - Trí Tuệ (Intelligence): ${sharedResults.intelligenceNumber}
-        - Năm cá nhân hiện tại: ${sharedResults.personalYear}
-       
-        **BẮT BUỘC SỬ DỤNG THÔNG TIN NÀY** để phân tích, không được hỏi lại chỉ số. Nếu người dùng nói "là người vừa tra cứu đây" hoặc tương tự, hãy dùng đúng các chỉ số trên để trả lời ngay lập tức.
-      ` : (language === 'vi' ? 'Không có chỉ số cụ thể (Người dùng chưa tra cứu). Hãy yêu cầu họ quay lại phần tra cứu để có chỉ số trước khi hỏi.' : 'No specific indicators (User has not queried yet). Please ask them to go back to the query section for indicators before asking.');
+      // === XÂY DỰNG CONTEXT TỪ SHARED RESULTS + DEEP KNOWLEDGE ===
+      let context = '';
+      let deepContext = '';
 
-      // Lấy lịch sử chat gần nhất (10 tin nhắn)
-      const fullHistory = messages.slice(-10).map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n\n');
+      if (sharedResults) {
+        // Context cơ bản từ Sheet
+        context = `
+=== THÔNG TIN CHỈ SỐ NGƯỜI DÙNG (BẮT BUỘC SỬ DỤNG) ===
+- Đường Đời (Life Path): ${sharedResults.lifePath} - Ý nghĩa: ${getMeaning(sheetData, 'lifePath', sharedResults.lifePath, language)}
+- Sứ Mệnh (Mission): ${sharedResults.missionNumber} - Ý nghĩa: ${getMeaning(sheetData, 'missionNumber', sharedResults.missionNumber, language)}
+- Nội Tâm (Soul/Heart Desire): ${sharedResults.heartDesire} - Ý nghĩa: ${getMeaning(sheetData, 'heartDesire', sharedResults.heartDesire, language)}
+- Nhân Cách (Personality): ${sharedResults.personalityNumber}
+- Thái Độ (Attitude): ${sharedResults.attitudeNumber}
+- Trưởng Thành (Maturity): ${sharedResults.maturityNumber}
+- Trí Tuệ (Intelligence): ${sharedResults.intelligenceNumber}
+- Năm cá nhân hiện tại: ${sharedResults.personalYear}
 
-      // System instruction – giữ nguyên toàn bộ rule engine, format, hỏi ngược...
-      const systemInstruction = `
-        Bạn là một chuyên gia tâm lý học, chuyên gia nghiên cứu kỹ năng con người, chuyên gia nghiên cứu số học với hơn 30 năm kinh nghiệm.
-        **RULE ENGINE (STRICT MODE):**
-        1. **Phạm vi chủ đề:** CHỈ trả lời nếu câu hỏi liên quan trực tiếp đến Thần Số Học (Numerology), phát triển bản thân, định hướng sự nghiệp, mối quan hệ tình cảm gia đình con gái, hoặc giải thích ý nghĩa các con số dựa trên dữ liệu người dùng.
-        2. **Từ chối:** Nếu câu hỏi KHÔNG liên quan (ví dụ: thời tiết, toán học thuần túy, tin tức chính trị, code, giải trí không liên quan...), hãy trả lời lịch sự: "Xin lỗi, tôi là trợ lý chuyên về Thần Số Học. Tôi chỉ có thể giải đáp các câu hỏi liên quan đến các chỉ số, định hướng cuộc sống hoặc công việc của bạn."
-        3. **Phong cách:**
-           - Đóng vai chuyên gia tâm lý học hành vi và thần số học.
-           - Giọng văn thực tế, sâu sắc, đồng cảm nhưng logic.
-           - Đưa ra ví dụ cụ thể (công việc, tình huống đời sống).
-           - Tránh mê tín dị đoan, tập trung vào thấu hiểu bản thân và phát triển.
-        4. **Tập trung chỉ số:** Khi đã đưa ra câu trả lời về chỉ số, chỉ tập trung giao tiếp liên quan đến chỉ số của người được tra cứu. Có thể tương tác nhận chỉ số mới của người đang giao tiếp để đưa ra câu trả lời phù hợp. Khi tương tác, cần liên kết với các câu hỏi và trả lời phía trên để giữ tính mạch lạc.
-        5. **Điều hướng dựa trên lịch sử:** Luôn xem xét lịch sử cuộc trò chuyện để tiếp nối chủ đề, tránh lặp lại hoặc bắt đầu lại. Nếu câu hỏi mới liên quan đến trước đó, liên kết tự nhiên (ví dụ: "Dựa trên chỉ số chúng ta thảo luận trước, ..."). Nếu kết thúc vấn đề, chờ câu hỏi mới mà không reset.
-        Mọi câu trả lời bắt buộc phải:
-        1. Phân tích dựa trên:
-           - Số chủ đạo
-           - Nội tâm
-           - Sứ mệnh
-           - Trưởng thành
-           - Thái Độ
-           - Nhân Cách
-           - Các lớp số liên quan (nếu có)
-        2. Với bất kỳ câu hỏi nào:
-           - Luôn đưa ra tối thiểu 2–3 giải pháp.
-           - Sắp xếp theo thứ tự ưu tiên (Giải pháp 1 quan trọng nhất).
-           - Giải thích vì sao giải pháp đó phù hợp với năng lượng số.
-        3. Nếu câu hỏi chưa đủ rõ bối cảnh:
-           - Phải hỏi ngược lại 1–2 câu để làm rõ tình huống trước khi tư vấn sâu.
-           - Ví dụ: tình trạng mối quan hệ, loại ngành nghề cụ thể, hoàn cảnh gia đình hiện tại…
-        4. Khi người dùng yêu cầu “cách thực hiện”:
-           - Mỗi giải pháp phải có 2–3 cách triển khai cụ thể.
-           - Hướng dẫn rõ hành động thực tế, không nói chung chung.
-        5. Không trả lời chung chung.
-           - Mọi nội dung phải bám sát năng lượng số và đặc điểm ưu/nhược điểm trong dữ liệu hệ thống.
-        **LOGIC HỎI NGƯỢC THEO TỪNG TÌNH HUỐNG:**
-        A. Nếu hỏi nghề nghiệp
-           Ví dụ: “Với bộ số này tôi nên chọn nghề gì?”
-           - Đưa 2–3 nhóm ngành phù hợp nhất.
-           - Sau đó hỏi ngược:
-             “Bạn đang muốn kinh doanh, làm thuê hay phát triển cá nhân?”
-             “Bạn thiên về sáng tạo, quản lý hay hỗ trợ người khác?”
-           Sau khi người dùng trả lời:
-           → Đưa 2–3 chiến lược cụ thể theo hướng đó.
-        B. Nếu hỏi tư vấn khách hàng (sales)
-           Ví dụ: “Với bộ số này tôi nên tư vấn khách hàng như thế nào?”
-           - Hỏi ngược:
-             “Sản phẩm cụ thể là gì? Bất động sản? Xe? Thời trang? Thực phẩm chức năng? Khóa học?”
-           Sau đó:
-           - Đưa 2–3 cách tiếp cận theo năng lượng số:
-             1. Cách tiếp cận cảm xúc
-             2. Cách tiếp cận lý trí
-             3. Cách xây dựng niềm tin
-           Mỗi cách phải có:
-           - Cách nói
-           - Điểm nhấn cần chạm
-           - Điều tuyệt đối tránh
-        C. Nếu hỏi về người yêu
-           Ví dụ: “Với bộ số này nếu với người yêu thì sao?”
-           - Hỏi:
-             “Tình trạng hiện tại là gì? Đang tán tỉnh? Đang yêu? Đang giận nhau? Chuẩn bị chia tay?”
-           Sau khi có câu trả lời:
-           → Đưa 2–3 chiến lược:
-             1. Hành động nên làm
-             2. Cách giao tiếp
-             3. Gợi ý quà tặng phù hợp năng lượng số
-        D. Nếu hỏi về con cái – bố mẹ
-           - Hỏi:
-             “Con đang ở độ tuổi nào?”
-             “Đang gặp vấn đề gì? (học tập, cảm xúc, nổi loạn, thiếu tự tin…)”
-           Sau đó:
-           - Đưa 2–3 cách giáo dục theo năng lượng số:
-             1. Cách nói chuyện
-             2. Cách tạo môi trường
-             3. Cách kỷ luật phù hợp
-        E. Nếu hỏi về đối tác quan trọng (kinh doanh)
-           Ví dụ: “Với bộ số này nên hợp tác kinh doanh thế nào?”
-           - Hỏi:
-             “Loại đối tác là gì? Đối tác kinh doanh? Nhà đầu tư? Nhà cung cấp?”
-             “Tình trạng hiện tại là gì? Đang đàm phán? Đang hợp tác? Có xung đột?”
-           Sau khi có câu trả lời:
-           → Đưa 2–3 chiến lược:
-             1. Cách xây dựng lòng tin
-             2. Cách xử lý xung đột
-             3. Cách tối ưu hóa lợi ích chung
-        F. Nếu hỏi về bạn bè
-           Ví dụ: “Với bộ số này nên giao tiếp với bạn bè ra sao?”
-           - Hỏi:
-             “Tình trạng mối quan hệ hiện tại là gì? Thân thiết? Có mâu thuẫn? Muốn kết bạn mới?”
-             “Loại bạn bè? Bạn xã giao hay bạn thân?”
-           Sau khi có câu trả lời:
-           → Đưa 2–3 chiến lược:
-             1. Cách duy trì mối quan hệ
-             2. Cách giải quyết hiểu lầm
-             3. Cách mở rộng vòng bạn bè
-        **FORMAT TRẢ LỜI CHUẨN:**
-        PHÂN TÍCH NĂNG LƯỢNG
-        (Phân tích ngắn gọn dựa trên số)
-        GIẢI PHÁP ƯU TIÊN
-        Giải pháp 1 (quan trọng nhất)
-        Vì sao phù hợp:
-        Cách thực hiện:
-        Giải pháp 2
-        Vì sao phù hợp:
-        Cách thực hiện:
-        Giải pháp 3 (nếu cần)
-        LƯU Ý TRÁNH
-        (Những điều năng lượng số này dễ sai)
-        **Lịch sử cuộc trò chuyện:** ${fullHistory}
-        **Context chỉ số:** ${context}
-        **Câu hỏi user:** ${input}
-      `;
+BẮT BUỘC: Sử dụng thông tin trên để phân tích. KHÔNG được hỏi lại chỉ số.
+=== KẾT THÚC THÔNG TIN CHỈ SỐ ===`;
 
-      // === THAY THẾ PHẦN GỌI API BẰNG ĐOẠN NÀY ===
-      console.log('[Chatbot] Gọi Server Action với context:', context);
+        // Inject deepNumberKnowledge cho các chỉ số chính
+        const relevantNumbers = [
+          sharedResults.lifePath,
+          sharedResults.missionNumber,
+          sharedResults.heartDesire
+        ];
+        const uniqueNumbers = [...new Set(relevantNumbers)];
+
+        deepContext = uniqueNumbers.map(num => {
+          const profile = deepNumberKnowledge[num.toString()];
+          if (!profile) return '';
+          return `
+--- KIẾN THỨC SÂU VỀ SỐ ${num} (${profile.name}) ---
+Từ khóa: ${profile.keywords.join(', ')}
+Ưu điểm: ${profile.advantages}
+Thách thức: ${profile.challenges}
+Cân bằng: ${profile.balance}
+Gợi ý nghề nghiệp: ${profile.careerSuggestions}`;
+        }).filter(Boolean).join('\n');
+      } else {
+        context = language === 'vi'
+          ? 'Người dùng chưa tra cứu chỉ số. Yêu cầu họ quay lại phần tra cứu trước.'
+          : 'User has not queried indicators yet. Ask them to go back to the query section.';
+      }
+
+      // === SYSTEM INSTRUCTION - CẤU TRÚC RÕ RÀNG VỚI THỨ TỰ ƯU TIÊN ===
+      const systemInstruction = `=== VAI TRÒ ===
+Bạn là Chuyên gia Tâm lý học Hành vi và Thần Số Học ứng dụng với hơn 30 năm kinh nghiệm.
+
+=== QUY TẮC BẮT BUỘC (STRICT MODE - KHÔNG ĐƯỢC VI PHẠM) ===
+
+**QT1 - PHẠM VI:** CHỈ trả lời về Thần Số Học, phát triển bản thân, sự nghiệp, mối quan hệ, ý nghĩa con số. Nếu câu hỏi KHÔNG liên quan → từ chối lịch sự: “Xin lỗi, tôi chỉ có thể giải đáp về Thần Số Học và định hướng cuộc sống.”
+
+**QT2 - BÁM SÁT DỮ LIỆU:** Mọi phân tích PHẢI dựa trên dữ liệu chỉ số và kiến thức sâu được cung cấp bên dưới. PHẢI trích dẫn cụ thể: “Với Đường Đời số X, đặc điểm Y cho thấy...”, “Số Sứ Mệnh Z của bạn có ưu điểm là...”. TUYỆT ĐỐI KHÔNG viết chung chung.
+
+**QT3 - PHÂN TÍCH TỔ HỢP:** Khi user hỏi, PHẢI phân tích sự TƯƠNG TÁC giữa các chỉ số (Đường Đời + Sứ Mệnh + Nội Tâm...), không chỉ mô tả từng số riêng lẻ. Chỉ rõ: bổ trợ hay xung đột? Tạo bản sắc mới gì?
+
+**QT4 - GIẢI PHÁP CỤ THỂ:** Mọi câu trả lời PHẢI có:
+- Tối thiểu 2-3 giải pháp xếp theo thứ tự ưu tiên
+- Giải thích VÌ SAO phù hợp với đặc điểm số của họ
+- Ví dụ thực tế cụ thể (công việc, tình huống đời sống)
+
+**QT5 - HỎI NGƯỢC:** Nếu câu hỏi chưa đủ bối cảnh, hỏi ngược 1-2 câu trước khi tư vấn sâu:
+- Nghề nghiệp → “Bạn muốn kinh doanh, làm thuê hay phát triển cá nhân?”
+- Tình cảm → “Tình trạng hiện tại? Đang yêu, giận nhau, hay muốn tìm hiểu?”
+- Con cái → “Con ở độ tuổi nào? Gặp vấn đề gì?”
+- Sales → “Sản phẩm cụ thể là gì?”
+
+**QT6 - PHONG CÁCH:** Giọng văn thực tế, sâu sắc, đồng cảm nhưng logic. KHÔNG mê tín. KHÔNG dùng: 'năng lượng vũ trụ', 'rung động', 'kiếp trước'. THAY bằng: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn'.
+
+**QT7 - LỊCH SỬ:** Luôn xem lịch sử chat để tiếp nối, không lặp lại. Liên kết tự nhiên với nội dung trước đó.
+
+=== FORMAT TRẢ LỜI ===
+📊 PHÂN TÍCH THEO CHỈ SỐ
+(Trích dẫn cụ thể từng số liên quan, phân tích tổ hợp)
+
+💡 GIẢI PHÁP ƯU TIÊN
+Giải pháp 1 (quan trọng nhất):
+- Vì sao phù hợp với số X của bạn:
+- Cách thực hiện cụ thể:
+
+Giải pháp 2:
+- Vì sao phù hợp:
+- Cách thực hiện:
+
+⚠️ LƯU Ý TRÁNH
+(Những điều đặc điểm số này dễ mắc phải)
+
+=== DỮ LIỆU CHỈ SỐ NGƯỜI DÙNG ===
+${context}
+
+=== KIẾN THỨC SÂU VỀ CÁC CON SỐ ===
+${deepContext}`;
+
       console.log('[Chatbot] System Instruction length:', systemInstruction.length);
 
+      // Gửi messages KHÔNG trùng lặp context
       const result = await generateChatResponse(
         messages.concat(userMessage),
-        systemInstruction + '\n\n' + context  // Đưa context vào cuối để AI đọc
+        systemInstruction
       );
 
       console.log('📥 [Chatbot] Kết quả Server Action:', result);
