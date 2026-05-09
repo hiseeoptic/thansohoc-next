@@ -1,10 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    turbopack: false, // Tắt Turbopack, quay về webpack
-  },
 };
 
 export default nextConfig;
