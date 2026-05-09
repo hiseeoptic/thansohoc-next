@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle } from 'lucide-react';
 import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
-import { ConnectionAnalysisResult, NumberType, NumberTypeEN, SheetMeaning, CalculationResult } from '@/types';
+import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
+import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 
@@ -211,7 +212,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
         setSubscriptions(subs);
       } catch (error) {
         console.error('Failed to load subscriptions:', error);
-        setSubscriptionMessage(language === 'vi' ? 'Lỗi tải dữ liệu thuê bao. Vui lòng thử sau.' : 'Error loading subscription data. Please try later.');
+        setSubscriptionMessage('Lỗi tải dữ liệu thuê bao. Vui lòng thử sau.');
       }
     };
     loadSubscriptions();
@@ -247,7 +248,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     const trimmedCode = code.trim();
     // Bypass codes
     if (['8888', 'admin', 'vip'].includes(trimmedCode)) {
-       setSubscriptionMessage(language === 'vi' ? 'Xác thực thành công (Chế độ Dự phòng/Test).' : 'Authentication successful (Backup/Test mode).');
+       setSubscriptionMessage('Xác thực thành công (Chế độ Dự phòng/Test).');
        setIsValidSubscription(true);
        return true;
     }
@@ -255,7 +256,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     const sub = subscriptions.find(s => s.phone.trim() === trimmedCode);
 
     if (!sub) {
-      setSubscriptionMessage(language === 'vi' ? 'Mã không tồn tại hoặc chưa đăng ký.' : 'Code does not exist or is not registered.');
+      setSubscriptionMessage('Mã không tồn tại hoặc chưa đăng ký.');
       setIsValidSubscription(false);
       return false;
     }
@@ -268,17 +269,17 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
       const expiryDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       if (now <= expiryDate) {
-        setSubscriptionMessage(language === 'vi' ? 'Thuê bao hợp lệ ✓' : 'Subscription valid ✓');
+        setSubscriptionMessage('Thuê bao hợp lệ ✓');
         setIsValidSubscription(true);
         return true;
       } else {
-        setSubscriptionMessage(language === 'vi' ? 'Thuê bao đã hết hạn. Vui lòng gia hạn!' : 'Subscription expired. Please renew!');
+        setSubscriptionMessage('Thuê bao đã hết hạn. Vui lòng gia hạn!');
         setIsValidSubscription(false);
         return false;
       }
     } catch (error) {
       console.error('Error checking subscription:', error);
-      setSubscriptionMessage(language === 'vi' ? 'Lỗi kiểm tra mã. Vui lòng thử lại.' : 'Error checking code. Please try again.');
+      setSubscriptionMessage('Lỗi kiểm tra mã. Vui lòng thử lại.');
       setIsValidSubscription(false);
       return false;
     }
@@ -287,7 +288,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const handleDeepAnalyze = async () => {
   // *** Kiểm tra thuê bao trước khi phân tích ***
   if (!phone) {
-    setSubscriptionMessage(language === 'vi' ? 'Vui lòng nhập mã thuê bao để xác thực.' : 'Please enter subscription code to verify.');
+    setSubscriptionMessage('Vui lòng nhập mã thuê bao để xác thực.');
     return;
   }
   const isValid = checkSubscription(phone);
@@ -334,9 +335,9 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
                setAnalysis({
                   relationship: "Lỗi",
                   keywords: "",
-                  advice: language === 'vi' ? "Không thể fetch dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối." : "Cannot fetch data from Google Sheet. Please check connection.",
+                  advice: "Không thể fetch dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối.",
                   growth: "",
-                  aiContent: `<p class='text-red-400'>${language === 'vi' ? 'Lỗi: Không thể đọc dữ liệu từ Google Sheet.' : 'Error: Cannot read data from Google Sheet.'}</p>`
+                  aiContent: "<p class='text-red-400'>Lỗi: Không thể đọc dữ liệu từ Google Sheet.</p>"
                });
                setIsAnalyzing(false);
                setIsFetchingSheet(false);
@@ -351,37 +352,26 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
 
       // 1. Tạo dữ liệu gốc từ Google Sheet
       const contextData = activeInputs.map(input => {
-          const meaning = getMeaning(currentSheetData, input.typeKey, input.value, language);
-          return `### ${language === 'en' ? 'SOURCE DATA (Behavior/Personality)' : 'DỮ LIỆU GỐC (Hành vi/Tính cách)'} ${language === 'en' ? 'of' : 'của'} ${input.type} ${language === 'en' ? 'number' : 'số'} ${input.value}:\n"${meaning.substring(0, 1500)}"`;
+          const meaning = getMeaning(currentSheetData, input.typeKey, input.value, 'vi');
+          return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`;
       }).join('\n\n');
 
-// === PHẦN KIẾN THỨC SÂU VỀ CÁC CON SỐ — INJECT ĐẦY ĐỦ ===
+// === PHẦN KIẾN THỨC SÂU VỀ CÁC CON SỐ (THÊM VÀO ĐÂY) ===
 const deepContext = activeInputs.map(input => {
-  const profile = deepNumberKnowledge[input.value.toString()];
+  const profile = deepNumberKnowledge[input.value.toString()] || deepNumberKnowledge[input.value];
   if (!profile) return '';
 
-  return `
-=== ${language === 'en' ? 'DEEP KNOWLEDGE' : 'KIẾN THỨC SÂU'}: ${language === 'en' ? 'NUMBER' : 'SỐ'} ${input.value} — ${profile.name} ===
-${language === 'en' ? 'Planet' : 'Hành tinh'}: ${profile.planet}
-${language === 'en' ? 'Keywords' : 'Từ khóa'}: ${profile.keywords.join(', ')}
-${language === 'en' ? 'Core Message' : 'Thông điệp cốt lõi'}: ${profile.coreMessage || ''}
-
-${language === 'en' ? 'STRENGTHS (MUST cite in analysis)' : 'ƯU ĐIỂM (BẮT BUỘC trích dẫn khi phân tích)'}:
-${profile.advantages}
-
-${language === 'en' ? 'CHALLENGES (MUST cite in analysis)' : 'THÁCH THỨC (BẮT BUỘC trích dẫn khi phân tích)'}:
-${profile.challenges}
-
-${language === 'en' ? 'BALANCE STRATEGY' : 'CHIẾN LƯỢC CÂN BẰNG'}:
-${profile.balance}
-
-${language === 'en' ? 'CAREER SUGGESTIONS' : 'GỢI Ý NGHỀ NGHIỆP'}:
-${profile.careerSuggestions}
-=== ${language === 'en' ? 'END NUMBER' : 'KẾT THÚC SỐ'} ${input.value} ===`;
-}).filter(Boolean).join('\n\n');
+  return `### KIẾN THỨC SÂU VỀ SỐ ${input.value} (${profile.name}):
+**Hành tinh:** ${profile.planet}
+**Từ khóa:** ${profile.keywords.join(', ')}
+**Ưu điểm:** ${profile.advantages}
+**Thách thức:** ${profile.challenges}
+**Cân bằng:** ${profile.balance}
+**Gợi ý nghề nghiệp:** ${profile.careerSuggestions}`;
+}).join('\n\n');
 
 // Kết hợp contextData cũ + deepContext mới
-const fullContext = `${contextData}\n\n${deepContext}\n\n=== ${language === 'en' ? 'IMPORTANT: You MUST use the STRENGTHS, CHALLENGES, BALANCE and CAREER data above to form your analysis. Do NOT ignore this data.' : 'QUAN TRỌNG: Bạn PHẢI sử dụng dữ liệu ƯU ĐIỂM, THÁCH THỨC, CÂN BẰNG và NGHỀ NGHIỆP ở trên để phân tích. KHÔNG ĐƯỢC bỏ qua dữ liệu này.'} ===`;
+const fullContext = contextData + '\n\n' + deepContext;
     
       // 2. LẤY RULE ENGINE (Phần này rất quan trọng)
       const modifiers = ruleEngine.getPromptModifiers(
@@ -391,44 +381,32 @@ const fullContext = `${contextData}\n\n${deepContext}\n\n=== ${language === 'en'
       );
 
       // 3. Tạo commonInstructions + Rule Engine
-      const langDirective = language === 'en'
-        ? '=== LANGUAGE DIRECTIVE ===\nYou MUST respond ENTIRELY in English. All analysis, headings, examples must be in English.\n=== END LANGUAGE DIRECTIVE ===\n'
-        : '';
-
+      // QUAN TRỌNG: Inject cả contextData (Google Sheet) + deepContext (kiến thức sâu về số) vào prompt
       const commonInstructions = `
-${langDirective}
-=== NHIỆM VỤ ===
-Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự.
-Phân tích tính cách, hành vi, xu hướng thể hiện tình cảm dựa HOÀN TOÀN vào dữ liệu được cung cấp.
+            === NHIỆM VỤ ===
+            Phân tích tổ hợp số ${activeInputs.map(i => `${i.type}: ${i.value}`).join(', ')} theo đúng framework bên dưới.
+            BẠN PHẢI dựa vào DỮ LIỆU KIẾN THỨC SÂU để nhận diện năng lượng lõi của từng số, sau đó PHÂN TÍCH sự kết hợp — KHÔNG ĐƯỢC chỉ đọc lại hay paraphrase dữ liệu.
 
-=== QUY TẮC BẮT BUỘC (ĐỌC TRƯỚC KHI PHÂN TÍCH) ===
+            === DỮ LIỆU GỐC TỪ GOOGLE SHEET (Hành vi/Tính cách) ===
+            ${contextData}
 
-**R1 - DỮ LIỆU LÀ NGUỒN DUY NHẤT:** Mọi nhận định PHẢI trích xuất từ DỮ LIỆU THAM CHIẾU bên dưới. Nếu thiếu dữ liệu → chỉ nói "Dữ liệu hiện tại chưa đủ để phân tích chi tiết phần này". KHÔNG tự chế.
+            === DỮ LIỆU KIẾN THỨC SÂU VỀ CÁC SỐ (BẮT BUỘC SỬ DỤNG) ===
+            ${deepContext}
 
-**R2 - TRÍCH DẪN RÕ RÀNG:** PHẢI viết: "Theo đặc điểm số X: [trích dữ liệu]...", "Số Y có thách thức là [trích]...", "Khi kết hợp số A (đặc điểm: ...) với số B (đặc điểm: ...) tạo ra...". KHÔNG ĐƯỢC viết "người này thường..." hay "con số này cho thấy..." mà không chỉ rõ số nào.
+            === HƯỚNG DẪN PHÂN TÍCH BẮT BUỘC ===
+            Khi phân tích, BẮT BUỘC làm theo các bước:
+            1. Nhận diện năng lượng lõi từng số DỰA TRÊN keywords, advantages, challenges trong dữ liệu kiến thức sâu
+            2. So sánh: đồng hướng (cùng nhóm → khuếch đại) / bổ trợ (khác nhóm → phát triển) / tương phản (đối lập → xung đột nhưng tiến hóa)
+            3. Tạo trục năng lượng kết hợp: "X ↔ Y" (VD: "Ổn định ↔ Tự do")
+            4. Mỗi điểm phân tích phải: trích dẫn rõ số ("Theo đặc điểm số X...") + diễn giải sâu + ví dụ thực tế cụ thể
+            5. Sinh kịch bản: Khi đúng hướng → phiên bản cao | Khi lệch → phiên bản thấp | Khi trưởng thành → cân bằng
 
-**R3 - PHÂN TÍCH TỔ HỢP 4 BƯỚC (BẮT BUỘC):**
-Bước 1: Xác định đặc điểm lõi của TỪNG số (trích từ dữ liệu)
-Bước 2: So sánh: cùng nhóm (khuếch đại) hay khác nhóm (bổ trợ/xung đột)?
-Bước 3: Khi kết hợp tạo ra "bản sắc mới" gì? Biểu hiện thực tế?
-Bước 4: Nếu lệch hướng → biểu hiện tiêu cực cụ thể?
-→ KHÔNG ĐƯỢC bỏ qua bước nào. Mỗi bước phải có ví dụ thực tế.
+            ${modifiers}
 
-**R4 - VÍ DỤ THỰC TẾ:** Mỗi điểm phân tích PHẢI có ít nhất 1 ví dụ cụ thể từ cuộc sống (công sở, gia đình, tài chính, mối quan hệ). KHÔNG chỉ liệt kê.
-
-**R5 - ĐỘ DÀI:** Mỗi phần h3 phải ít nhất 150-200 từ. Mỗi li phải có diễn giải, không chỉ 1 câu.
-
-${modifiers}
-
-=== DỮ LIỆU THAM CHIẾU (CONTEXT - ĐÂY LÀ NGUỒN DỮ LIỆU DUY NHẤT) ===
-${fullContext}
-
-=== YÊU CẦU ĐỊNH DẠNG OUTPUT ===
-- Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown (**, ##, -).
-- BÁM SÁT ĐÚNG khung sườn (cấu trúc h3/h4) trong prompt bên dưới. KHÔNG thêm, bớt phần.
-- TUYỆT ĐỐI tuân thủ toàn bộ quy tắc R1-R5.
-
-=== BẮT ĐẦU PHÂN TÍCH THEO KHUNG SAU ===
+            === YÊU CẦU ĐỊNH DẠNG ===
+            - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
+            - Mỗi phần h3 phải dài ít nhất 150-200 từ.
+            - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
       `;
 
       let prompt = "";
@@ -1612,14 +1590,47 @@ MÀ phải phân tích theo bản chất năng lượng:
             `;
         }
 
-      // Gọi Server Action thay vì fetch /api/analyze
-      const result = await generateAnalyzeResponse(prompt, language);
+      // Tạo system instruction riêng cho phân tích — ép GPT tuân theo framework
+      const analyzeSystemInstruction = `Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự với hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng.
+
+=== QUY TẮC TUYỆT ĐỐI (VI PHẠM = KẾT QUẢ KHÔNG HỢP LỆ) ===
+
+1. KHÔNG ĐƯỢC đọc lại hay paraphrase dữ liệu. PHẢI tự suy luận và phân tích dựa trên năng lượng lõi của từng số.
+   - SAI: "Người mang số 3 thường sáng tạo" (đọc lại)
+   - ĐÚNG: "Số 3 mang năng lượng biểu đạt-cảm xúc, khi kết hợp với số 5 (tự do-trải nghiệm) → tạo xu hướng lan tỏa mạnh nhưng dễ hời hợt trong cam kết" (phân tích tổ hợp)
+
+2. BẮT BUỘC sử dụng dữ liệu "KIẾN THỨC SÂU" (keywords, advantages, challenges, balance, careerSuggestions) làm nền tảng nhận diện năng lượng. Trích dẫn cụ thể: "Theo đặc điểm của số X là...", "Số Y cho thấy..."
+
+3. FLOW PHÂN TÍCH BẮT BUỘC:
+   Bước 1: Nhận diện năng lượng lõi từng số (từ keywords + advantages + challenges)
+   Bước 2: Phân loại quan hệ (đồng hướng/bổ trợ/tương phản)
+   Bước 3: Tạo trục năng lượng kết hợp ("X ↔ Y")
+   Bước 4: Phân tích 5 lớp (Core → Mechanism → Power → Shadow → Evolution)
+   Bước 5: Sinh 3 kịch bản (đúng hướng / lệch / trưởng thành)
+
+4. TỶ TRỌNG: 80% logic phân tích năng lượng + 20% pattern tăng cường. KHÔNG đảo ngược.
+
+5. MỖI điểm phân tích PHẢI có ví dụ thực tế cụ thể (công việc, tài chính, mối quan hệ, gia đình).
+
+6. CẤM: 'năng lượng vũ trụ', 'tần số rung động', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
+   THAY: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn', 'cống hiến', 'tạo giá trị xã hội'.
+
+7. GIỌNG VĂN: Thực tế, sắc sảo, tâm lý học hành vi. KHÔNG mơ hồ.
+
+8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown. Mỗi phần h3 ít nhất 150-200 từ.
+
+9. PHẦN "BÀI HỌC NHÂN – DUYÊN – QUẢ": Phân tích tổ hợp số KĨ LƯỠNG — phải đưa ví dụ cụ thể khi lệch (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, tệ nạn...). Nhấn mạnh: Nhân (suy nghĩ+hành vi) → Duyên (môi trường kích hoạt) → Quả (kết quả cuộc đời).
+
+10. KHÔNG viết chung chung kiểu "người số X thường..." — PHẢI phân tích dựa trên TỔ HỢP cụ thể đang tra cứu.`;
+
+      // Gọi Server Action với system instruction riêng
+      const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
 
       if (result.error) {
         throw new Error(result.error);
       }
 
-      const responseText = result.content || `<p class="text-yellow-400">${language === 'vi' ? 'Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.' : 'No analysis content received from AI. Please try again.'}</p>`;
+      const responseText = result.content || '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>';
 
       setAnalysis({
         ...basicAnalysis,
@@ -1648,49 +1659,43 @@ MÀ phải phân tích theo bản chất năng lượng:
            </div>
           
           <div className="flex bg-black/40 rounded-lg p-1">
-            <button
+            <button 
                 onClick={() => { setMode(2); setAnalysis(null); }}
                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 2 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
-                {language === 'vi' ? '2 Chỉ Số' : '2 Numbers'}
+                2 Chỉ Số
             </button>
-            <button
+            <button 
                 onClick={() => { setMode(3); setAnalysis(null); }}
                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 3 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
             >
-                {language === 'vi' ? '3 Chỉ Số' : '3 Numbers'}
+                3 Chỉ Số
             </button>
           </div>
         </div>
 
-        {/* Hướng dẫn kết nối chỉ số */}
+        {/* Hướng dẫn kết nối chỉ số (Menu hướng dẫn mới) */}
         <div className="mb-6 p-4 bg-black/20 rounded-lg border border-blue-500/20 text-gray-300 text-sm leading-relaxed">
           <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
-            <Layers size={16} /> {language === 'vi' ? 'Hướng dẫn chọn chỉ số để kết nối' : 'Guide to Selecting Indicators'}
+            <Layers size={16} /> Hướng dẫn chọn chỉ số để kết nối
           </h4>
           <ul className="list-disc pl-5 space-y-2">
-            <li>{language === 'vi'
-              ? <>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</>
-              : <>Combine <strong>Life Path + Soul + Mission</strong> (or 2 of 3) to learn about your <strong>life trends, success model, and personal development roadmap</strong>.</>
-            }</li>
-            <li>{language === 'vi'
-              ? <>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</>
-              : <>Combine <strong>Soul + Attitude + Personality + Maturity</strong> (or at least Soul + 1 other) to learn about your <strong>core personality, stress response mechanisms, and behavioral growth direction</strong>.</>
-            }</li>
+            <li>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</li>
+            <li>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</li>
           </ul>
-          <p className="mt-2 italic text-gray-400">{language === 'vi' ? 'Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.' : 'Choose the right combo to receive in-depth AI Engine analysis.'}</p>
+          <p className="mt-2 italic text-gray-400">Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.</p>
         </div>
 
         {/* *** Thêm input số điện thoại (mật khẩu) *** */}
         {/* Giải thích: Input để nhập số điện thoại, dùng làm mật khẩu kiểm tra thuê bao. */}
         <div className="mb-6">
-  <label className="block text-gray-300 mb-2 font-medium">{language === 'vi' ? 'Nhập Mã Thuê Bao:' : 'Enter Subscription Code:'}</label>
+  <label className="block text-gray-300 mb-2 font-medium">Nhập Mã Thuê Bao:</label>
   <input
     type="text"
     value={phone}
     onChange={(e) => setPhone(e.target.value.trim())}
     className="w-full bg-black/30 text-white p-4 rounded-xl border border-white/10 focus:border-blue-500 text-lg"
-    placeholder={language === 'vi' ? 'Nhập mã (ví dụ: 123123)' : 'Enter code (e.g.: 123123)'}
+    placeholder="Nhập mã (ví dụ: 123123)"
   />
   {subscriptionMessage && (
     <p className={`mt-3 font-medium ${isValidSubscription ? 'text-green-400' : 'text-red-400'}`}>
@@ -1704,7 +1709,7 @@ MÀ phải phân tích theo bản chất năng lượng:
              {inputs.slice(0, mode).map((input, idx) => (
                <div key={idx} className="bg-gradient-to-b from-white/10 to-white/5 p-5 rounded-2xl border border-white/10 relative group hover:border-blue-400/30 transition-all">
                   <div className="absolute -top-3 left-4 bg-gray-900 px-3 py-0.5 text-xs font-bold text-blue-300 rounded-full border border-blue-500/30">
-                    {language === 'vi' ? `Lớp số ${idx + 1}` : `Layer ${idx + 1}`}
+                    Lớp số {idx + 1}
                   </div>
                   
                   <div className="mt-2 space-y-3">
@@ -1713,7 +1718,7 @@ MÀ phải phân tích theo bản chất năng lượng:
                         onChange={(e) => handleInputChange(idx, 'type', e.target.value)}
                         className="w-full bg-black/20 text-blue-100 text-sm font-medium p-2.5 rounded-lg border border-white/5 focus:border-blue-500/50 outline-none appearance-none"
                     >
-                        {Object.values(NumberType).map(t => <option key={t} value={t}>{language === 'en' ? NumberTypeEN[t] || t : t}</option>)}
+                        {Object.values(NumberType).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                     
                     <div className="relative">
@@ -1724,7 +1729,7 @@ MÀ phải phân tích theo bản chất năng lượng:
                             onChange={(e) => handleInputChange(idx, 'value', e.target.value)}
                             className="w-full bg-transparent text-center text-4xl font-bold text-white p-2 focus:outline-none border-b border-white/10 focus:border-blue-400 transition-colors placeholder-white/10"
                         />
-                        <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">{language === 'vi' ? 'Nhập số' : 'Enter number'}</div>
+                        <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">Nhập số</div>
                     </div>
                   </div>
                </div>
@@ -1744,12 +1749,12 @@ MÀ phải phân tích theo bản chất năng lượng:
                 {isAnalyzing ? (
                     <>
                         <RefreshCw size={20} className="animate-spin" />
-                        <span>{language === 'vi' ? 'Đang kích hoạt Deep Engine & Mapping dữ liệu...' : 'Activating Deep Engine & Mapping data...'}</span>
+                        <span>Đang kích hoạt Deep Engine & Mapping dữ liệu...</span>
                     </>
                 ) : (
                     <>
                         <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
-                        <span>{language === 'vi' ? 'Kích Hoạt Phân Tích Chuyên Sâu' : 'Activate Deep Analysis'}</span>
+                        <span>Kích Hoạt Phân Tích Chuyên Sâu</span>
                     </>
                 )}
             </div>
@@ -1762,7 +1767,7 @@ MÀ phải phân tích theo bản chất năng lượng:
                 {isFetchingSheet && (
                   <div className="text-center mb-4 text-yellow-400 flex items-center justify-center gap-2">
                     <RefreshCw size={16} className="animate-spin" />
-                    <span>{language === 'vi' ? 'Đang đọc dữ liệu từ Google Sheet...' : 'Loading data from Google Sheet...'}</span>
+                    <span>Đang đọc dữ liệu từ Google Sheet...</span>
                   </div>
                 )}
 
@@ -1786,7 +1791,7 @@ MÀ phải phân tích theo bản chất năng lượng:
                     /* Fallback Static Content */
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-emerald-900/10 p-6 rounded-2xl border border-emerald-500/20">
-                           <p>{language === 'vi' ? 'Hệ thống đang chờ kết nối...' : 'System is waiting for connection...'}</p>
+                           <p>Hệ thống đang chờ kết nối...</p>
                         </div>
                     </div>
                 )}
@@ -1798,7 +1803,7 @@ MÀ phải phân tích theo bản chất năng lượng:
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 border border-emerald-400/30"
                    >
                      <MessageCircle size={22} />
-                     <span>{language === 'vi' ? 'Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)' : 'Ask In-Depth About Results (AI Chatbot)'}</span>
+                     <span>Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)</span>
                    </button>
                 </div>
             </div>
