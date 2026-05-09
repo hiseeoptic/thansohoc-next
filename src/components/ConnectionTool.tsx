@@ -417,28 +417,6 @@ const fullContext = contextData + '\n\n' + deepContext;
 
       let prompt = "";
 
-      // Phần tạo prompt theo từng loại combo
-      if (comboInfo.comboType === 'coreMissionLife') {
-          prompt = `
-${commonInstructions}
-
-Hãy phân tích **theo đúng khung sườn 4 phần h3** (từ 1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI đến 4. ỨNG DỤNG THỰC TẾ), 
-sau đó thêm phần **🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH** ngay sau phần 4.
-Phân tích phải rất sâu, dựa hoàn toàn vào tổ hợp số đang tra cứu (${activeInputs.map(i => i.value).join(' + ')}).
-          `;
-      } else if (comboInfo.comboType === 'innerPersonalityAxis') {
-          prompt = `
-${commonInstructions}
-
-Hãy phân tích theo khung sườn chuyên sâu cho trục Nội Tâm – Nhân Cách – Thái Độ – Trưởng Thành.
-          `;
-      } else {
-          prompt = `
-${commonInstructions}
-
-Hãy phân tích theo khung phân tích cơ bản.
-          `;
-      }
         if (comboInfo.comboType === 'coreMissionLife') {
             // PROMPT CŨ CHO TRỤC ĐƯỜNG ĐỜI + NỘI TÂM + SỨ MỆNH
             prompt = `
