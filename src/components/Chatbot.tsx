@@ -68,11 +68,15 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
 BẮT BUỘC: Sử dụng thông tin trên để phân tích. KHÔNG được hỏi lại chỉ số.
 === KẾT THÚC THÔNG TIN CHỈ SỐ ===`;
 
-        // Inject deepNumberKnowledge cho các chỉ số chính
+        // Inject deepNumberKnowledge cho TẤT CẢ các chỉ số
         const relevantNumbers = [
           sharedResults.lifePath,
           sharedResults.missionNumber,
-          sharedResults.heartDesire
+          sharedResults.heartDesire,
+          sharedResults.personalityNumber,
+          sharedResults.attitudeNumber,
+          sharedResults.maturityNumber,
+          sharedResults.intelligenceNumber
         ];
         const uniqueNumbers = [...new Set(relevantNumbers)];
 
@@ -80,12 +84,14 @@ BẮT BUỘC: Sử dụng thông tin trên để phân tích. KHÔNG được h�
           const profile = deepNumberKnowledge[num.toString()];
           if (!profile) return '';
           return `
---- KIẾN THỨC SÂU VỀ SỐ ${num} (${profile.name}) ---
+=== SỐ ${num} — ${profile.name} ===
+Thông điệp: ${profile.coreMessage || ''}
 Từ khóa: ${profile.keywords.join(', ')}
 Ưu điểm: ${profile.advantages}
 Thách thức: ${profile.challenges}
 Cân bằng: ${profile.balance}
-Gợi ý nghề nghiệp: ${profile.careerSuggestions}`;
+Nghề nghiệp: ${profile.careerSuggestions}
+=== KẾT THÚC SỐ ${num} ===`;
         }).filter(Boolean).join('\n');
       } else {
         context = language === 'vi'
@@ -94,12 +100,16 @@ Gợi ý nghề nghiệp: ${profile.careerSuggestions}`;
       }
 
       // === SYSTEM INSTRUCTION - CẤU TRÚC RÕ RÀNG VỚI THỨ TỰ ƯU TIÊN ===
+      const langDirective = language === 'en'
+        ? '\n=== LANGUAGE DIRECTIVE ===\nYou MUST respond ENTIRELY in English. All analysis, solutions, and examples must be in English.\n=== END LANGUAGE DIRECTIVE ===\n'
+        : '';
+
       const systemInstruction = `=== VAI TRÒ ===
 Bạn là Chuyên gia Tâm lý học Hành vi và Thần Số Học ứng dụng với hơn 30 năm kinh nghiệm.
-
+${langDirective}
 === QUY TẮC BẮT BUỘC (STRICT MODE - KHÔNG ĐƯỢC VI PHẠM) ===
 
-**QT1 - PHẠM VI:** CHỈ trả lời về Thần Số Học, phát triển bản thân, sự nghiệp, mối quan hệ, ý nghĩa con số. Nếu câu hỏi KHÔNG liên quan → từ chối lịch sự: “Xin lỗi, tôi chỉ có thể giải đáp về Thần Số Học và định hướng cuộc sống.”
+**QT1 - PHẠM VI:** CHỈ trả lời về Thần Số Học, phát triển bản thân, sự nghiệp, mối quan hệ, ý nghĩa con số. Nếu câu hỏi KHÔNG liên quan → từ chối lịch sự: “${language === 'en' ? 'Sorry, I can only answer questions about Numerology and life guidance.' : 'Xin lỗi, tôi chỉ có thể giải đáp về Thần Số Học và định hướng cuộc sống.'}”
 
 **QT2 - BÁM SÁT DỮ LIỆU:** Mọi phân tích PHẢI dựa trên dữ liệu chỉ số và kiến thức sâu được cung cấp bên dưới. PHẢI trích dẫn cụ thể: “Với Đường Đời số X, đặc điểm Y cho thấy...”, “Số Sứ Mệnh Z của bạn có ưu điểm là...”. TUYỆT ĐỐI KHÔNG viết chung chung.
 
@@ -139,8 +149,16 @@ Giải pháp 2:
 === DỮ LIỆU CHỈ SỐ NGƯỜI DÙNG ===
 ${context}
 
-=== KIẾN THỨC SÂU VỀ CÁC CON SỐ ===
-${deepContext}`;
+=== KIẾN THỨC SÂU VỀ CÁC CON SỐ (BẮT BUỘC SỬ DỤNG) ===
+${deepContext}
+
+=== HƯỚNG DẪN SỬ DỤNG DỮ LIỆU ===
+Khi trả lời, bạn PHẢI:
+1. Trích dẫn CỤ THỂ từ "KIẾN THỨC SÂU" ở trên: ưu điểm, thách thức, chiến lược cân bằng, gợi ý nghề nghiệp
+2. Viết rõ: "Với Đường Đời số X, ưu điểm của bạn là [trích từ dữ liệu]...", "Thách thức số Y là [trích]..."
+3. Phân tích TỔ HỢP: "Khi kết hợp Đường Đời X (đặc điểm: ...) với Sứ Mệnh Y (đặc điểm: ...) → tạo ra..."
+4. KHÔNG ĐƯỢC viết chung chung mà không dẫn chứng từ dữ liệu
+=== KẾT THÚC HƯỚNG DẪN ===`;
 
       console.log('[Chatbot] System Instruction length:', systemInstruction.length);
 
