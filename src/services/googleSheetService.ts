@@ -32,14 +32,32 @@ export const fetchMeanings = async (): Promise<SheetMeaning[]> => {
 };
 
 export const getMeaning = (data: SheetMeaning[], key: string, number: number | string, lang: 'vi' | 'en'): string => {
-  // Handle string numbers like "1, 5" for Subconscious
   const numStr = number.toString();
-  
+
+  // Handle multi-number values like "1, 5" for subconsciousSelf
+  if (numStr.includes(',')) {
+    const numbers = numStr.split(',').map(n => n.trim());
+    const meanings = numbers.map(num => {
+      const found = data.find(row => row.type === key && row.number.toString() === num);
+      if (found) {
+        const meaning = lang === 'en' ? (found.english_meaning || found.meaning) : found.meaning;
+        return `<strong>Số ${num}:</strong> ${meaning}`;
+      }
+      return null;
+    }).filter(Boolean);
+
+    if (meanings.length > 0) {
+      return meanings.join('<br/><br/>');
+    }
+    return lang === 'en' ? "Meaning updating..." : "Đang cập nhật nội dung...";
+  }
+
+  // Single number lookup
   const found = data.find(row => row.type === key && row.number.toString() === numStr);
-  
+
   if (found) {
     return lang === 'en' ? (found.english_meaning || found.meaning) : found.meaning;
   }
-  
+
   return lang === 'en' ? "Meaning updating..." : "Đang cập nhật nội dung...";
 };
