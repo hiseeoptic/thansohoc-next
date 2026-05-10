@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle, Calendar, Mountain, AlertTriangle } from 'lucide-react';
+import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle, Calendar, Mountain, AlertTriangle, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
@@ -133,6 +133,97 @@ Tất cả 12 quy tắc trên có hiệu lực tuyệt đối với toàn bộ o
 };
 
 
+// Component hiển thị Đỉnh Cao & Thách Thức với nội dung từ Google Sheet
+const PeaksChallengesSection: React.FC<{
+  sharedResults: CalculationResult;
+  sheetData: SheetMeaning[];
+  language: 'vi' | 'en';
+}> = ({ sharedResults, sheetData, language }) => {
+  const [expandedPeak, setExpandedPeak] = useState<number | null>(null);
+  const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
+
+  return (
+    <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 shadow-2xl">
+      <h3 className="text-xl font-bold text-purple-200 mb-6 flex items-center gap-2">
+        <Mountain size={20} className="text-purple-400" />
+        {language === 'vi' ? 'Kim Tự Tháp Đỉnh Cao & Thách Thức' : 'Pyramid Peaks & Challenges'}
+      </h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="text-purple-300 border-b border-white/10">
+              <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Giai đoạn' : 'Phase'}</th>
+              <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Độ tuổi / Năm' : 'Age / Year'}</th>
+              <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Đỉnh Cao' : 'Peak'}</th>
+              <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Thách Thức' : 'Challenge'}</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-300">
+            {[1, 2, 3, 4].map((i) => {
+              const peakNum = (sharedResults.peaks as any)[`peak${i}`];
+              const challengeNum = (sharedResults.challenges as any)[`challenge${i}`];
+              return (
+                <React.Fragment key={i}>
+                  <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="p-3 font-semibold text-blue-200">
+                      {language === 'vi' ? `Giai đoạn ${i}` : `Phase ${i}`}
+                    </td>
+                    <td className="p-3 text-gray-400">
+                      {(sharedResults.peaks as any)[`age${i}`]} {language === 'vi' ? 'tuổi /' : 'age /'} {(sharedResults.peaks as any)[`year${i}`]}
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => setExpandedPeak(expandedPeak === i ? null : i)}
+                        className="inline-flex items-center gap-1 text-yellow-400 font-bold text-lg hover:text-yellow-300 transition-colors"
+                      >
+                        <Sparkles size={14} className="text-yellow-500" />
+                        {peakNum}
+                        {expandedPeak === i ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => setExpandedChallenge(expandedChallenge === i ? null : i)}
+                        className="inline-flex items-center gap-1 text-red-400 font-medium hover:text-red-300 transition-colors"
+                      >
+                        <AlertTriangle size={14} className="text-red-500" />
+                        {challengeNum}
+                        {expandedChallenge === i ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+                    </td>
+                  </tr>
+                  {/* Expanded Peak Meaning */}
+                  {expandedPeak === i && (
+                    <tr>
+                      <td colSpan={4} className="p-4 bg-yellow-900/10 border-b border-yellow-500/10">
+                        <div className="text-sm text-gray-200 leading-relaxed">
+                          <strong className="text-yellow-300">{language === 'vi' ? `Ý nghĩa Đỉnh Cao ${peakNum}:` : `Peak ${peakNum} Meaning:`}</strong>
+                          <div className="mt-2" dangerouslySetInnerHTML={{ __html: getMeaning(sheetData, 'peakNumbers', peakNum, language).replace(/\n/g, '<br/>') }} />
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  {/* Expanded Challenge Meaning */}
+                  {expandedChallenge === i && (
+                    <tr>
+                      <td colSpan={4} className="p-4 bg-red-900/10 border-b border-red-500/10">
+                        <div className="text-sm text-gray-200 leading-relaxed">
+                          <strong className="text-red-300">{language === 'vi' ? `Ý nghĩa Thách Thức ${challengeNum}:` : `Challenge ${challengeNum} Meaning:`}</strong>
+                          <div className="mt-2" dangerouslySetInnerHTML={{ __html: getMeaning(sheetData, 'challengeNumbers', challengeNum, language).replace(/\n/g, '<br/>') }} />
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheetData, sharedResults, language }) => {
   const [mode, setMode] = useState<2 | 3>(2);
   const [inputs, setInputs] = useState([
@@ -156,6 +247,9 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   // *** Thêm state cho dữ liệu subscriptions từ Sheet ***
   // Giải thích: Lưu dữ liệu từ Sheet Subscriptions để check local (không dùng AppScript).
   const [subscriptions, setSubscriptions] = useState<{ phone: string; regDate: string }[]>([]);
+
+  // State ngôn ngữ phân tích (tách biệt với language prop của app)
+  const [analysisLang, setAnalysisLang] = useState<'vi' | 'en'>(language);
 
   // State chatbot
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
@@ -419,6 +513,9 @@ const fullContext = contextData + '\n\n' + deepContext;
             - Mỗi phần h3 phải dài ít nhất 150-200 từ với nội dung phân tích sâu.
             - Mỗi li phải dài ít nhất 80 từ — KHÔNG liệt kê ngắn gọn.
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
+
+            === NGÔN NGỮ OUTPUT ===
+            ${analysisLang === 'en' ? 'BẮT BUỘC viết TOÀN BỘ output bằng TIẾNG ANH (English). Tất cả tiêu đề h3, h4, nội dung p, li đều phải bằng tiếng Anh. Giữ nguyên cấu trúc framework nhưng dịch toàn bộ nội dung sang English.' : 'Viết toàn bộ output bằng TIẾNG VIỆT.'}
 
             === BÊN DƯỚI LÀ DÀN Ý PHÂN TÍCH — HÃY DÙNG LÀM KHUNG CẤU TRÚC, TỰ VIẾT NỘI DUNG ===
       `;
@@ -862,38 +959,61 @@ Trước khi trả output, tự hỏi:
              <p className="text-gray-400 text-xs mt-1">AI Engine v4.0: Rule-Based Logic & Behavioral Psychology</p>
            </div>
           
-          <div className="flex bg-black/40 rounded-lg p-1">
-            <button 
-                onClick={() => { setMode(2); setAnalysis(null); }}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 2 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          <div className="flex items-center gap-2">
+            {/* Language Toggle */}
+            <button
+              onClick={() => setAnalysisLang(analysisLang === 'vi' ? 'en' : 'vi')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-black/40 border border-white/10 text-gray-300 hover:text-white hover:border-purple-400/50 transition-all"
+              title={analysisLang === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
             >
-                2 Chỉ Số
+              <Globe size={14} />
+              <span>{analysisLang === 'vi' ? 'VI' : 'EN'}</span>
             </button>
-            <button 
-                onClick={() => { setMode(3); setAnalysis(null); }}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 3 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-            >
-                3 Chỉ Số
-            </button>
+
+            {/* Mode Toggle */}
+            <div className="flex bg-black/40 rounded-lg p-1">
+              <button
+                  onClick={() => { setMode(2); setAnalysis(null); }}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 2 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+              >
+                  {analysisLang === 'vi' ? '2 Chỉ Số' : '2 Indices'}
+              </button>
+              <button
+                  onClick={() => { setMode(3); setAnalysis(null); }}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 3 ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+              >
+                  {analysisLang === 'vi' ? '3 Chỉ Số' : '3 Indices'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Hướng dẫn kết nối chỉ số (Menu hướng dẫn mới) */}
+        {/* Hướng dẫn kết nối chỉ số */}
         <div className="mb-6 p-4 bg-black/20 rounded-lg border border-blue-500/20 text-gray-300 text-sm leading-relaxed">
           <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
-            <Layers size={16} /> Hướng dẫn chọn chỉ số để kết nối
+            <Layers size={16} /> {analysisLang === 'vi' ? 'Hướng dẫn chọn chỉ số để kết nối' : 'Guide to Selecting Indices for Connection'}
           </h4>
           <ul className="list-disc pl-5 space-y-2">
-            <li>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</li>
-            <li>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</li>
+            {analysisLang === 'vi' ? (
+              <>
+                <li>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</li>
+                <li>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</li>
+              </>
+            ) : (
+              <>
+                <li>Combine <strong>Life Path + Soul + Mission</strong> (or 2 of 3 indices) to discover your <strong>life direction, success model, and personal development roadmap</strong>.</li>
+                <li>Combine <strong>Soul + Attitude + Personality + Maturity</strong> (or at least Soul + 1 other index in this group) to understand your <strong>core character, stress response mechanisms, and behavioral growth direction</strong>.</li>
+              </>
+            )}
           </ul>
-          <p className="mt-2 italic text-gray-400">Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.</p>
+          <p className="mt-2 italic text-gray-400">
+            {analysisLang === 'vi' ? 'Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.' : 'Choose the right combo for in-depth AI Engine analysis.'}
+          </p>
         </div>
 
         {/* *** Thêm input số điện thoại (mật khẩu) *** */}
-        {/* Giải thích: Input để nhập số điện thoại, dùng làm mật khẩu kiểm tra thuê bao. */}
         <div className="mb-6">
-  <label className="block text-gray-300 mb-2 font-medium">Nhập Mã Thuê Bao:</label>
+  <label className="block text-gray-300 mb-2 font-medium">{analysisLang === 'vi' ? 'Nhập Mã Thuê Bao:' : 'Enter Subscription Code:'}</label>
   <input
     type="text"
     value={phone}
@@ -913,7 +1033,7 @@ Trước khi trả output, tự hỏi:
              {inputs.slice(0, mode).map((input, idx) => (
                <div key={idx} className="bg-gradient-to-b from-white/10 to-white/5 p-5 rounded-2xl border border-white/10 relative group hover:border-blue-400/30 transition-all">
                   <div className="absolute -top-3 left-4 bg-gray-900 px-3 py-0.5 text-xs font-bold text-blue-300 rounded-full border border-blue-500/30">
-                    Lớp số {idx + 1}
+                    {analysisLang === 'vi' ? `Lớp số ${idx + 1}` : `Layer ${idx + 1}`}
                   </div>
                   
                   <div className="mt-2 space-y-3">
@@ -933,7 +1053,7 @@ Trước khi trả output, tự hỏi:
                             onChange={(e) => handleInputChange(idx, 'value', e.target.value)}
                             className="w-full bg-transparent text-center text-4xl font-bold text-white p-2 focus:outline-none border-b border-white/10 focus:border-blue-400 transition-colors placeholder-white/10"
                         />
-                        <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">Nhập số</div>
+                        <div className="text-center text-xs text-gray-500 mt-1 uppercase tracking-widest">{analysisLang === 'vi' ? 'Nhập số' : 'Enter number'}</div>
                     </div>
                   </div>
                </div>
@@ -953,12 +1073,12 @@ Trước khi trả output, tự hỏi:
                 {isAnalyzing ? (
                     <>
                         <RefreshCw size={20} className="animate-spin" />
-                        <span>Đang kích hoạt Deep Engine & Mapping dữ liệu...</span>
+                        <span>{analysisLang === 'vi' ? 'Đang kích hoạt Deep Engine & Mapping dữ liệu...' : 'Activating Deep Engine & Data Mapping...'}</span>
                     </>
                 ) : (
                     <>
                         <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
-                        <span>Kích Hoạt Phân Tích Chuyên Sâu</span>
+                        <span>{analysisLang === 'vi' ? 'Kích Hoạt Phân Tích Chuyên Sâu' : 'Activate Deep Analysis'}</span>
                     </>
                 )}
             </div>
@@ -1000,50 +1120,13 @@ Trước khi trả output, tự hỏi:
                     </div>
                 )}
 
-                {/* Peaks & Challenges Table */}
+                {/* Peaks & Challenges Table with Sheet Meanings */}
                 {sharedResults && sharedResults.peaks && sharedResults.challenges && (
-                  <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 shadow-2xl">
-                    <h3 className="text-xl font-bold text-purple-200 mb-6 flex items-center gap-2">
-                      <Mountain size={20} className="text-purple-400" />
-                      {language === 'vi' ? 'Kim Tự Tháp Đỉnh Cao & Thách Thức' : 'Pyramid Peaks & Challenges'}
-                    </h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="text-purple-300 border-b border-white/10">
-                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Giai đoạn' : 'Phase'}</th>
-                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Độ tuổi / Năm' : 'Age / Year'}</th>
-                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Đỉnh Cao' : 'Peak'}</th>
-                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Thách Thức' : 'Challenge'}</th>
-                          </tr>
-                        </thead>
-                        <tbody className="text-gray-300">
-                          {[1, 2, 3, 4].map((i) => (
-                            <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                              <td className="p-3 font-semibold text-blue-200">
-                                {language === 'vi' ? `Giai đoạn ${i}` : `Phase ${i}`}
-                              </td>
-                              <td className="p-3 text-gray-400">
-                                {(sharedResults.peaks as any)[`age${i}`]} {language === 'vi' ? 'tuổi /' : 'age /'} {(sharedResults.peaks as any)[`year${i}`]}
-                              </td>
-                              <td className="p-3">
-                                <span className="inline-flex items-center gap-1 text-yellow-400 font-bold text-lg">
-                                  <Sparkles size={14} className="text-yellow-500" />
-                                  {(sharedResults.peaks as any)[`peak${i}`]}
-                                </span>
-                              </td>
-                              <td className="p-3">
-                                <span className="inline-flex items-center gap-1 text-red-400 font-medium">
-                                  <AlertTriangle size={14} className="text-red-500" />
-                                  {(sharedResults.challenges as any)[`challenge${i}`]}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                  <PeaksChallengesSection
+                    sharedResults={sharedResults}
+                    sheetData={sheetData}
+                    language={analysisLang}
+                  />
                 )}
 
                 {/* Chatbot Button Trigger */}
@@ -1053,7 +1136,7 @@ Trước khi trả output, tự hỏi:
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 border border-emerald-400/30"
                    >
                      <MessageCircle size={22} />
-                     <span>Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)</span>
+                     <span>{analysisLang === 'vi' ? 'Hỏi Chuyên Sâu Về Kết Quả (AI Chatbot)' : 'Ask In-Depth Questions (AI Chatbot)'}</span>
                    </button>
                 </div>
             </div>
@@ -1063,11 +1146,11 @@ Trước khi trả output, tự hỏi:
    {isChatbotOpen && (
   <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
     <div className="w-full max-w-2xl">
-      <Chatbot 
-        sharedResults={sharedResults} 
-        sheetData={sheetData} 
-        onClose={() => setIsChatbotOpen(false)} 
-        language={language} // Thêm truyền language từ props của ConnectionTool
+      <Chatbot
+        sharedResults={sharedResults}
+        sheetData={sheetData}
+        onClose={() => setIsChatbotOpen(false)}
+        language={analysisLang} // Truyền analysisLang để chatbot có thể trả lời bằng tiếng Anh
       />
     </div>
   </div>
