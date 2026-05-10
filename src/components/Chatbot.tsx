@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
-import { Send, X, Bot, User, ChevronUp, ChevronDown } from 'lucide-react';
+import { Send, X, Bot, User, ChevronUp, ChevronDown, Globe } from 'lucide-react';
 import { OpenAI } from 'openai';
 import { generateChatResponse } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
@@ -17,9 +17,10 @@ interface Message {
   content: string;
 }
 
-const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, language }) => {
+const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, language: initialLanguage }) => {
+  const [chatLang, setChatLang] = useState<'vi' | 'en'>(initialLanguage);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: language === 'vi' ? 'Xin chào! Tôi là trợ lý Thần Số Học AI. Tôi có thể giúp bạn giải đáp thắc mắc về các chỉ số của bạn hoặc định hướng công việc phù hợp. Bạn muốn hỏi gì?' : 'Hello! I am the Numerology AI Assistant. I can help you with questions about your indicators or career guidance. What would you like to ask?' }
+    { role: 'assistant', content: initialLanguage === 'vi' ? 'Xin chào! Tôi là trợ lý Thần Số Học AI. Tôi có thể giúp bạn giải đáp thắc mắc về các chỉ số của bạn hoặc định hướng công việc phù hợp. Bạn muốn hỏi gì?' : 'Hello! I am the Numerology AI Assistant. I can help you with questions about your indicators or career guidance. What would you like to ask?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
 
   const handleSend = async () => {
     if (!input.trim()) {
-      const errorMsg = language === 'vi' ? 'Vui lòng nhập câu hỏi.' : 'Please enter a question.';
+      const errorMsg = chatLang === 'vi' ? 'Vui lòng nhập câu hỏi.' : 'Please enter a question.';
       const errorMessage: Message = { role: 'assistant', content: errorMsg };
       setMessages(prev => [...prev, errorMessage]);
       return;
@@ -69,9 +70,9 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
 
       const context = sharedResults ? `
         **THÔNG TIN CHỈ SỐ NGƯỜI DÙNG:**
-        - Đường Đời (Life Path): ${sharedResults.lifePath} - Ý nghĩa: ${getMeaning(sheetData, 'lifePath', sharedResults.lifePath, language)}
-        - Sứ Mệnh (Mission): ${sharedResults.missionNumber} - Ý nghĩa: ${getMeaning(sheetData, 'missionNumber', sharedResults.missionNumber, language)}
-        - Nội Tâm (Soul/Heart Desire): ${sharedResults.heartDesire} - Ý nghĩa: ${getMeaning(sheetData, 'heartDesire', sharedResults.heartDesire, language)}
+        - Đường Đời (Life Path): ${sharedResults.lifePath} - Ý nghĩa: ${getMeaning(sheetData, 'lifePath', sharedResults.lifePath, chatLang)}
+        - Sứ Mệnh (Mission): ${sharedResults.missionNumber} - Ý nghĩa: ${getMeaning(sheetData, 'missionNumber', sharedResults.missionNumber, chatLang)}
+        - Nội Tâm (Soul/Heart Desire): ${sharedResults.heartDesire} - Ý nghĩa: ${getMeaning(sheetData, 'heartDesire', sharedResults.heartDesire, chatLang)}
         - Nhân Cách (Personality): ${sharedResults.personalityNumber}
         - Thái Độ (Attitude): ${sharedResults.attitudeNumber}
         - Trưởng Thành (Maturity): ${sharedResults.maturityNumber}
@@ -82,13 +83,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         ${deepContext}
 
         **BẮT BUỘC:** Sử dụng kiến thức sâu ở trên (keywords, ưu điểm, thách thức) làm nền tảng khi phân tích. Trích dẫn cụ thể: "Theo đặc điểm số X là...". Không được hỏi lại chỉ số. Phân tích theo TỔ HỢP số, không phân tích từng số riêng lẻ.
-      ` : (language === 'vi' ? 'Không có chỉ số cụ thể (Người dùng chưa tra cứu). Hãy yêu cầu họ quay lại phần tra cứu để có chỉ số trước khi hỏi.' : 'No specific indicators (User has not queried yet). Please ask them to go back to the query section for indicators before asking.');
+      ` : (chatLang === 'vi' ? 'Không có chỉ số cụ thể (Người dùng chưa tra cứu). Hãy yêu cầu họ quay lại phần tra cứu để có chỉ số trước khi hỏi.' : 'No specific indicators (User has not queried yet). Please ask them to go back to the query section for indicators before asking.');
 
       // Lấy lịch sử chat gần nhất (10 tin nhắn)
       const fullHistory = messages.slice(-10).map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n\n');
 
       // System instruction – giữ nguyên toàn bộ rule engine, format, hỏi ngược...
       const systemInstruction = `
+        ${chatLang === 'en' ? '⚠️ LANGUAGE RULE: You MUST respond ENTIRELY in English. All analysis, advice, examples must be in English.' : ''}
         Bạn là một chuyên gia tâm lý học, chuyên gia nghiên cứu kỹ năng con người, chuyên gia nghiên cứu số học với hơn 30 năm kinh nghiệm.
         **RULE ENGINE (STRICT MODE):**
         1. **Phạm vi chủ đề:** CHỈ trả lời nếu câu hỏi liên quan trực tiếp đến Thần Số Học (Numerology), phát triển bản thân, định hướng sự nghiệp, mối quan hệ tình cảm gia đình con gái, hoặc giải thích ý nghĩa các con số dựa trên dữ liệu người dùng.
@@ -224,8 +226,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
 
     } catch (error: any) {
       console.error('❌ [Chatbot] Lỗi handleSend:', error);
-      const errorMsg = language === 'vi' 
-        ? `Lỗi kết nối AI: ${error.message || 'Vui lòng thử lại sau.'}` 
+      const errorMsg = chatLang === 'vi'
+        ? `Lỗi kết nối AI: ${error.message || 'Vui lòng thử lại sau.'}`
         : `AI connection error: ${error.message || 'Please try again later.'}`;
       const errorMessage: Message = { role: 'assistant', content: errorMsg };
       setMessages(prev => [...prev, errorMessage]);
@@ -239,8 +241,20 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
   return (
     <div className="flex flex-col h-[80vh]">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-green-200">Chatbot Thần Số Học</h3>
-        <button onClick={onClose}><X size={20} /></button>
+        <h3 className="text-lg font-bold text-green-200">
+          {chatLang === 'vi' ? 'Chatbot Thần Số Học' : 'Numerology Chatbot'}
+        </h3>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setChatLang(chatLang === 'vi' ? 'en' : 'vi')}
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-black/40 border border-white/10 text-gray-300 hover:text-white hover:border-green-400/50 transition-all"
+            title={chatLang === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
+          >
+            <Globe size={12} />
+            {chatLang === 'vi' ? 'VI' : 'EN'}
+          </button>
+          <button onClick={onClose}><X size={20} /></button>
+        </div>
       </div>
 
       {/* Phần hiển thị chỉ số tra cứu – giữ nguyên */}
@@ -249,24 +263,24 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
           onClick={() => setIsIndicatorsOpen(!isIndicatorsOpen)}
           className="w-full flex justify-between items-center font-bold text-green-200 mb-2"
         >
-          {language === 'vi' ? 'Chỉ Số Tra Cứu Của Bạn' : 'Your Lookup Indicators'}
+          {chatLang === 'vi' ? 'Chỉ Số Tra Cứu Của Bạn' : 'Your Lookup Indicators'}
           {isIndicatorsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
         {isIndicatorsOpen && (
           <>
             {sharedResults ? (
               <ul className="space-y-1">
-                <li><strong>{language === 'vi' ? 'Đường Đời (Life Path):' : 'Life Path:'}</strong> {sharedResults.lifePath}</li>
-                <li><strong>{language === 'vi' ? 'Sứ Mệnh (Mission):' : 'Mission:'}</strong> {sharedResults.missionNumber}</li>
-                <li><strong>{language === 'vi' ? 'Nội Tâm (Soul/Heart Desire):' : 'Soul/Heart Desire:'}</strong> {sharedResults.heartDesire}</li>
-                <li><strong>{language === 'vi' ? 'Nhân Cách (Personality):' : 'Personality:'}</strong> {sharedResults.personalityNumber}</li>
-                <li><strong>{language === 'vi' ? 'Thái Độ (Attitude):' : 'Attitude:'}</strong> {sharedResults.attitudeNumber}</li>
-                <li><strong>{language === 'vi' ? 'Trưởng Thành (Maturity):' : 'Maturity:'}</strong> {sharedResults.maturityNumber}</li>
-                <li><strong>{language === 'vi' ? 'Trí Tuệ (Intelligence):' : 'Intelligence:'}</strong> {sharedResults.intelligenceNumber}</li>
-                <li><strong>{language === 'vi' ? 'Năm Cá Nhân:' : 'Personal Year:'}</strong> {sharedResults.personalYear}</li>
+                <li><strong>{chatLang === 'vi' ? 'Đường Đời (Life Path):' : 'Life Path:'}</strong> {sharedResults.lifePath}</li>
+                <li><strong>{chatLang === 'vi' ? 'Sứ Mệnh (Mission):' : 'Mission:'}</strong> {sharedResults.missionNumber}</li>
+                <li><strong>{chatLang === 'vi' ? 'Nội Tâm (Soul/Heart Desire):' : 'Soul/Heart Desire:'}</strong> {sharedResults.heartDesire}</li>
+                <li><strong>{chatLang === 'vi' ? 'Nhân Cách (Personality):' : 'Personality:'}</strong> {sharedResults.personalityNumber}</li>
+                <li><strong>{chatLang === 'vi' ? 'Thái Độ (Attitude):' : 'Attitude:'}</strong> {sharedResults.attitudeNumber}</li>
+                <li><strong>{chatLang === 'vi' ? 'Trưởng Thành (Maturity):' : 'Maturity:'}</strong> {sharedResults.maturityNumber}</li>
+                <li><strong>{chatLang === 'vi' ? 'Trí Tuệ (Intelligence):' : 'Intelligence:'}</strong> {sharedResults.intelligenceNumber}</li>
+                <li><strong>{chatLang === 'vi' ? 'Năm Cá Nhân:' : 'Personal Year:'}</strong> {sharedResults.personalYear}</li>
               </ul>
             ) : (
-              <p>{language === 'vi' ? 'Bạn chưa tra cứu chỉ số. Hãy quay lại phần Tra Cứu để tính toán trước khi hỏi.' : 'You haven\'t looked up indicators yet. Please go back to the Query section to calculate first.'}</p>
+              <p>{chatLang === 'vi' ? 'Bạn chưa tra cứu chỉ số. Hãy quay lại phần Tra Cứu để tính toán trước khi hỏi.' : 'You haven\'t looked up indicators yet. Please go back to the Query section to calculate first.'}</p>
             )}
           </>
         )}
@@ -278,7 +292,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
             {msg.content}
           </div>
         ))}
-        {isLoading && <div className="text-center">Đang suy nghĩ...</div>}
+        {isLoading && <div className="text-center">{chatLang === 'vi' ? 'Đang suy nghĩ...' : 'Thinking...'}</div>}
       </div>
 
       <div className="mt-4 flex gap-2 flex-col">
@@ -287,7 +301,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
             value={input}
             onChange={e => setInput(e.target.value)}
             className="flex-1 bg-black/30 p-3 rounded-lg border border-white/10"
-            placeholder={language === 'vi' ? "Hỏi về chỉ số của bạn..." : "Ask about your indicators..."}
+            placeholder={chatLang === 'vi' ? "Hỏi về chỉ số của bạn..." : "Ask about your indicators..."}
             onKeyDown={e => e.key === 'Enter' && handleSend()}
           />
           <button onClick={handleSend} className="bg-green-600 p-3 rounded-lg"><Send size={16} /></button>
@@ -299,18 +313,18 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
             onClick={() => setIsGuideOpen(!isGuideOpen)}
             className="w-full flex justify-between items-center font-bold text-blue-200 mb-2"
           >
-            {language === 'vi' ? 'HƯỚNG DẪN ĐẶT CÂU HỎI' : 'QUESTION GUIDANCE'}
+            {chatLang === 'vi' ? 'HƯỚNG DẪN ĐẶT CÂU HỎI' : 'QUESTION GUIDANCE'}
             {isGuideOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           {isGuideOpen && (
             <div>
-              - {language === 'vi' ? 'Chỉ rõ bộ số (Chủ đạo, Nội tâm, Sứ mệnh...).' : 'Specify the number set (Main, Inner, Mission...).'}<br/>
-              - {language === 'vi' ? 'Bối cảnh: Nghề nghiệp? Tình yêu? Gia đình?' : 'Context: Career? Love? Family?'}<br/>
-              - {language === 'vi' ? 'Tình trạng hiện tại và mục tiêu.' : 'Current status and goals.'}<br/>
-              <p className="mt-2">{language === 'vi' ? 'Ví dụ:' : 'Examples:'}</p>
-              - {language === 'vi' ? '“Số chủ đạo 1, nội tâm 2. Kinh doanh mỹ phẩm online, chiến lược nào?”' : '“Main number 1, inner 2. Online cosmetics business, what strategy?”'}<br/>
-              - {language === 'vi' ? '“Số 5, người yêu số 2, đang giận. Hàn gắn thế nào?”' : '“Number 5, lover number 2, angry. How to reconcile?”'}<br/>
-              - {language === 'vi' ? '“Khách hàng số 4, bán bất động sản, tư vấn hướng nào?”' : '“Customer number 4, selling real estate, what advice?”'}
+              - {chatLang === 'vi' ? 'Chỉ rõ bộ số (Chủ đạo, Nội tâm, Sứ mệnh...).' : 'Specify the number set (Main, Inner, Mission...).'}<br/>
+              - {chatLang === 'vi' ? 'Bối cảnh: Nghề nghiệp? Tình yêu? Gia đình?' : 'Context: Career? Love? Family?'}<br/>
+              - {chatLang === 'vi' ? 'Tình trạng hiện tại và mục tiêu.' : 'Current status and goals.'}<br/>
+              <p className="mt-2">{chatLang === 'vi' ? 'Ví dụ:' : 'Examples:'}</p>
+              - {chatLang === 'vi' ? '“Số chủ đạo 1, nội tâm 2. Kinh doanh mỹ phẩm online, chiến lược nào?”' : '“Main number 1, inner 2. Online cosmetics business, what strategy?”'}<br/>
+              - {chatLang === 'vi' ? '“Số 5, người yêu số 2, đang giận. Hàn gắn thế nào?”' : '“Number 5, lover number 2, angry. How to reconcile?”'}<br/>
+              - {chatLang === 'vi' ? '“Khách hàng số 4, bán bất động sản, tư vấn hướng nào?”' : '“Customer number 4, selling real estate, what advice?”'}
             </div>
           )}
         </div>
