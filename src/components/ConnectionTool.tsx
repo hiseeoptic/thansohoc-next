@@ -23,7 +23,7 @@ const ruleEngine = {
     // Rule 1: Validate giá trị (Chấp nhận 1-9 và Master Numbers)
     const validNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33];
     if (!activeInputs.every(i => validNumbers.includes(i.value))) {
-      throw new Error('Chỉ số không hợp lệ. Hệ thống chỉ phân tích các số đơn (1-9) và số Master (11, 22, 33). Vui lòng kiểm tra lại.');
+      throw new Error('Invalid index. System only analyzes single digits (1-9) and Master Numbers (11, 22, 33). / Chỉ số không hợp lệ. Hệ thống chỉ phân tích các số đơn (1-9) và số Master (11, 22, 33).');
     }
 
     const types = activeInputs.map(i => i.type);
@@ -312,7 +312,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
         setSubscriptions(subs);
       } catch (error) {
         console.error('Failed to load subscriptions:', error);
-        setSubscriptionMessage('Lỗi tải dữ liệu thuê bao. Vui lòng thử sau.');
+        setSubscriptionMessage(analysisLang === 'en' ? 'Error loading subscription data. Please try later.' : 'Lỗi tải dữ liệu thuê bao. Vui lòng thử sau.');
       }
     };
     loadSubscriptions();
@@ -346,9 +346,10 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   // Giải thích: Tìm phone trong subscriptions, check date +30 ngày, không cần AppScript.
   const checkSubscription = (code: string) => {
     const trimmedCode = code.trim();
+    const isEn = analysisLang === 'en';
     // Bypass codes
     if (['8888', 'admin', 'vip'].includes(trimmedCode)) {
-       setSubscriptionMessage('Xác thực thành công (Chế độ Dự phòng/Test).');
+       setSubscriptionMessage(isEn ? 'Authentication successful (Backup/Test mode).' : 'Xác thực thành công (Chế độ Dự phòng/Test).');
        setIsValidSubscription(true);
        return true;
     }
@@ -356,7 +357,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     const sub = subscriptions.find(s => s.phone.trim() === trimmedCode);
 
     if (!sub) {
-      setSubscriptionMessage('Mã không tồn tại hoặc chưa đăng ký.');
+      setSubscriptionMessage(isEn ? 'Code does not exist or is not registered.' : 'Mã không tồn tại hoặc chưa đăng ký.');
       setIsValidSubscription(false);
       return false;
     }
@@ -369,17 +370,17 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
       const expiryDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       if (now <= expiryDate) {
-        setSubscriptionMessage('Thuê bao hợp lệ ✓');
+        setSubscriptionMessage(isEn ? 'Subscription valid ✓' : 'Thuê bao hợp lệ ✓');
         setIsValidSubscription(true);
         return true;
       } else {
-        setSubscriptionMessage('Thuê bao đã hết hạn. Vui lòng gia hạn!');
+        setSubscriptionMessage(isEn ? 'Subscription expired. Please renew!' : 'Thuê bao đã hết hạn. Vui lòng gia hạn!');
         setIsValidSubscription(false);
         return false;
       }
     } catch (error) {
       console.error('Error checking subscription:', error);
-      setSubscriptionMessage('Lỗi kiểm tra mã. Vui lòng thử lại.');
+      setSubscriptionMessage(isEn ? 'Error verifying code. Please try again.' : 'Lỗi kiểm tra mã. Vui lòng thử lại.');
       setIsValidSubscription(false);
       return false;
     }
@@ -388,7 +389,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const handleDeepAnalyze = async () => {
   // *** Kiểm tra thuê bao trước khi phân tích ***
   if (!phone) {
-    setSubscriptionMessage('Vui lòng nhập mã thuê bao để xác thực.');
+    setSubscriptionMessage(analysisLang === 'en' ? 'Please enter a subscription code to verify.' : 'Vui lòng nhập mã thuê bao để xác thực.');
     return;
   }
   const isValid = checkSubscription(phone);
@@ -435,9 +436,9 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
                setAnalysis({
                   relationship: "Lỗi",
                   keywords: "",
-                  advice: "Không thể fetch dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối.",
+                  advice: analysisLang === 'en' ? "Cannot fetch data from Google Sheet. Please check connection." : "Không thể fetch dữ liệu từ Google Sheet. Vui lòng kiểm tra kết nối.",
                   growth: "",
-                  aiContent: "<p class='text-red-400'>Lỗi: Không thể đọc dữ liệu từ Google Sheet.</p>"
+                  aiContent: analysisLang === 'en' ? "<p class='text-red-400'>Error: Cannot read data from Google Sheet.</p>" : "<p class='text-red-400'>Lỗi: Không thể đọc dữ liệu từ Google Sheet.</p>"
                });
                setIsAnalyzing(false);
                setIsFetchingSheet(false);
@@ -931,7 +932,7 @@ Trước khi trả output, tự hỏi:
         throw new Error(result.error);
       }
 
-      const responseText = result.content || '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>';
+      const responseText = result.content || (analysisLang === 'en' ? '<p class="text-yellow-400">No analysis content received from AI. Please try again.</p>' : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>');
 
       setAnalysis({
         ...basicAnalysis,
@@ -941,7 +942,7 @@ Trước khi trả output, tự hỏi:
       console.error('OpenAI Analyze error:', error);
       setAnalysis({
         ...basicAnalysis,
-        aiContent: `<p class='text-red-400 font-bold'>⚠️ Lỗi kết nối OpenAI: ${error.message || 'Vui lòng thử lại sau'}</p>`
+        aiContent: `<p class='text-red-400 font-bold'>⚠️ ${analysisLang === 'en' ? 'OpenAI connection error' : 'Lỗi kết nối OpenAI'}: ${error.message || (analysisLang === 'en' ? 'Please try again later' : 'Vui lòng thử lại sau')}</p>`
       });
     } finally {
       setIsAnalyzing(false);
@@ -1019,7 +1020,7 @@ Trước khi trả output, tự hỏi:
     value={phone}
     onChange={(e) => setPhone(e.target.value.trim())}
     className="w-full bg-black/30 text-white p-4 rounded-xl border border-white/10 focus:border-blue-500 text-lg"
-    placeholder="Nhập mã (ví dụ: 123123)"
+    placeholder={analysisLang === 'vi' ? 'Nhập mã (ví dụ: 123123)' : 'Enter code (e.g. 123123)'}
   />
   {subscriptionMessage && (
     <p className={`mt-3 font-medium ${isValidSubscription ? 'text-green-400' : 'text-red-400'}`}>
@@ -1037,12 +1038,24 @@ Trước khi trả output, tự hỏi:
                   </div>
                   
                   <div className="mt-2 space-y-3">
-                    <select 
+                    <select
                         value={input.type}
                         onChange={(e) => handleInputChange(idx, 'type', e.target.value)}
                         className="w-full bg-black/20 text-blue-100 text-sm font-medium p-2.5 rounded-lg border border-white/5 focus:border-blue-500/50 outline-none appearance-none"
                     >
-                        {Object.values(NumberType).map(t => <option key={t} value={t}>{t}</option>)}
+                        {Object.values(NumberType).map(t => {
+                          const enLabels: Record<string, string> = {
+                            [NumberType.LifePath]: 'Life Path',
+                            [NumberType.HeartDesire]: 'Soul (Heart Desire)',
+                            [NumberType.Mission]: 'Mission',
+                            [NumberType.Personality]: 'Personality',
+                            [NumberType.Attitude]: 'Attitude',
+                            [NumberType.Maturity]: 'Maturity',
+                            [NumberType.BirthDay]: 'Birth Day',
+                            [NumberType.Intelligence]: 'Intelligence',
+                          };
+                          return <option key={t} value={t}>{analysisLang === 'en' ? enLabels[t] || t : t}</option>;
+                        })}
                     </select>
                     
                     <div className="relative">
@@ -1091,7 +1104,7 @@ Trước khi trả output, tự hỏi:
                 {isFetchingSheet && (
                   <div className="text-center mb-4 text-yellow-400 flex items-center justify-center gap-2">
                     <RefreshCw size={16} className="animate-spin" />
-                    <span>Đang đọc dữ liệu từ Google Sheet...</span>
+                    <span>{analysisLang === 'vi' ? 'Đang đọc dữ liệu từ Google Sheet...' : 'Loading data from Google Sheet...'}</span>
                   </div>
                 )}
 
@@ -1115,7 +1128,7 @@ Trước khi trả output, tự hỏi:
                     /* Fallback Static Content */
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-emerald-900/10 p-6 rounded-2xl border border-emerald-500/20">
-                           <p>Hệ thống đang chờ kết nối...</p>
+                           <p>{analysisLang === 'vi' ? 'Hệ thống đang chờ kết nối...' : 'System waiting for connection...'}</p>
                         </div>
                     </div>
                 )}
