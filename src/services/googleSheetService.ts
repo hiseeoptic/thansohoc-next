@@ -38,7 +38,7 @@ export const getMeaning = (data: SheetMeaning[], key: string, number: number | s
   if (numStr.includes(',')) {
     const numbers = numStr.split(',').map(n => n.trim());
     const meanings = numbers.map(num => {
-      const found = data.find(row => row.type === key && row.number.toString() === num);
+      const found = data.find(row => row.type.trim() === key.trim() && row.number.toString() === num);
       if (found) {
         const meaning = lang === 'en' ? (found.english_meaning || found.meaning) : found.meaning;
         return `<strong>Số ${num}:</strong> ${meaning}`;
@@ -52,8 +52,8 @@ export const getMeaning = (data: SheetMeaning[], key: string, number: number | s
     return lang === 'en' ? "Meaning updating..." : "Đang cập nhật nội dung...";
   }
 
-  // Single number lookup
-  const found = data.find(row => row.type === key && row.number.toString() === numStr);
+  // Single number lookup (trim type to handle trailing spaces in sheet data)
+  const found = data.find(row => row.type.trim() === key.trim() && row.number.toString() === numStr);
 
   if (found) {
     return lang === 'en' ? (found.english_meaning || found.meaning) : found.meaning;
