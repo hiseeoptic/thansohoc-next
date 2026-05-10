@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle } from 'lucide-react';
+import { Layers, ArrowRight, Zap, RefreshCw, Sparkles, BrainCircuit, Briefcase, GraduationCap, MessageCircle, Calendar, Mountain, AlertTriangle } from 'lucide-react';
 import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
@@ -391,28 +391,36 @@ const fullContext = contextData + '\n\n' + deepContext;
       const commonInstructions = `
             === NHIỆM VỤ ===
             Phân tích tổ hợp số ${activeInputs.map(i => `${i.type}: ${i.value}`).join(', ')} theo đúng framework bên dưới.
-            BẠN PHẢI dựa vào DỮ LIỆU KIẾN THỨC SÂU để nhận diện năng lượng lõi của từng số, sau đó PHÂN TÍCH sự kết hợp — KHÔNG ĐƯỢC chỉ đọc lại hay paraphrase dữ liệu.
+
+            ⛔ CẢNH BÁO: Phần bên dưới chứa KHUNG CẤU TRÚC (framework) với các thẻ HTML. Đây là DÀN Ý để bạn PHÂN TÍCH, KHÔNG PHẢI template để điền vào. Bạn PHẢI:
+            - Đọc mỗi mục trong dàn ý
+            - Tra cứu dữ liệu KIẾN THỨC SÂU bên dưới để tìm keywords, advantages, challenges, balance của từng số
+            - TỰ VIẾT nội dung phân tích MỚI HOÀN TOÀN cho bộ số ${activeInputs.map(i => i.value).join(' + ')}
+            - KHÔNG copy/paraphrase bất kỳ câu nào từ dàn ý. Dàn ý nói "Phân tích X" thì bạn phải TỰ phân tích X, không viết lại "Phân tích X".
 
             === DỮ LIỆU GỐC TỪ GOOGLE SHEET (Hành vi/Tính cách) ===
             ${contextData}
 
-            === DỮ LIỆU KIẾN THỨC SÂU VỀ CÁC SỐ (BẮT BUỘC SỬ DỤNG) ===
+            === DỮ LIỆU KIẾN THỨC SÂU VỀ CÁC SỐ (BẮT BUỘC SỬ DỤNG LÀM NỀN TẢNG) ===
             ${deepContext}
 
-            === HƯỚNG DẪN PHÂN TÍCH BẮT BUỘC ===
-            Khi phân tích, BẮT BUỘC làm theo các bước:
-            1. Nhận diện năng lượng lõi từng số DỰA TRÊN keywords, advantages, challenges trong dữ liệu kiến thức sâu
-            2. So sánh: đồng hướng (cùng nhóm → khuếch đại) / bổ trợ (khác nhóm → phát triển) / tương phản (đối lập → xung đột nhưng tiến hóa)
-            3. Tạo trục năng lượng kết hợp: "X ↔ Y" (VD: "Ổn định ↔ Tự do")
-            4. Mỗi điểm phân tích phải: trích dẫn rõ số ("Theo đặc điểm số X...") + diễn giải sâu + ví dụ thực tế cụ thể
-            5. Sinh kịch bản: Khi đúng hướng → phiên bản cao | Khi lệch → phiên bản thấp | Khi trưởng thành → cân bằng
+            === CÁCH SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU ===
+            Khi phân tích MỖI điểm, bạn PHẢI:
+            1. Tra keywords/advantages/challenges/balance của từng số trong bộ từ dữ liệu trên
+            2. Nhận diện năng lượng lõi: VD số 5 có keywords "Tự do, Phiêu lưu, Thay đổi" → năng lượng lõi = trải nghiệm + không ràng buộc
+            3. Phân tích TỔ HỢP: khi năng lượng số ${activeInputs[0]?.value} gặp năng lượng số ${activeInputs[1]?.value || activeInputs[0]?.value} → tạo ra hiệu ứng gì MỚI?
+            4. Trích dẫn rõ ràng: "Số ${activeInputs[0]?.value} với đặc điểm [trích từ keywords]..." + "Kết hợp số ${activeInputs[1]?.value || ''} có [trích từ advantages]..." + "Xung đột xảy ra vì [trích từ challenges]..."
+            5. Đưa ví dụ thực tế CỤ THỂ trong công việc, tình cảm, tài chính, gia đình
 
             ${modifiers}
 
             === YÊU CẦU ĐỊNH DẠNG ===
             - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
-            - Mỗi phần h3 phải dài ít nhất 150-200 từ.
+            - Mỗi phần h3 phải dài ít nhất 150-200 từ với nội dung phân tích sâu.
+            - Mỗi li phải dài ít nhất 80 từ — KHÔNG liệt kê ngắn gọn.
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
+
+            === BÊN DƯỚI LÀ DÀN Ý PHÂN TÍCH — HÃY DÙNG LÀM KHUNG CẤU TRÚC, TỰ VIẾT NỘI DUNG ===
       `;
 
       let prompt = "";
@@ -422,726 +430,75 @@ const fullContext = contextData + '\n\n' + deepContext;
             prompt = `
                 ${commonInstructions}
 
-               <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
+
+⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số).
+
+<h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
+<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 2 ví dụ hành vi thực tế.</p>
 <ul>
-
-<li>
-<strong>Lớp Bản Chất (Core Identity):</strong>
-Dựa trên dữ liệu gốc của các số, trích xuất các đặc điểm chính và phân tích sự kết hợp tạo ra mẫu người có tính cách gốc là gì? Diễn giải sâu sắc với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ, nhấn mạnh cách các đặc điểm này hình thành nên bản chất cốt lõi.
-
-<ul>
-
-<li>
-<strong>0. TRỤC NĂNG LƯỢNG KẾT HỢP (Energy Axis):</strong>
-
-<ul>
-<li>
-<strong>Trục năng lượng:</strong>
-
-Dựa trên sự kết hợp các chỉ số (ví dụ: X + Y hoặc X + Y + Z), xác định trục năng lượng tổng thể:
-
-→ “___ ↔ ___”
-
-Ví dụ:
-- 4 + 5 → Ổn định – Tự do  
-- 2 + 6 → Yêu thương – Chăm sóc  
-- 1 + 8 → Lãnh đạo – Quyền lực  
-
-→ Trục này chính là “lực kéo trung tâm” chi phối toàn bộ bản chất, động lực và hành vi của người này.
-</li>
-
-<li>
-<strong>Bản chất kết hợp:</strong>
-
-- Số A mang năng lượng gì?  
-- Số B (và C) mang năng lượng gì?  
-
-→ Khi kết hợp:
-- Khuếch đại (cùng nhóm năng lượng)
-- Bổ trợ (khác nhóm nhưng hỗ trợ)
-- Xung đột (đối cực năng lượng)
-
-→ Không còn là từng số riêng lẻ mà tạo thành một “bản sắc mới”.
-
-Ví dụ:
-- 2 + 8 → cảm xúc + quyền lực → vừa cần kết nối vừa muốn kiểm soát  
-- 7 + 3 → trí tuệ + biểu đạt → người truyền đạt tri thức
-</li>
-
-<li>
-<strong>Biểu hiện thực tế:</strong>
-
-- Trong công việc: họ hành động theo năng lượng nào chiếm ưu thế?
-- Trong cảm xúc: họ bị giằng co giữa nhu cầu nào?
-- Trong quyết định: họ thiên về an toàn, tự do hay kiểm soát?
-
-→ Đây là nơi thể hiện rõ xung lực nội tại của tổ hợp số trong đời sống thực tế.
-</li>
-
-<li>
-🔥 <strong>Chuyển hóa tâm thức:</strong>
-
-- Khi chưa trưởng thành:
-→ sống theo bản năng từng số → mâu thuẫn, thiếu ổn định, dễ lệch hướng
-
-- Khi trưởng thành:
-→ tích hợp → tạo ra phiên bản cao hơn
-
-Ví dụ:
-4 + 5:
-- Thấp: vừa sợ thay đổi vừa chán ổn định  
-- Cao: “tự do trong kỷ luật”
-
-→ Cùng một bộ số nhưng có thể biểu hiện ở hai tầng hoàn toàn khác nhau tùy mức độ nhận thức.
-</li>
-</ul>
-</li>
-
-<li><strong>Nhóm động lực tâm lý chủ đạo:</strong> Trích xuất từ dữ liệu gốc, bộ số này thiên về Hành động (1–8), Cảm xúc (2–6), Sáng tạo (3–5) hay Trí tuệ (7–9) hay logic cầu toàn (4) hay các số master (11-22-33)? 
-
-→ Khi kết hợp các số:
-- Số A thuộc nhóm (…)
-- Số B thuộc nhóm (…)
-
-→ Nếu cùng nhóm: khuếch đại mạnh → nội lực rõ ràng nhưng dễ cực đoan  
-→ Nếu khác nhóm: bổ trợ hoặc xung đột → tạo tiềm năng phát triển cao  
-
-Phân tích nhóm chiếm ưu thế quyết định khí chất lõi như thế nào, với ví dụ cụ thể về hành vi trong môi trường công sở hoặc gia đình, và hậu quả nếu nhóm này bị lệch.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Thấp → bị năng lượng chi phối (quá cảm xúc / quá kiểm soát / thiếu ổn định…)  
-- Cao → làm chủ năng lượng → linh hoạt sử dụng theo hoàn cảnh
-</li>
- 
-<li><strong>Động cơ cốt lõi:</strong> Từ dữ liệu gốc, họ sống vì điều gì? Thành tựu – Tự do – Giá trị – Sự công nhận – Sự an toàn – Cống hiến? 
-
-→ Khi kết hợp:
-- Số A theo đuổi (…)
-- Số B theo đuổi (…)
-
-→ Tạo thành động cơ kép:
-
-Ví dụ:
-- 4 + 5 → an toàn + tự do  
-- 2 + 8 → kết nối + quyền lực  
-
-Diễn giải sâu cách nhiên liệu bên trong này chi phối quyết định, đưa ví dụ thực tế như cách họ chọn nghề nghiệp hoặc xử lý khủng hoảng, và cách nó ảnh hưởng đến động lực lâu dài.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Thấp → giằng xé nội tâm  
-- Cao → tích hợp → tạo động lực mạnh mẽ và rõ ràng
-</li>
- 
-<li><strong>Bản sắc cá nhân:</strong> Trích xuất từ context, họ là người dẫn dắt, người xây dựng, người kết nối, người đổi mới hay người khai sáng? 
-
-→ Khi kết hợp:
-- Số A = bản chất lõi  
-- Số B = cách thể hiện  
-
-→ Tạo ra “vai trò lai”:
-
-Ví dụ:
-- 7 + 3 → người truyền đạt tri thức  
-- 1 + 6 → lãnh đạo có trách nhiệm  
-
-Phân tích vai trò tự nhiên trong tập thể với ví dụ cụ thể, như vai trò lãnh đạo trong nhóm làm việc hoặc vai trò hỗ trợ trong gia đình.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Thấp → vai trò méo (kiểm soát, phụ thuộc, né tránh…)  
-- Cao → đúng vai trò → phát huy tối đa giá trị
-</li>
- 
-<li><strong>Định hướng nội tại:</strong> Dựa trên dữ liệu, thiên về cá nhân hay cộng đồng? Thực tế hay lý tưởng? Ổn định hay bứt phá? 
-
-→ Khi kết hợp:
-- Có thể đồng hướng → rõ ràng  
-- Hoặc đối lập → giằng co  
-
-Ví dụ:
-- 9 + 1 → cá nhân vs cộng đồng  
-- 4 + 5 → ổn định vs thay đổi  
-
-Diễn giải hướng sống dài hạn với ví dụ về lựa chọn nghề nghiệp hoặc mối quan hệ.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Khi Thấp thì thế nào 
-- Khi cao thì như thế nào
-</li>
- 
-<li><strong>Mức độ đồng bộ nội – ngoại:</strong> Từ dữ liệu gốc, nội tâm có trùng khớp với cách họ thể hiện ra ngoài không? 
-
-→ Khi kết hợp:
-- Nội tâm (số A) vs biểu hiện (số B)
-
-→ 3 trạng thái:
-- Đồng bộ → mạnh mẽ, nhất quán  
-- Lệch nhẹ → mệt mỏi, thiếu động lực  
-- Lệch mạnh → sống “vai diễn”  
-
-Diễn giải sâu họ dễ rơi vào mâu thuẫn bản thân hoặc kiệt sức như thế nào.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Nhận thức → giảm lệch  
-- Trưởng thành → thống nhất nội – ngoại
-</li>
- 
-<li><strong>Khí chất tổng thể:</strong> Trích xuất và phân tích, người này mang động lực tâm lý trầm ổn – quyết liệt – linh hoạt – sâu sắc – nhân văn hay thực dụng? 
-
-→ Khí chất được tạo bởi “tổng hòa năng lượng” của các số.
-
-Ví dụ:
-- 4 + 8 → thực tế – mạnh mẽ  
-- 2 + 9 → nhân văn – cảm xúc  
-
-Diễn giải cách khí chất này ảnh hưởng đến tương tác hàng ngày.
-
-🔥 <strong>Chuyển hóa:</strong>
-- Thấp → cực đoan (cứng nhắc / cảm xúc quá mức…)  
-- Cao → cân bằng – trưởng thành – có chiều sâu
-</li>
-
-</ul>
-</li>
-<li>
-<strong>Cơ Chế Tâm Lý (Mechanism):</strong>
-Dựa trên dữ liệu gốc, trích xuất và phân tích khi bình thường (Flow) và khi áp lực (Stress), họ tư duy và phản ứng thế nào? Mở rộng với ví dụ thực tế sâu sắc về cách cơ chế này vận hành trong cuộc sống.
-
-<ul>
-<li><strong>Trạng thái Flow:</strong> Trích xuất từ context, khi môi trường thuận lợi, số nào chi phối hành vi? Diễn giải họ hành động quyết đoán, mềm mỏng, sáng tạo hay phân tích sâu như thế nào, với ví dụ cụ thể từ thành công công việc hoặc mối quan hệ hạnh phúc.</li>
- 
-<li><strong>Trạng thái Stress:</strong> Từ dữ liệu, khi áp lực xuất hiện, họ phản ứng theo xu hướng nào: kiểm soát, né tránh, bùng nổ cảm xúc hay thu mình? Phân tích sâu hậu quả và cách nhận biết, ví dụ từ tình huống thất bại dự án hoặc tranh cãi gia đình.</li>
- 
-<li><strong>Chi phối lý trí:</strong> Trích xuất, số nào quyết định logic, phân tích, chiến lược? Diễn giải cách nó ảnh hưởng đến quyết định lớn, với ví dụ thực tế như lập kế hoạch tài chính hoặc giải quyết vấn đề phức tạp.</li>
- 
-<li><strong>Chi phối cảm xúc:</strong> Từ dữ liệu gốc, số nào điều khiển nỗi sợ, tổn thương, sự nhạy cảm? Phân tích sâu cách nó hình thành phản ứng cảm xúc, ví dụ từ cách xử lý thất bại tình cảm hoặc căng thẳng công việc.</li>
- 
-<li><strong>Cơ chế phòng vệ:</strong> Trích xuất và diễn giải, khi bị tổn thương, họ có xu hướng đổ lỗi, tự trách, kiểm soát người khác hay tự cô lập? Mở rộng với ví dụ thực tế và hậu quả lâu dài nếu không điều chỉnh.</li>
- 
-<li><strong>Mô hình hành vi lặp lại:</strong> Dựa trên context, những phản xạ vô thức nào thường xuyên tái diễn khi họ gặp xung đột? Phân tích sâu vòng lặp này, với ví dụ từ hành vi lặp lại trong mối quan hệ hoặc công việc.</li>
- 
-<li><strong>Điểm kích hoạt:</strong> Từ dữ liệu, điều gì dễ làm họ mất cân bằng nhất? Bị kiểm soát? Bị xem thường? Bị bỏ rơi? Thiếu tự do? Diễn giải cách tránh và xử lý, ví dụ cụ thể từ tình huống đời thực.</li>
-</ul>
-</li>
-<li>
-<strong>Mô Hình Thành Công (Success Pattern):</strong>
-Trích xuất từ dữ liệu gốc, phân tích công thức thành công thực tế nhất cho bộ số này, mở rộng với diễn giải sâu và ví dụ thực tế.
-
-<ul>
-<li><strong>Môi trường phù hợp:</strong> Từ context, họ phát triển tốt trong môi trường cạnh tranh, nhân văn, sáng tạo hay có hệ thống? Diễn giải lý do và ví dụ từ sự nghiệp thành công hoặc thất bại do môi trường sai.</li>
- 
-<li><strong>Cách đạt thành tựu:</strong> Trích xuất, thành công nhờ cá nhân xuất sắc, nhờ xây hệ thống, nhờ kết nối đội nhóm hay nhờ chuyên môn sâu? Phân tích sâu chiến lược, ví dụ từ case study cá nhân hóa.</li>
- 
-<li><strong>Chiến lược tối ưu:</strong> Dựa trên dữ liệu, nên tập trung vào mở rộng nhanh, phát triển bền vững, xây thương hiệu cá nhân hay tích lũy giá trị dài hạn? Diễn giải với ví dụ thực tế từ quản lý tài chính hoặc phát triển sự nghiệp.</li>
- 
-<li><strong>Lợi thế tự nhiên:</strong> Từ dữ liệu gốc, kỹ năng nổi bật nhất là gì? Lãnh đạo, giao tiếp, phân tích, chăm sóc hay đổi mới? Phân tích cách tận dụng, ví dụ từ vai trò trong nhóm.</li>
- 
-<li><strong>Đòn bẩy thành công:</strong> Trích xuất, khi kích hoạt đúng động lực tâm lý, họ sẽ bứt phá mạnh nhất ở đâu? Diễn giải sâu với ví dụ từ chuyển biến sự nghiệp.</li>
- 
-<li><strong>Vai trò phù hợp:</strong> Từ context, lãnh đạo, chuyên gia, người truyền cảm hứng, nhà cố vấn, người xây dựng nền tảng hay nhà khai phá? Phân tích lý do và ví dụ thực tế từ vị trí công việc lý tưởng.</li>
-</ul>
-</li>
-<li>
-<strong>Điểm Mù Hành Vi (Shadow):</strong>
-Dựa trên dữ liệu gốc, trích xuất and phân tích những thói quen xấu, mặt trái động lực tâm lý và rào cản cần khắc phục, với diễn giải sâu và ví dụ thực tế.
-
-<ul>
-<li><strong>Thiên lệch động lực tâm lý:</strong> Từ dữ liệu, số nào đang lấn át? Diễn giải nó đem đến điều gì cho nội tâm hay xu hướng tâm lý, ví dụ từ hành vi lệch lạc trong mối quan hệ.</li>
- 
-<li><strong>Thói quen phá hủy:</strong> Trích xuất, những năng lượng nghịch của con số đó sẽ gây nên điều gì dẫn đến hậu quả gì? Phân tích ảnh hưởng đến quyết định, ví dụ từ sai lầm tài chính hoặc xung đột gia đình.</li>
- 
-<li><strong>Nỗi sợ cốt lõi:</strong> Từ context, sợ thất bại, sợ bị từ chối, sợ mất kiểm soát, sợ không được công nhận hay sợ mất tự do? Diễn giải sâu nguồn gốc và cách biểu hiện, ví dụ thực tế.</li>
- 
-<li><strong>Hành vi tự sabotaging:</strong> Trích xuất, họ có tự phá cơ hội bằng sự do dự, nóng vội, thiếu nhất quán hay cầu toàn quá mức? Phân tích vòng lặp, ví dụ từ cơ hội nghề nghiệp bị bỏ lỡ.</li>
- 
-<li><strong>Mặt trái khi lệch hướng:</strong> Từ dữ liệu, khi mất cân bằng, họ sẽ trở thành con người thế nào và ảnh hưởng đến mối quan hệ ra sao? Diễn giải sâu với ví dụ từ xung đột xã hội.</li>
- 
-<li><strong>Hậu quả dài hạn:</strong> Nếu không điều chỉnh, lặp đi lặp lại sẽ gây ảnh hưởng nghiêm trọng thế nào đến họ và người xung quanh? Phân tích sâu, ví dụ từ sức khỏe tâm lý hoặc mối quan hệ tan vỡ.</li>
-</ul>
-</li>
-
-<li>
-<strong>Bài Học Phát Triển (Evolution):</strong>
-Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần rèn luyện để thăng tiến, với diễn giải sâu và ví dụ thực tế.
-
-<ul>
-<li><strong>Kỹ năng cần rèn luyện:</strong> Từ context, kỷ luật bản thân, kiểm soát cảm xúc, kỹ năng lãnh đạo, tư duy chiến lược, giao tiếp thấu cảm hay khả năng thích nghi? Diễn giải cách rèn và lợi ích, ví dụ từ thói quen hàng ngày.</li>
- 
-<li><strong>Bài học cốt lõi:</strong> Trích xuất, họ cần học cách cân bằng giữa lý trí và cảm xúc, giữa tự do và trách nhiệm, giữa cá nhân và tập thể. Phân tích sâu ý nghĩa, ví dụ từ chuyển biến cá nhân.</li>
- 
-<li><strong>Thói quen nên xây dựng:</strong> Từ dữ liệu, thiết lập mục tiêu dài hạn, thực hành phản tư, quản trị thời gian, rèn luyện sự kiên trì. Diễn giải cách áp dụng, ví dụ từ lập kế hoạch hàng tuần.</li>
- 
-<li><strong>Chuyển hóa điểm yếu:</strong> Trích xuất, biến sự nhạy cảm thành trực giác, biến tham vọng thành tầm nhìn, biến kỷ luật thành nền tảng bền vững. Phân tích quá trình, ví dụ thực tế từ case tự cải thiện.</li>
- 
-<li><strong>Phiên bản trưởng thành:</strong> Từ context, khi tích hợp đầy đủ động lực tâm lý, họ sẽ trở thành ai? Nhà lãnh đạo nhân văn, chuyên gia uy tín, người truyền cảm hứng hay người xây dựng hệ thống giá trị? Diễn giải sâu vai trò xã hội.</li>
- 
-<li><strong>Chiến lược phát triển dài hạn:</strong> Phân tích, phát triển chiều sâu nội tâm trước khi mở rộng ảnh hưởng bên ngoài, với ví dụ từ lộ trình sự nghiệp hoặc phát triển bản thân.</li>
-</ul>
-</li>
-                </ul>
-
-<h3>2. TƯƠNG TÁC & XUNG ĐỘT (Interaction)</h3>
-<ul>
-
-    <li>
-        <strong>Độ Đồng Hướng:</strong>
-        Trích xuất từ dữ liệu gốc, phân tích các chỉ số này hỗ trợ hay mâu thuẫn nhau về mặt mục tiêu và hành động? Diễn giải sâu với ví dụ thực tế từ quyết định cuộc sống.
-
-        <ul>
-
-            <li>
-                <strong>Đồng hướng – Bổ trợ – Tương phản:</strong>
-
-                - Đồng hướng → khuếch đại (năng lượng cùng chiều → hành động mạnh, nhất quán)  
-                - Bổ trợ → phát triển (khác biệt nhưng hỗ trợ → tạo chiều sâu và hiệu quả)  
-                - Tương phản → xung đột nhưng tiềm năng cao (đối cực → giằng xé nhưng nếu trưởng thành sẽ bứt phá mạnh)
-
-                → Đây là lớp nền để xác định toàn bộ chất lượng tương tác giữa các chỉ số.
-            </li>
-
-            <li><strong>Đồng hướng cao:</strong> Khi các số cùng nhóm động lực tâm lý (Hành động, Cảm xúc, Sáng tạo, Trí tuệ), phân tích họ có nội lực mạnh, nhất quán, quyết định nhanh như thế nào, ví dụ từ thành công dự án nhóm.</li>
-            
-            <li><strong>Bổ trợ:</strong> Khi khác nhóm nhưng bù trừ cho nhau (ví dụ: Trí tuệ + Hành động), diễn giải họ có chiều sâu và khả năng triển khai ra sao, ví dụ từ hợp tác kinh doanh.</li>
-            
-            <li><strong>Tương phản mạnh:</strong> Khi các số đại diện cho hai cực đối lập (ổn định – tự do, cảm xúc – quyền lực), phân tích nội tâm giằng xé nhưng tiềm năng phát triển cao nếu trưởng thành, ví dụ từ khủng hoảng cá nhân.</li>
-
-            <li>
-                <strong>3 loại xung đột:</strong>
-
-                - Nội tâm → giằng xé bên trong  
-                - Hành vi → làm khác điều mình muốn  
-                - Môi trường → sống sai môi trường  
-
-                → Ba lớp này giúp xác định xung đột nằm ở đâu: bên trong, bên ngoài hay hoàn cảnh.
-            </li>
-
-            <li>
-                <strong>Câu hỏi phân tích sâu:</strong>
-                <ul>
-                    <li>Mục tiêu bên trong và mục tiêu bên ngoài có trùng nhau không? Diễn giải với ví dụ từ lựa chọn nghề nghiệp.</li>
-                    <li>Họ đang sống theo bản chất hay theo vai trò xã hội? Phân tích hậu quả nếu sống giả tạo.</li>
-                    <li>Họ hành động vì giá trị hay vì áp lực? Ví dụ từ quyết định dưới stress.</li>
-                </ul>
-            </li>
-
-        </ul>
-    </li>
-
-    <li>
-        <strong>Phân Tích Mâu Thuẫn (nếu có):</strong>
-        Từ dữ liệu gốc, trích xuất và phân tích có sự giằng xé giữa “nhu cầu bên trong” và “trách nhiệm bên ngoài” không? Mở rộng sâu với ví dụ thực tế.
-
-        <ul>
-
-            <li><strong>Mâu thuẫn nội tâm:</strong> Khi Nội tâm cần A nhưng Nhân cách/Thái Độ thể hiện B, diễn giải cách nó gây căng thẳng, ví dụ từ xung đột giá trị cá nhân.</li>
-            
-            <li><strong>Mâu thuẫn hành vi:</strong> Khi họ muốn làm điều này nhưng phản xạ lại làm điều ngược lại, phân tích vòng lặp, ví dụ từ hành xử trong tranh cãi.</li>
-            
-            <li><strong>Mâu thuẫn môi trường:</strong> Họ ở trong môi trường trái với động lực chủ đạo của mình, diễn giải hậu quả, ví dụ từ môi trường làm việc không phù hợp.</li>
-
-            <li>
-                <strong>Biểu hiện:</strong>
-
-                - Mệt mỏi  
-                - thiếu động lực  
-                - dễ bùng nổ hoặc thu mình  
-
-                → Đây là dấu hiệu rõ ràng cho thấy hệ năng lượng đang bị lệch hoặc xung đột kéo dài.
-            </li>
-
-            <li><strong>Biểu hiện thường thấy:</strong> Mệt mỏi, thiếu động lực, hay tự nghi ngờ, dễ nổi nóng hoặc thu mình, ví dụ từ triệu chứng kiệt sức.</li>
-
-            <li>
-                <strong>Câu hỏi phân tích sâu:</strong>
-                <ul>
-                    <li>Khi áp lực, họ chọn bảo vệ cái tôi hay bảo vệ mối quan hệ? Diễn giải lựa chọn với ví dụ.</li>
-                    <li>Họ sợ mất điều gì nhất: tự do, vị thế, sự công nhận, sự an toàn? Phân tích nguồn gốc sợ hãi.</li>
-                </ul>
-            </li>
-
-        </ul>
-    </li>
-
-    <li>
-        <strong>Cơ Chế Cân Bằng:</strong>
-        Trích xuất từ context, khi mệt mỏi, họ quay về thói quen của số nào? Phân tích sâu cơ chế với ví dụ thực tế.
-
-        <ul>
-
-            <li><strong>Số an toàn:</strong> Số đại diện cho nhu cầu sâu nhất (thường là Nội Tâm), diễn giải cách nó giúp phục hồi, ví dụ từ hoạt động thư giãn.</li>
-            
-            <li><strong>Số phòng vệ:</strong> Số đại diện cho phản xạ mạnh nhất khi stress, phân tích ưu nhược điểm, ví dụ từ phản ứng dưới áp lực.</li>
-            
-            <li><strong>Mô hình lặp lại:</strong> Họ có xu hướng lặp lại hành vi kiểm soát, né tránh, bùng nổ hay im lặng? Diễn giải cách phá vỡ vòng lặp.</li>
-            
-            <li><strong>Điểm phục hồi:</strong> Muốn cân bằng, họ cần quay về giá trị nào? Ví dụ thực tế từ phương pháp tự chăm sóc.</li>
-
-            <li>
-                🔥 <strong>Chu kỳ chuyển hóa:</strong>
-
-                1. Bản năng  
-                2. Xung đột  
-                3. Nhận thức  
-                4. Tích hợp  
-
-                → Không phải ai cũng đạt giai đoạn 4  
-                → Đây là tiến trình phát triển tâm thức của toàn bộ hệ số
-            </li>
-
-        </ul>
-    </li>
-
-</ul>
-            <h3>3. HỒ SƠ TÍNH CÁCH (Profile)</h3>
-<ul>
-
-    <li>
-        <strong>Tư Duy:</strong>
-
-        <ul>
-
-            <li>
-                <strong>Tổng quan năng lượng tư duy:</strong>
-
-                - Logic hay cảm xúc?
-                - Thực tế hay lý tưởng?
-
-                → Dựa trên tổ hợp số:
-                - Số A thiên về (…)
-                - Số B thiên về (…)
-
-                → Khi kết hợp:
-                - Đồng hướng → tư duy rõ ràng, nhất quán  
-                - Xung đột → dễ giằng co, thiếu quyết đoán  
-                - Bổ trợ → vừa có chiều sâu vừa linh hoạt  
-
-                🔥 <strong>Chuyển hóa:</strong>
-                - Thấp → tư duy cứng nhắc hoặc cảm tính  
-                - Cao → linh hoạt, biết dùng đúng kiểu tư duy theo tình huống
-            </li>
-
-            <li><strong>Logic hay Cảm xúc:</strong> Trích xuất từ dữ liệu, quyết định dựa trên dữ kiện hay cảm nhận? Diễn giải sâu cách tư duy ảnh hưởng đến quyết định, ví dụ từ giải quyết vấn đề công việc.</li>
-
-            <li><strong>Thực tế hay Lý tưởng:</strong> Tập trung vào kết quả cụ thể hay giá trị dài hạn? Phân tích ưu nhược, ví dụ từ lập kế hoạch tương lai.</li>
-
-            <li><strong>Chiều sâu tư duy:</strong> Phân tích chiến lược hay phản ứng tức thời? Diễn giải với ví dụ từ xử lý khủng hoảng.</li>
-
-            <li><strong>Nội lực trí tuệ:</strong> Họ có khả năng tập trung sâu và kiên định không? Phân tích hạn chế nếu thiếu, ví dụ từ học tập hoặc nghiên cứu.</li>
-
-            <li><strong>Điểm hạn chế tư duy:</strong> Quá cầu toàn, quá cảm tính, quá lý tưởng hóa hay thiếu nhất quán? Diễn giải hậu quả và cách khắc phục, ví dụ thực tế.</li>
-
-        </ul>
-    </li>
-
-    <li>
-        <strong>Hành Vi:</strong>
-
-        <ul>
-
-            <li>
-                <strong>Tổng quan hành vi:</strong>
-
-                - Chủ động hay thụ động?
-                - Quyết liệt hay thận trọng?
-
-                → Dựa trên tổ hợp số:
-                - Số A hành động theo (…)
-                - Số B hành động theo (…)
-
-                → Khi kết hợp:
-                - Đồng hướng → hành động mạnh, rõ ràng  
-                - Xung đột → lúc nhanh lúc chậm, thiếu ổn định  
-                - Bổ trợ → vừa có chiến lược vừa có triển khai  
-
-                🔥 <strong>Chuyển hóa:</strong>
-                - Thấp → phản ứng theo cảm xúc  
-                - Cao → hành động có ý thức và kiểm soát
-            </li>
-
-            <li><strong>Chủ động hay quan sát:</strong> Họ là người mở đầu hay người phản hồi? Phân tích trong ngữ cảnh xã hội, ví dụ từ giao tiếp nhóm.</li>
-
-            <li><strong>Quyết liệt hay thận trọng:</strong> Ra quyết định nhanh hay cân nhắc lâu? Diễn giải ưu nhược, ví dụ từ đầu tư tài chính.</li>
-
-            <li><strong>Mức động lực cá nhân:</strong> Mạnh mẽ, linh hoạt, ổn định hay trầm lắng? Phân tích cách nó ảnh hưởng đến năng suất, ví dụ từ thói quen làm việc.</li>
-
-            <li><strong>Sức bền nội lực:</strong> Họ bền bỉ theo đuổi mục tiêu hay dễ thay đổi? Diễn giải với ví dụ từ dự án dài hạn.</li>
-
-            <li><strong>Hạn chế hành vi:</strong> Dễ mất kiên nhẫn, thiếu kỷ luật, sợ xung đột hay quá kiểm soát? Phân tích sâu và ví dụ từ mối quan hệ.</li>
-
-        </ul>
-    </li>
-
-    <li>
-        <strong>Nội lực (Inner Power):</strong>
-
-        <ul>
-
-            <li>
-                <strong>Mức độ nội lực:</strong>
-
-                - Mạnh – yếu – dao động?
-
-                → Dựa trên sự kết hợp:
-                - Đồng hướng → nội lực mạnh, ổn định  
-                - Xung đột → nội lực dao động  
-                - Lệch → dễ mất phương hướng  
-
-                Ví dụ:
-                - 1 + 8 → nội lực mạnh, thiên hành động  
-                - 2 + 6 → nội lực cảm xúc mạnh nhưng dễ bị ảnh hưởng  
-            </li>
-
-            <li>
-                <strong>Nguồn năng lượng chính:</strong>
-
-                - Họ được “nạp năng lượng” từ đâu?
-                → Thành tựu / kết nối / tự do / tri thức / giá trị
-            </li>
-
-            <li>
-                <strong>Điểm suy yếu:</strong>
-
-                - Khi nào họ mất năng lượng?
-                → Bị kiểm soát / bị từ chối / thiếu định hướng / quá áp lực
-            </li>
-
-            <li>
-                🔥 <strong>Chuyển hóa nội lực:</strong>
-
-                - Thấp → phụ thuộc môi trường  
-                - Trung → nhận ra điểm yếu  
-                - Cao → tự tạo năng lượng từ bên trong  
-
-                → Đây là yếu tố quyết định họ bền vững hay dễ gục ngã
-            </li>
-
-        </ul>
-    </li>
-
-    <li>
-        🔥 <strong>Chuyển hóa tổng thể (Integration):</strong>
-
-        <ul>
-
-            <li>
-                <strong>Trạng thái chưa trưởng thành:</strong>
-
-                - Tư duy: cứng nhắc / cảm tính  
-                - Hành vi: phản ứng / thiếu kiểm soát  
-                - Nội lực: phụ thuộc bên ngoài  
-            </li>
-
-            <li>
-                <strong>Trạng thái trưởng thành:</strong>
-
-                → tư duy linh hoạt hơn  
-                → hành vi ổn định hơn  
-                → nội lực vững vàng hơn  
-
-                → biết khi nào nên hành động, khi nào nên dừng lại
-            </li>
-
-            <li>
-                <strong>Bước chuyển hóa:</strong>
-
-                1. Nhận ra xung đột  
-                2. Quan sát bản thân  
-                3. Điều chỉnh hành vi  
-                4. Tích hợp năng lượng  
-
-                → Không phải ai cũng đi đến bước 4
-            </li>
-
-        </ul>
-    </li>
-
+<li><strong>Trục năng lượng kết hợp:</strong> Dựa trên keywords của từng số trong bộ, xác định trục năng lượng dạng “X ↔ Y”. Giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào. Ví dụ biểu hiện trong công việc, cảm xúc, ra quyết định.</li>
+<li><strong>Nhóm động lực chủ đạo:</strong> Bộ số thuộc nhóm Hành động/Cảm xúc/Sáng tạo/Trí tuệ? Nếu đa nhóm → phân tích xung đột hoặc bổ trợ. Ví dụ cụ thể hành vi trong công sở và gia đình.
+<p>🔥 <strong>Chuyển hóa:</strong> Dựa trên challenges cụ thể của từng số, khi ở mức THẤP → hành vi lệch cụ thể gì? (VD: “Số ${activeInputs[0]?.value} khi lệch sẽ [trích từ challenges]...”). Khi ở mức CAO → biến challenges thành gì? (trích từ balance).</p></li>
+<li><strong>Động cơ cốt lõi:</strong> Từ advantages, bộ số này sống vì điều gì? Phân tích động cơ kép khi kết hợp. Ví dụ cách chọn nghề, xử lý khủng hoảng.
+<p>🔥 <strong>Chuyển hóa:</strong> Thấp → giằng xé cụ thể giữa [nhu cầu số ${activeInputs[0]?.value}] và [nhu cầu số ${activeInputs[1]?.value || ''}]. Cao → tích hợp thành công cụ thể ra sao?</p></li>
+<li><strong>Bản sắc cá nhân & vai trò:</strong> Tổ hợp tạo “vai trò lai” gì? Phân tích vai trò tự nhiên trong tập thể, gia đình.
+<p>🔥 <strong>Chuyển hóa:</strong> Thấp → vai trò méo cụ thể gì? (kiểm soát/phụ thuộc/né tránh — dựa trên challenges). Cao → vai trò đúng mang lại giá trị gì?</p></li>
+<li><strong>Mức độ đồng bộ nội–ngoại:</strong> Nội tâm có trùng với biểu hiện không? 3 trạng thái: đồng bộ/lệch nhẹ/lệch mạnh. Hậu quả khi lệch. Hướng dẫn cân bằng cụ thể.</li>
+<li><strong>Khí chất tổng thể:</strong> Tổ hợp tạo khí chất gì? Ảnh hưởng tương tác hàng ngày ra sao? Ví dụ thực tế.</li>
 </ul>
 
-                <h3>4. ỨNG DỤNG THỰC TẾ (Actionable Insights)</h3>
+<h3>2. CƠ CHẾ TÂM LÝ & MÔ HÌNH TƯƠNG TÁC (Mechanism & Interaction)</h3>
+<p>Phân tích cơ chế vận hành tâm lý của bộ số ${activeInputs.map(i => i.value).join(' + ')}. PHẢI dựa trên challenges và advantages cụ thể.</p>
+<ul>
+<li><strong>Trạng thái Flow vs Stress:</strong> Khi thuận lợi, số nào chi phối và biểu hiện cụ thể? Khi áp lực, phản ứng cụ thể gì (kiểm soát/né tránh/bùng nổ/thu mình)? Ví dụ tình huống thất bại dự án, tranh cãi gia đình.</li>
+<li><strong>Cơ chế phòng vệ & điểm kích hoạt:</strong> Khi tổn thương → đổ lỗi/tự trách/kiểm soát/cô lập? Điều gì dễ khiến mất cân bằng nhất? (dựa trên challenges). Ví dụ tình huống thực.</li>
+<li><strong>Mô hình hành vi lặp lại:</strong> Pattern vô thức nào tái diễn khi xung đột? Vòng lặp cụ thể trong mối quan hệ, công việc.</li>
+<li><strong>Xung đột nội tại:</strong> Các số có hỗ trợ hay mâu thuẫn? 3 loại xung đột (nội tâm/hành vi/môi trường). Biểu hiện: mệt mỏi, thiếu động lực, tự nghi ngờ — giải thích TẠI SAO dựa trên tổ hợp số cụ thể.</li>
+<li><strong>Cơ chế cân bằng & hướng dẫn phục hồi:</strong> Khi kiệt sức, quay về thói quen số nào? Cách phá vỡ vòng lặp tiêu cực — hành động cụ thể.</li>
+</ul>
+
+<h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU (Deep Profile)</h3>
+<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục PHẢI bám sát keywords, advantages, challenges cụ thể.</p>
+<ul>
+<li><strong>Tư duy:</strong> Logic hay cảm xúc? Thực tế hay lý tưởng? Tư duy chiến lược hay phản ứng tức thời? Ra quyết định dựa trên gì? Khi nào tư duy sáng suốt, khi nào bị cảm xúc chi phối? Ví dụ cụ thể trong công việc.
+<p>🔥 <strong>Chuyển hóa cụ thể:</strong> Từ [hạn chế tư duy cụ thể dựa trên challenges] → chuyển sang [tư duy mới cụ thể dựa trên balance]. Hành động thực tế để chuyển hóa.</p></li>
+<li><strong>Hành vi & phong cách sống:</strong> Chủ động hay thụ động? Quyết liệt hay thận trọng? Bền bỉ hay dễ thay đổi? Họ sống ngày thường như thế nào — thói quen, cách làm việc, cách quản lý thời gian? Ví dụ cụ thể.
+<p>🔥 <strong>Chuyển hóa cụ thể:</strong> Hành vi tiêu cực cụ thể nào cần thay đổi? Thay bằng hành vi gì? Thói quen hàng ngày nên xây dựng.</p></li>
+<li><strong>Cách thể hiện cảm xúc:</strong> Bộc lộ hay che giấu? Nhạy cảm với điều gì? Cách yêu thương, cách giận dữ, cách buồn. Mô tả CỤ THỂ để người đọc hình dung rõ.</li>
+<li><strong>Nội lực & sức bền:</strong> Nội lực mạnh/yếu/dao động? Được “nạp năng lượng” từ đâu (thành tựu/kết nối/tự do/tri thức)? Khi nào mất năng lượng? Cách tự phục hồi.</li>
+<li><strong>Điểm mù & nỗi sợ cốt lõi:</strong> Nỗi sợ sâu nhất (thất bại/bị từ chối/mất kiểm soát/mất tự do)? Thói quen tự sabotage? Mặt trái khi lệch hướng? Hậu quả dài hạn nếu không điều chỉnh? Tất cả PHẢI dựa trên challenges cụ thể.</li>
+<li><strong>Bức tranh tổng thể — “Người này là ai”:</strong> Viết 1 đoạn mô tả ngắn gọn nhưng sắc nét về con người mang bộ số này — như thể bạn đang vẽ chân dung tâm lý cho họ. Bao gồm: điểm mạnh nổi bật nhất, điểm yếu nguy hiểm nhất, nhu cầu sâu nhất, nỗi sợ lớn nhất.</li>
+</ul>
+
+<h3>4. ỨNG DỤNG THỰC TẾ (Actionable Insights)</h3>
+
 <h4>🏢 Sự Nghiệp & Kinh Doanh:</h4>
+<p>Phân tích CỤ THỂ cho bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG liệt kê chung theo nhóm — PHẢI phân tích dựa trên tổ hợp thực tế.</p>
 <ul>
-    <li>
-        <strong>Vị Thế Phù Hợp:</strong>
-        Trích xuất từ dữ liệu, phân tích vị thế phù hợp cho từng nhóm, diễn giải sâu lý do và ví dụ thực tế từ ngành nghề.
-
-        <ul>
-            <li>Nhóm Hành động: Lãnh đạo, quản lý, khởi nghiệp. Diễn giải cách nhóm này tạo kết quả, ví dụ từ doanh nhân thành công.</li>
-            <li>Nhóm Cảm xúc: Giáo dục, chăm sóc khách hàng, HR. Phân tích cách tạo kết nối, ví dụ từ vai trò cố vấn.</li>
-            <li>Nhóm Sáng tạo: Marketing, truyền thông, nghệ thuật. Diễn giải sự mới mẻ, ví dụ từ dự án sáng tạo.</li>
-            <li>Nhóm Trí tuệ: Cố vấn, nghiên cứu, chuyên gia. Phân tích chiều sâu, ví dụ từ nghiên cứu khoa học.</li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>Lý Giải Vì Sao Phù Hợp:</strong>
-        Từ context, động lực lõi quyết định cách họ tạo giá trị: Người hành động tạo kết quả, người cảm xúc tạo kết nối, người sáng tạo tạo sự mới mẻ, người trí tuệ tạo chiều sâu. Diễn giải sâu với ví dụ từ sự nghiệp thực tế.
-    </li>
-
-    <li>
-        <strong>Điểm Yếu Cần Quản Trị:</strong>
-        Trích xuất, phân tích điểm yếu như thiếu kỷ luật, quá kiểm soát, dễ dao động, dễ kiệt sức, với ví dụ và chiến lược quản trị.
-
-        <ul>
-            <li>Thiếu kỷ luật, thiếu tập trung. Diễn giải hậu quả và cách khắc phục.</li>
-            <li>Quá kiểm soát hoặc quá cả nể. Ví dụ từ quản lý đội nhóm.</li>
-            <li>Dễ dao động khi bị từ chối. Phân tích trong bán hàng.</li>
-            <li>Dễ kiệt sức vì ôm trách nhiệm. Ví dụ từ làm việc quá sức.</li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>Chiến lược phát huy:</strong>
-        Xây môi trường phù hợp với nhóm động lực chủ đạo thay vì ép bản thân vào môi trường trái bản chất. Diễn giải sâu với ví dụ từ chuyển việc thành công.
-    </li>
+<li><strong>Vị thế & ngành nghề phù hợp:</strong> Dựa trên careerSuggestions + advantages của TẤT CẢ các số trong bộ, tổ hợp này phù hợp ngành gì nhất? Vai trò cụ thể: lãnh đạo/chuyên gia/kết nối/sáng tạo? Lý do dựa trên năng lượng kết hợp.</li>
+<li><strong>Cách ra quyết định kinh doanh:</strong> Nhanh hay chậm? Cảm tính hay logic? Mạo hiểm hay an toàn? Ví dụ tình huống đầu tư, tuyển dụng.</li>
+<li><strong>Điểm yếu cần quản trị trong công việc:</strong> Dựa trên challenges — cụ thể điểm nào sẽ cản trở sự nghiệp? Chiến lược quản trị từng điểm yếu.</li>
+<li><strong>Chiến lược phát huy tối ưu:</strong> Xây hệ thống hay bán hàng? Mở rộng nhanh hay bền vững? Cá nhân hay đội nhóm? Lý do từ tổ hợp số.</li>
 </ul>
 
-<h4>🤝 Giao Tiếp & Thuyết Phục (Theo Thần Số Học – Chỉ số X):</h4>
+<h4>❤️ Tình Yêu & Mối Quan Hệ:</h4>
+<p>⚠️ PHẢI nói RÕ: người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} trong tình yêu MUỐN gì, CẦN gì, SỢ gì — để đối phương biết cách cư xử.</p>
 <ul>
-    <li>
-        <strong>Cách Tiếp Cận (Do's):</strong>
-        Trích xuất và phân tích cách người khác nên tiếp cận với người mang chỉ số X, dựa trên đặc điểm cốt lõi của họ, kèm ví dụ thực tế trong giao tiếp, bán hàng hoặc tư vấn.
+<li><strong>Xu hướng tính cách trong tình yêu:</strong> Họ yêu kiểu gì? Mãnh liệt hay điềm đạm? Ghen tuông hay thoáng? Cần không gian hay cần gần gũi? Chung thủy hay dễ chán? (dựa trên keywords + challenges cụ thể).</li>
+<li><strong>Họ mong muốn gì từ đối phương:</strong> Sự tôn trọng/tự do/an toàn/hiểu/đồng hành/ngưỡng mộ? Ngôn ngữ tình cảm họ hiểu (lời nói/hành động/quà tặng/thời gian chất lượng)?</li>
+<li><strong>Điều TUYỆT ĐỐI không nên làm:</strong> Hành vi nào dễ làm họ tổn thương sâu nhất hoặc mất niềm tin? (dựa trên challenges + nỗi sợ). Ví dụ tình huống cụ thể.</li>
+<li><strong>Dấu hiệu rạn nứt & cách hàn gắn:</strong> Khi nào biết họ bắt đầu xa cách? Cách tiếp cận lại cụ thể.</li>
+<li><strong>Hướng đi đúng trong tình cảm:</strong> Lời khuyên cụ thể để xây dựng mối quan hệ bền vững với người mang bộ số này.</li>
+</ul>
 
-        <ul>
-            <li>
-                Cách mở đầu: 
-                Nên bắt đầu bằng cách đánh vào động lực chính của người chỉ số X (ví dụ: mục tiêu, cảm xúc, ý nghĩa, hoặc logic tùy từng số).
-            </li>
-            <li>
-                Cách truyền đạt:
-                Điều chỉnh ngôn ngữ phù hợp với “tần số” của họ (trực tiếp / cảm xúc / sáng tạo / logic).
-            </li>
-            <li>
-                Cách đưa giải pháp:
-                Trình bày theo cách mà họ dễ chấp nhận nhất (kết quả rõ ràng / sự an toàn / ý tưởng mới / phân tích chiều sâu).
-            </li>
-            <li>
-                Ví dụ thực tế:
-                Minh họa tình huống giao tiếp, tư vấn hoặc đàm phán thành công với người mang chỉ số X.
-            </li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>Điều Cần Tránh (Don'ts):</strong>
-        Phân tích những sai lầm khi giao tiếp với người mang chỉ số X, kèm theo hậu quả tâm lý và hành vi của họ.
-
-        <ul>
-            <li>
-                Tránh kích hoạt điểm tiêu cực:
-                Ví dụ: gây áp lực sai cách, làm họ mất kiểm soát, hoặc chạm vào nỗi sợ cốt lõi.
-            </li>
-            <li>
-                Tránh sai phong cách giao tiếp:
-                Ví dụ: nói vòng vo với người cần rõ ràng, hoặc quá khô khan với người thiên cảm xúc/sáng tạo.
-            </li>
-            <li>
-                Tránh thiếu yếu tố họ coi trọng:
-                Ví dụ: thiếu logic, thiếu sự tôn trọng, thiếu cảm xúc hoặc thiếu tầm nhìn.
-            </li>
-            <li>
-                Ví dụ hậu quả:
-                Nếu giao tiếp sai, họ có thể phản ứng như: im lặng, chống đối, mất niềm tin, hoặc rút lui hoàn toàn.
-            </li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>Soi vào điểm yếu để thuyết phục:</strong>
-        Trích xuất và phân tích “điểm mù tâm lý” của người mang chỉ số X, từ đó đưa ra cách tiếp cận giúp họ mở lòng và ra quyết định.
-
-        <ul>
-            <li>
-                Nỗi sợ cốt lõi:
-                Xác định điều họ lo lắng nhất (mất kiểm soát, bị từ chối, thiếu giá trị, không đạt mục tiêu…).
-            </li>
-            <li>
-                Cách khai thác tích cực:
-                Nếu họ sợ điều gì → hãy đưa cho họ giải pháp làm họ cảm thấy an toàn hoặc mạnh mẽ hơn.
-            </li>
-            <li>
-                Đòn bẩy thuyết phục:
-                Đưa thông điệp đúng “điểm chạm” khiến họ dễ đồng ý (quyền lựa chọn / sự công nhận / sự đảm bảo / tầm nhìn).
-            </li>
-            <li>
-                Ví dụ thực tế:
-                Ứng dụng trong bán hàng, tuyển dụng hoặc dẫn dắt đội nhóm với người mang chỉ số X.
-            </li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>💰 Ứng Dụng Trong Tư Vấn – Bán Hàng – Chốt Quyết Định:</strong>
-        Phân tích cách người khác nên tiếp cận người mang chỉ số X khi muốn tư vấn, bán hàng hoặc thuyết phục họ ra quyết định.
-
-        <ul>
-            <li>
-                Trọng tâm cần đánh vào:
-                Xác định yếu tố khiến họ sẵn sàng chi tiền (kết quả, cảm xúc, sự an toàn, giá trị cá nhân, hoặc tầm nhìn).
-            </li>
-
-            <li>
-                Cách xây dựng niềm tin:
-                Người bán cần chứng minh điều gì để họ tin (kết quả thực tế, câu chuyện, dữ liệu, trải nghiệm cá nhân).
-            </li>
-
-            <li>
-                Cách trình bày sản phẩm/dịch vụ:
-                Điều chỉnh cách nói theo cách họ ra quyết định (nhanh – chậm, cảm tính – lý trí, linh hoạt – cấu trúc).
-            </li>
-
-            <li>
-                Đòn bẩy ra quyết định:
-                Sử dụng yếu tố kích hoạt phù hợp:
-                - Quyền lựa chọn
-                - Sự đảm bảo an toàn
-                - Sự khan hiếm / cơ hội
-                - Sự công nhận / nâng tầm bản thân
-            </li>
-
-            <li>
-                Cách xử lý từ chối:
-                Hiểu lý do thật sự phía sau sự do dự (sợ rủi ro, chưa tin, chưa thấy giá trị) và xử lý đúng nỗi sợ gốc.
-            </li>
-
-            <li>
-                Cách chốt (Closing):
-                Đưa ra đề nghị theo cách họ dễ chấp nhận:
-                - Cho họ cảm giác kiểm soát
-                - Hoặc tạo sự chắc chắn
-                - Hoặc mở ra cơ hội phát triển lớn hơn
-            </li>
-
-            <li>
-                Ví dụ thực tế:
-                Minh họa một tình huống tư vấn hoặc bán hàng thành công với người mang chỉ số X.
-            </li>
-        </ul>
-    </li>
-
-    <li>
-        <strong>❤️ Tình Cảm & Kết Nối:</strong>
-        Phân tích cách xây dựng mối quan hệ tình cảm hoặc sự gắn bó lâu dài với người mang chỉ số X.
-
-        <ul>
-            <li>
-                Nên làm gì:
-                Những hành động giúp họ cảm thấy được yêu, được hiểu và muốn gắn bó (tùy theo nhu cầu cảm xúc cốt lõi của họ).
-            </li>
-            <li>
-                Không nên làm gì:
-                Những hành vi dễ làm họ tổn thương sâu sắc hoặc mất niềm tin (ví dụ: kiểm soát, bỏ rơi, thiếu tôn trọng…).
-            </li>
-
-            <li>
-                Ngôn ngữ tình cảm họ hiểu:
-                Họ cảm nhận tình cảm qua điều gì (lời nói, hành động, sự ổn định, sự phát triển…).
-            </li>
-
-            <li>
-                Dấu hiệu rạn nứt:
-                Nhận biết sớm khi họ bắt đầu thay đổi (lạnh nhạt, né tránh, kiểm soát hơn, hoặc mất kết nối).
-            </li>
-        </ul>
-    </li>
+<h4>🤝 Gợi Ý Cho Sale/Coach/Tư Vấn:</h4>
+<p>⚠️ PHẢI cho biết: người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} THÍCH gì, MONG MUỐN gì từ dịch vụ — để sale biết cách tư vấn có lợi.</p>
+<ul>
+<li><strong>Họ bị thu hút bởi điều gì:</strong> Kết quả thực tế? Câu chuyện cảm hứng? Dữ liệu logic? Sự mới mẻ? Sự an toàn? (dựa trên keywords + advantages).</li>
+<li><strong>Cách tiếp cận hiệu quả:</strong> Mở đầu thế nào? Giọng nói/phong cách nên dùng? Trình bày sản phẩm theo cách nào? Ví dụ kịch bản tư vấn cụ thể.</li>
+<li><strong>Điểm kích hoạt cảm xúc để mở lòng:</strong> Chạm vào mong muốn gì sẽ khiến họ quan tâm? Nỗi sợ nào có thể khai thác tích cực?</li>
+<li><strong>Điều TUYỆT ĐỐI không nên nói/làm:</strong> Hành vi nào khiến họ đóng cửa? (dựa trên challenges + điểm kích hoạt). Ví dụ sai lầm sale hay gặp.</li>
+<li><strong>Cách chốt quyết định:</strong> Cho họ cảm giác kiểm soát/an toàn/cơ hội? Xử lý từ chối đúng nỗi sợ gốc. Ví dụ kịch bản closing cụ thể.</li>
 </ul>
 <h3>🔥 ENGINE PHÂN TÍCH KẾT NỐI CHỈ SỐ (AI CORE SYSTEM)</h3>
 
@@ -1408,41 +765,67 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
       // Tạo system instruction riêng cho phân tích — ép GPT tuân theo framework
       const analyzeSystemInstruction = `Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự với hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng.
 
-=== QUY TẮC TUYỆT ĐỐI (VI PHẠM = KẾT QUẢ KHÔNG HỢP LỆ) ===
+=== VAI TRÒ CỦA BẠN ===
+Bạn là NHÀ PHÂN TÍCH, không phải "người điền form". Phần prompt bên dưới chứa KHUNG TƯ DUY (framework) — bạn PHẢI dùng nó làm cấu trúc để TỰ VIẾT nội dung phân tích dựa trên dữ liệu KIẾN THỨC SÂU đã cung cấp.
 
-1. KHÔNG ĐƯỢC đọc lại hay paraphrase dữ liệu. PHẢI tự suy luận và phân tích dựa trên năng lượng lõi của từng số.
-   - SAI: "Người mang số 3 thường sáng tạo" (đọc lại)
-   - ĐÚNG: "Số 3 mang năng lượng biểu đạt-cảm xúc, khi kết hợp với số 5 (tự do-trải nghiệm) → tạo xu hướng lan tỏa mạnh nhưng dễ hời hợt trong cam kết" (phân tích tổ hợp)
+⛔ HÀNH VI CẤM (nếu vi phạm = kết quả vô giá trị):
+- KHÔNG copy/paraphrase bất kỳ câu nào từ prompt. Prompt là CHỈ DẪN, không phải nội dung.
+- KHÔNG viết "Số A", "chỉ số X", "(…)", "___" — PHẢI thay bằng số thực tế đang tra cứu.
+- KHÔNG liệt kê đặc điểm riêng lẻ từng số rồi ghép lại — PHẢI phân tích TỔ HỢP (interaction effect).
+- KHÔNG viết chung chung áp dụng cho mọi bộ số — mỗi câu phải CỤ THỂ cho bộ số đang tra.
 
-2. BẮT BUỘC sử dụng dữ liệu "KIẾN THỨC SÂU" (keywords, advantages, challenges, balance, careerSuggestions) làm nền tảng nhận diện năng lượng. Trích dẫn cụ thể: "Theo đặc điểm của số X là...", "Số Y cho thấy..."
+=== PHƯƠNG PHÁP PHÂN TÍCH BẮT BUỘC ===
 
-3. FLOW PHÂN TÍCH BẮT BUỘC:
-   Bước 1: Nhận diện năng lượng lõi từng số (từ keywords + advantages + challenges)
-   Bước 2: Phân loại quan hệ (đồng hướng/bổ trợ/tương phản)
-   Bước 3: Tạo trục năng lượng kết hợp ("X ↔ Y")
-   Bước 4: Phân tích 5 lớp (Core → Mechanism → Power → Shadow → Evolution)
-   Bước 5: Sinh 3 kịch bản (đúng hướng / lệch / trưởng thành)
+BƯỚC 1 — NHẬN DIỆN: Đọc phần "KIẾN THỨC SÂU" trong prompt, trích xuất keywords, advantages, challenges, balance của TỪNG số.
 
-4. TỶ TRỌNG: 80% logic phân tích năng lượng + 20% pattern tăng cường. KHÔNG đảo ngược.
+BƯỚC 2 — TỔ HỢP: Xác định quan hệ giữa các số:
+- Đồng hướng (cùng nhóm → khuếch đại lẫn nhau)
+- Bổ trợ (khác nhóm → bù đắp điểm yếu)
+- Tương phản (đối lập → xung đột NHƯNG tiềm năng tiến hóa cao)
 
-5. MỖI điểm phân tích PHẢI có ví dụ thực tế cụ thể (công việc, tài chính, mối quan hệ, gia đình).
+BƯỚC 3 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
 
-6. CẤM: 'năng lượng vũ trụ', 'tần số rung động', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
+BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm:
+- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?)
+- Mechanism: Số nào chi phối khi bình thường? Khi stress?
+- Power: Lợi thế độc nhất mà từng số riêng lẻ không có
+- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...)
+- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày
+
+BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
+
+=== QUY TẮC VIẾT NỘI DUNG ===
+
+1. MỖI câu output PHẢI chứa ít nhất 1 con số cụ thể đang phân tích (VD: "Số 5 tạo xu hướng..." KHÔNG phải "Số này tạo xu hướng...").
+
+2. BẮT BUỘC trích dẫn dữ liệu KIẾN THỨC SÂU: "Theo KIẾN THỨC SÂU, số 5 có keywords: Tự do, Phiêu lưu, Thay đổi — cho thấy năng lượng lõi thiên về trải nghiệm. Kết hợp với số 3 (Sáng tạo, Biểu đạt) tạo thành xu hướng lan tỏa mạnh nhưng dễ hời hợt..."
+
+3. PHẦN CHUYỂN HÓA (🔥): PHẢI viết CỤ THỂ:
+   - SAI: "Thấp → giằng xé, Cao → cân bằng" (chung chung)
+   - ĐÚNG: "Khi số 5 kích hoạt sự bồng bột muốn bỏ việc giữa chừng (trích từ challenges: thiếu kiên nhẫn), hãy dùng năng lượng số 4 (kỷ luật, ổn định) để lập kế hoạch 30 ngày trước khi quyết định" (cụ thể)
+
+4. MỖI điểm phân tích (li) phải dài ít nhất 80 từ với ví dụ thực tế (công việc, tình cảm, tài chính, gia đình).
+
+5. PHẦN TÌNH YÊU: PHẢI nói rõ người này MUỐN gì, CẦN gì, SỢ gì trong tình yêu — đủ chi tiết để đối phương biết cách cư xử.
+
+6. PHẦN SALE/COACH: PHẢI nói rõ người này bị THU HÚT bởi gì, GHÉT gì từ người tư vấn — đủ chi tiết để sale biết cách tiếp cận.
+
+7. PHẦN BÀI HỌC NHÂN-DUYÊN-QUẢ: Phải dài ít nhất 400 từ. Phải có ví dụ lệch hướng CỤ THỂ cho tổ hợp (VD: 3+5 → đào hoa; 1+5 → mạo hiểm tài chính; 2+8 → bị áp chế).
+
+8. CẤM: 'năng lượng vũ trụ', 'tần số rung động', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
    THAY: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn', 'cống hiến', 'tạo giá trị xã hội'.
 
-7. GIỌNG VĂN: Thực tế, sắc sảo, tâm lý học hành vi. KHÔNG mơ hồ.
+9. GIỌNG VĂN: Thực tế, sắc sảo, tâm lý học hành vi. KHÔNG mơ hồ, KHÔNG lý tưởng hóa.
 
-8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown. Mỗi phần h3 ít nhất 150-200 từ.
+10. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown. KHÔNG dùng ký tự đặc biệt ngoài emoji cho tiêu đề.
 
-9. PHẦN "BÀI HỌC NHÂN – DUYÊN – QUẢ": Phân tích tổ hợp số KĨ LƯỠNG — phải đưa ví dụ cụ thể khi lệch (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, tệ nạn...). Nhấn mạnh: Nhân (suy nghĩ+hành vi) → Duyên (môi trường kích hoạt) → Quả (kết quả cuộc đời).
-
-10. KHÔNG viết chung chung kiểu "người số X thường..." — PHẢI phân tích dựa trên TỔ HỢP cụ thể đang tra cứu.
-
-11. CHỐNG COPY TEMPLATE: Nếu trong prompt có placeholder (…), "___", "Số A/B" → PHẢI thay bằng phân tích thực sự với con số cụ thể. KHÔNG BAO GIỜ viết lại y nguyên nội dung prompt. Mỗi câu output PHẢI chứa ít nhất 1 con số cụ thể đang phân tích. Output giống template >50% = KHÔNG HỢP LỆ.
-
-12. SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU: Khi phân tích mỗi số, PHẢI trích dẫn từ phần keywords, advantages, challenges, balance, careerSuggestions trong dữ liệu đã cung cấp. VD: "Theo KIẾN THỨC SÂU, số 5 có keywords: Tự do, Phiêu lưu, Thay đổi — cho thấy năng lượng lõi thiên về trải nghiệm và không ràng buộc. Kết hợp với số 3 (Sáng tạo, Biểu đạt, Giao tiếp) tạo thành..."
-
-13. ĐỘ DÀI TỐI THIỂU: Mỗi điểm phân tích (li) phải dài ít nhất 80 từ. Phần "Bài học Nhân–Duyên–Quả" phải dài ít nhất 400 từ tổng cộng. KHÔNG được viết ngắn gọn ở phần này.`;
+=== KIỂM TRA CHẤT LƯỢNG (TỰ ĐÁNH GIÁ TRƯỚC KHI TRẢ KẾT QUẢ) ===
+Trước khi trả output, tự hỏi:
+- Có câu nào giống y nguyên prompt không? → XÓA viết lại.
+- Có câu nào không chứa số cụ thể không? → THÊM số vào.
+- Phần chuyển hóa có nói rõ "từ hành vi A cụ thể → sang hành vi B cụ thể" không? → Nếu chung chung, VIẾT LẠI.
+- Phần tình yêu có đủ chi tiết để đối phương biết cách cư xử không? → Nếu không, BỔ SUNG.
+- Mỗi li có ít nhất 80 từ không? → Nếu ngắn, MỞ RỘNG.`;
 
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
@@ -1615,6 +998,52 @@ Trích xuất từ dữ liệu gốc, phân tích kỹ năng cụ thể cần r�
                            <p>Hệ thống đang chờ kết nối...</p>
                         </div>
                     </div>
+                )}
+
+                {/* Peaks & Challenges Table */}
+                {sharedResults && sharedResults.peaks && sharedResults.challenges && (
+                  <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 shadow-2xl">
+                    <h3 className="text-xl font-bold text-purple-200 mb-6 flex items-center gap-2">
+                      <Mountain size={20} className="text-purple-400" />
+                      {language === 'vi' ? 'Kim Tự Tháp Đỉnh Cao & Thách Thức' : 'Pyramid Peaks & Challenges'}
+                    </h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="text-purple-300 border-b border-white/10">
+                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Giai đoạn' : 'Phase'}</th>
+                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Độ tuổi / Năm' : 'Age / Year'}</th>
+                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Đỉnh Cao' : 'Peak'}</th>
+                            <th className="p-3 text-sm font-semibold">{language === 'vi' ? 'Thách Thức' : 'Challenge'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-gray-300">
+                          {[1, 2, 3, 4].map((i) => (
+                            <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                              <td className="p-3 font-semibold text-blue-200">
+                                {language === 'vi' ? `Giai đoạn ${i}` : `Phase ${i}`}
+                              </td>
+                              <td className="p-3 text-gray-400">
+                                {(sharedResults.peaks as any)[`age${i}`]} {language === 'vi' ? 'tuổi /' : 'age /'} {(sharedResults.peaks as any)[`year${i}`]}
+                              </td>
+                              <td className="p-3">
+                                <span className="inline-flex items-center gap-1 text-yellow-400 font-bold text-lg">
+                                  <Sparkles size={14} className="text-yellow-500" />
+                                  {(sharedResults.peaks as any)[`peak${i}`]}
+                                </span>
+                              </td>
+                              <td className="p-3">
+                                <span className="inline-flex items-center gap-1 text-red-400 font-medium">
+                                  <AlertTriangle size={14} className="text-red-500" />
+                                  {(sharedResults.challenges as any)[`challenge${i}`]}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 )}
 
                 {/* Chatbot Button Trigger */}
