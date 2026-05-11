@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, Calendar, Globe, Sparkles, Heart, Brain, 
-  Activity, Crown, Scale, Zap, Target 
+import {
+  User, Calendar, Globe, Sparkles, Heart, Brain,
+  Activity, Crown, Scale, Zap, Target, Layers, ArrowRight
 } from 'lucide-react';
 import * as Utils from '@/utils/numerologyUtils';
 import { CalculationResult, SheetMeaning } from '@/types';
@@ -11,9 +11,10 @@ interface CalculatorProps {
   setSharedResults: (results: CalculationResult | null) => void;
   language: 'vi' | 'en';
   sheetData: SheetMeaning[];
+  onGoToConnection?: () => void;
 }
 
-const Calculator: React.FC<CalculatorProps> = ({ setSharedResults, language, sheetData }) => {
+const Calculator: React.FC<CalculatorProps> = ({ setSharedResults, language, sheetData, onGoToConnection }) => {
   const [name, setName] = useState('');
   // Separate states for Day, Month, Year
   const [day, setDay] = useState('');
@@ -230,6 +231,53 @@ const Calculator: React.FC<CalculatorProps> = ({ setSharedResults, language, she
                </tbody>
              </table>
           </div>
+
+          {/* CTA: Phân tích liên kết chỉ số */}
+          {onGoToConnection && (
+            <div
+              onClick={onGoToConnection}
+              className="relative cursor-pointer group overflow-hidden rounded-2xl border border-blue-500/40 bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-purple-900/40 p-5 sm:p-6 hover:border-blue-400/70 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all"></div>
+              <div className="relative flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="p-2.5 sm:p-3 bg-blue-500/20 rounded-xl border border-blue-400/30 group-hover:bg-blue-500/30 transition-all">
+                    <Layers size={22} className="text-blue-300" />
+                  </div>
+                  <div>
+                    <h4 className="text-base sm:text-lg font-bold text-white group-hover:text-blue-100 transition-colors">
+                      {language === 'vi' ? 'Phân Tích Liên Kết Chỉ Số' : 'Connection Index Analysis'}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">
+                      {language === 'vi'
+                        ? 'Kết nối các chỉ số để khám phá sâu hơn về xu hướng cuộc đời & tính cách cốt lõi'
+                        : 'Connect your indices for deeper insights into life trends & core personality'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-blue-300 group-hover:text-blue-200 group-hover:translate-x-1 transition-all">
+                  <span className="hidden sm:inline text-sm font-medium">
+                    {language === 'vi' ? 'Khám phá' : 'Explore'}
+                  </span>
+                  <ArrowRight size={20} />
+                </div>
+              </div>
+              <div className="relative mt-3 flex flex-wrap gap-2">
+                <span className="text-xs bg-blue-500/20 text-blue-200 px-2.5 py-1 rounded-full border border-blue-500/20">
+                  {language === 'vi' ? `Đường Đời: ${result.lifePath}` : `Life Path: ${result.lifePath}`}
+                </span>
+                <span className="text-xs bg-purple-500/20 text-purple-200 px-2.5 py-1 rounded-full border border-purple-500/20">
+                  {language === 'vi' ? `Nội Tâm: ${result.heartDesire}` : `Soul: ${result.heartDesire}`}
+                </span>
+                <span className="text-xs bg-indigo-500/20 text-indigo-200 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                  {language === 'vi' ? `Sứ Mệnh: ${result.missionNumber}` : `Mission: ${result.missionNumber}`}
+                </span>
+                <span className="text-xs bg-emerald-500/20 text-emerald-200 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                  {language === 'vi' ? `Nhân Cách: ${result.personalityNumber}` : `Personality: ${result.personalityNumber}`}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
