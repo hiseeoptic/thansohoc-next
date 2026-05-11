@@ -70,7 +70,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 pb-12 sm:pb-16 flex-grow">
         <div className={`transition-opacity duration-300 ${activeTab === 'calc' ? 'block' : 'hidden'}`}>
-          <Calculator setSharedResults={setSharedResults} language={language} sheetData={sheetData} />
+          <Calculator setSharedResults={setSharedResults} language={language} sheetData={sheetData} onGoToConnection={() => setActiveTab('connect')} />
         </div>
 
         <div className={`transition-opacity duration-300 ${activeTab === 'connect' ? 'block' : 'hidden'}`}>
