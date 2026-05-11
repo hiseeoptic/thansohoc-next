@@ -989,27 +989,104 @@ Trước khi trả output, tự hỏi:
           </div>
         </div>
 
-        {/* Hướng dẫn kết nối chỉ số */}
+        {/* Công thức kết nối mặc định */}
         <div className="mb-6 p-4 bg-black/20 rounded-lg border border-blue-500/20 text-gray-300 text-sm leading-relaxed">
           <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
-            <Layers size={16} /> {analysisLang === 'vi' ? 'Hướng dẫn chọn chỉ số để kết nối' : 'Guide to Selecting Indices for Connection'}
+            <Layers size={16} /> {analysisLang === 'vi' ? 'Công thức kết nối nhanh' : 'Quick Connection Formulas'}
           </h4>
-          <ul className="list-disc pl-5 space-y-2">
-            {analysisLang === 'vi' ? (
-              <>
-                <li>Kết hợp <strong>Đường Đời + Nội Tâm + Sứ Mệnh</strong> (hoặc 2 trong 3 chỉ số) để biết về <strong>xu hướng cuộc đời, mô hình thành công, và lộ trình phát triển cá nhân</strong> của bạn.</li>
-                <li>Kết hợp <strong>Nội Tâm + Thái Độ + Nhân Cách + Trưởng Thành</strong> (hoặc ít nhất Nội Tâm + 1 chỉ số khác trong nhóm) để biết về <strong>tính cách cốt lõi, cơ chế phản ứng dưới áp lực, và hướng trưởng thành hành vi</strong> của bạn.</li>
-              </>
-            ) : (
-              <>
-                <li>Combine <strong>Life Path + Soul + Mission</strong> (or 2 of 3 indices) to discover your <strong>life direction, success model, and personal development roadmap</strong>.</li>
-                <li>Combine <strong>Soul + Attitude + Personality + Maturity</strong> (or at least Soul + 1 other index in this group) to understand your <strong>core character, stress response mechanisms, and behavioral growth direction</strong>.</li>
-              </>
-            )}
-          </ul>
-          <p className="mt-2 italic text-gray-400">
-            {analysisLang === 'vi' ? 'Chọn đúng combo để nhận phân tích chuyên sâu từ AI Engine.' : 'Choose the right combo for in-depth AI Engine analysis.'}
-          </p>
+          <div className="space-y-3">
+            {/* Công thức 1: Đường Đời + Nội Tâm + Sứ Mệnh */}
+            <button
+              onClick={() => {
+                setMode(3);
+                setInputs([
+                  { type: NumberType.LifePath, value: sharedResults ? sharedResults.lifePath.toString() : '', typeKey: 'lifePath' },
+                  { type: NumberType.HeartDesire, value: sharedResults ? sharedResults.heartDesire.toString() : '', typeKey: 'heartDesire' },
+                  { type: NumberType.Mission, value: sharedResults ? sharedResults.missionNumber.toString() : '', typeKey: 'missionNumber' }
+                ]);
+                setAnalysis(null);
+              }}
+              className="w-full text-left p-3 rounded-lg border border-blue-500/30 hover:border-blue-400/60 hover:bg-blue-500/10 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Zap size={14} className="text-blue-400" />
+                <span className="font-semibold text-blue-200">
+                  {analysisLang === 'vi' ? 'Đường Đời + Nội Tâm + Sứ Mệnh' : 'Life Path + Soul + Mission'}
+                </span>
+                {sharedResults && (
+                  <span className="ml-auto text-xs text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded-full">
+                    {sharedResults.lifePath} • {sharedResults.heartDesire} • {sharedResults.missionNumber}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 pl-5">
+                {analysisLang === 'vi' ? 'Xu hướng cuộc đời, mô hình thành công, lộ trình phát triển cá nhân' : 'Life direction, success model, personal development roadmap'}
+              </p>
+            </button>
+
+            {/* Công thức 2: Nội Tâm + Thái Độ + Nhân Cách (3 chỉ số) */}
+            <button
+              onClick={() => {
+                setMode(3);
+                setInputs([
+                  { type: NumberType.HeartDesire, value: sharedResults ? sharedResults.heartDesire.toString() : '', typeKey: 'heartDesire' },
+                  { type: NumberType.Attitude, value: sharedResults ? sharedResults.attitudeNumber.toString() : '', typeKey: 'attitudeNumber' },
+                  { type: NumberType.Personality, value: sharedResults ? sharedResults.personalityNumber.toString() : '', typeKey: 'personalityNumber' }
+                ]);
+                setAnalysis(null);
+              }}
+              className="w-full text-left p-3 rounded-lg border border-purple-500/30 hover:border-purple-400/60 hover:bg-purple-500/10 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Zap size={14} className="text-purple-400" />
+                <span className="font-semibold text-purple-200">
+                  {analysisLang === 'vi' ? 'Nội Tâm + Thái Độ + Nhân Cách' : 'Soul + Attitude + Personality'}
+                </span>
+                {sharedResults && (
+                  <span className="ml-auto text-xs text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full">
+                    {sharedResults.heartDesire} • {sharedResults.attitudeNumber} • {sharedResults.personalityNumber}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 pl-5">
+                {analysisLang === 'vi' ? 'Tính cách cốt lõi, cơ chế phản ứng dưới áp lực, hướng trưởng thành hành vi' : 'Core character, stress response mechanisms, behavioral growth direction'}
+              </p>
+            </button>
+
+            {/* Công thức 3: Nội Tâm + Trưởng Thành (2 chỉ số) */}
+            <button
+              onClick={() => {
+                setMode(2);
+                setInputs([
+                  { type: NumberType.HeartDesire, value: sharedResults ? sharedResults.heartDesire.toString() : '', typeKey: 'heartDesire' },
+                  { type: NumberType.Maturity, value: sharedResults ? sharedResults.maturityNumber.toString() : '', typeKey: 'maturityNumber' },
+                  { type: NumberType.LifePath, value: sharedResults ? sharedResults.lifePath.toString() : '', typeKey: 'lifePath' }
+                ]);
+                setAnalysis(null);
+              }}
+              className="w-full text-left p-3 rounded-lg border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Zap size={14} className="text-emerald-400" />
+                <span className="font-semibold text-emerald-200">
+                  {analysisLang === 'vi' ? 'Nội Tâm + Trưởng Thành' : 'Soul + Maturity'}
+                </span>
+                {sharedResults && (
+                  <span className="ml-auto text-xs text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                    {sharedResults.heartDesire} • {sharedResults.maturityNumber}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 pl-5">
+                {analysisLang === 'vi' ? 'Nội tâm sâu kết hợp hướng trưởng thành dài hạn' : 'Deep inner self combined with long-term maturity direction'}
+              </p>
+            </button>
+          </div>
+          {!sharedResults && (
+            <p className="mt-3 italic text-yellow-400/80 text-xs">
+              {analysisLang === 'vi' ? '⚠ Hãy tra cứu thần số học trước để tự động điền chỉ số.' : '⚠ Please perform a numerology lookup first to auto-fill indices.'}
+            </p>
+          )}
         </div>
 
         {/* *** Thêm input số điện thoại (mật khẩu) *** */}
