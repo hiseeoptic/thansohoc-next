@@ -73,7 +73,7 @@ const ruleEngine = {
  getPromptModifiers: (comboType: string, isSpecial: boolean, axisCount?: number) => {
     return `
       **CHỈ THỊ KIỂM SOÁT NỘI DUNG (RULE ENGINE - STRICT MODE):**
-      1. **Độ dài & Chi tiết:** ${isSpecial ? 'BẮT BUỘC mỗi mục phân tích nhỏ (thẻ li) phải dài ít nhất 200-300 từ. Mỗi phần phân tích chính (thẻ h3) phải dài ít nhất 800-1200 từ tổng cộng.' : 'Giữ phân tích ngắn gọn, súc tích, đi thẳng vào vấn đề.'} Hãy đưa ra ví dụ thực tế cụ thể (trong công sở, gia đình, quản lý tài chính...).
+      1. **Độ dài & Chi tiết:** ${isSpecial ? 'BẮT BUỘC mỗi mục phân tích nhỏ (thẻ li) phải dài ít nhất 600 từ, chia thành 4 phần mỗi phần ít nhất 150 từ: (a) phân tích năng lượng, (b) tương tác/kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. Mỗi phần h3 phải dài ít nhất 2000-3000 từ tổng cộng.' : 'Giữ phân tích ngắn gọn, súc tích, đi thẳng vào vấn đề.'} Hãy đưa ra ví dụ thực tế cụ thể (trong công sở, gia đình, quản lý tài chính...).
       2. **Cấm Thuật Ngữ Tâm Linh:** TUYỆT ĐỐI KHÔNG dùng các từ: 'năng lượng', 'tần số', 'rung động', 'vũ trụ', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
       3. **Thay Thế Bằng Ngôn Ngữ Hành Vi:**
          - Thay 'năng lượng' -> 'động lực tâm lý', 'xu hướng hành vi'.
@@ -511,8 +511,8 @@ const fullContext = contextData + '\n\n' + deepContext;
 
             === YÊU CẦU ĐỊNH DẠNG ===
             - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
-            - Mỗi phần h3 phải dài ít nhất 800-1200 từ tổng cộng với nội dung phân tích sâu.
-            - BẮT BUỘC: Mỗi mục nhỏ (li) phải dài ít nhất 200-300 từ — KHÔNG liệt kê ngắn gọn. Mỗi li PHẢI có: (1) phân tích năng lượng con số cụ thể 60-80 từ, (2) diễn giải tương tác/kết hợp 60-80 từ, (3) ví dụ thực tế từ cuộc sống 60-80 từ, (4) phần chuyển hóa hoặc hậu quả 40-60 từ. Nếu li nào dưới 200 từ → BẮT BUỘC mở rộng thêm.
+            - Mỗi phần h3 phải dài ít nhất 2000-3000 từ tổng cộng với nội dung phân tích sâu.
+            - BẮT BUỘC: Mỗi mục nhỏ (li) phải dài ít nhất 200-300 từ — KHÔNG liệt kê ngắn gọn. Mỗi li PHẢI có 4 phần bắt buộc, mỗi phần ít nhất 150 từ: (1) Phân tích năng lượng con số cụ thể — trích xuất keywords, advantages, challenges từ KIẾN THỨC SÂU, mô tả bản chất năng lượng lõi, xu hướng tâm lý, nhóm động lực, ảnh hưởng đến hành vi và quyết định (ít nhất 150 từ). (2) Diễn giải tương tác/kết hợp giữa các số — phân tích khi kết hợp tạo ra hiệu ứng gì mới, đồng hướng hay xung đột, khuếch đại hay bổ trợ, trục năng lượng tổng thể, bản sắc mới khi tổ hợp (ít nhất 150 từ). (3) Ví dụ thực tế từ cuộc sống — tình huống cụ thể trong công việc, tình cảm, tài chính, gia đình, giao tiếp xã hội, kèm mô tả chi tiết hành vi, phản ứng, hậu quả thực tế (ít nhất 150 từ). (4) Phần chuyển hóa hoặc hậu quả cụ thể — mô tả phiên bản thấp (lệch hướng) vs phiên bản cao (trưởng thành), hành vi cũ cụ thể cần thay đổi, hành vi mới cụ thể cần xây dựng, hành động thực tế kèm theo (ít nhất 150 từ). Nếu li nào dưới 600 từ tổng → BẮT BUỘC mở rộng thêm.
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
 
             === NGÔN NGỮ OUTPUT ===
@@ -532,7 +532,7 @@ const fullContext = contextData + '\n\n' + deepContext;
 ⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số).
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
-<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp (li) PHẢI dài ít nhất 200-300 từ và PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 2 ví dụ hành vi thực tế, (d) có phần chuyển hóa hoặc hậu quả cụ thể. Nếu li nào dưới 200 từ → BẮT BUỘC mở rộng.</p>
+<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp (li) PHẢI dài ít nhất 600 từ (4 phần x 150 từ mỗi phần) và PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 2 ví dụ hành vi thực tế, (d) có phần chuyển hóa hoặc hậu quả cụ thể. Nếu li nào dưới 200 từ → BẮT BUỘC mở rộng.</p>
 <ul>
 <li><strong>Trục năng lượng kết hợp:</strong> Dựa trên keywords của từng số trong bộ, xác định trục năng lượng dạng “X ↔ Y”. Giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào. Ví dụ biểu hiện trong công việc, cảm xúc, ra quyết định.</li>
 <li><strong>Nhóm động lực chủ đạo:</strong> Bộ số thuộc nhóm Hành động/Cảm xúc/Sáng tạo/Trí tuệ? Nếu đa nhóm → phân tích xung đột hoặc bổ trợ. Ví dụ cụ thể hành vi trong công sở và gia đình.
@@ -556,7 +556,7 @@ const fullContext = contextData + '\n\n' + deepContext;
 </ul>
 
 <h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU (Deep Profile)</h3>
-<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục (li) PHẢI dài ít nhất 200-300 từ, bám sát keywords, advantages, challenges cụ thể, kèm ví dụ thực tế và hướng chuyển hóa.</p>
+<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục (li) PHẢI dài ít nhất 600 từ (4 phần x 150 từ: năng lượng, tương tác, ví dụ thực tế, chuyển hóa), bám sát keywords, advantages, challenges cụ thể.</p>
 <ul>
 <li><strong>Tư duy:</strong> Logic hay cảm xúc? Thực tế hay lý tưởng? Tư duy chiến lược hay phản ứng tức thời? Ra quyết định dựa trên gì? Khi nào tư duy sáng suốt, khi nào bị cảm xúc chi phối? Ví dụ cụ thể trong công việc.
 <p>🔥 <strong>Chuyển hóa cụ thể:</strong> Từ [hạn chế tư duy cụ thể dựa trên challenges] → chuyển sang [tư duy mới cụ thể dựa trên balance]. Hành động thực tế để chuyển hóa.</p></li>
@@ -621,7 +621,7 @@ const fullContext = contextData + '\n\n' + deepContext;
 </li>
 
 <li>
-<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 200-300 TỪ):</strong>
+<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 600 TỪ, CHIA 4 PHẦN MỖI PHẦN 150 TỪ):</strong>
 <ul>
 <li><strong>Core (Bản chất mới):</strong> Khi kết hợp các năng lượng lõi, “con người mới” này có bản chất gì? Họ khác gì so với từng số riêng lẻ? Đưa ví dụ cụ thể: cách họ ra quyết định, cách họ yêu, cách họ làm việc.</li>
 <li><strong>Mechanism (Cơ chế vận hành tâm lý):</strong> Khi bình thường, số nào chi phối? Khi stress, số nào lấn át? Phản ứng cụ thể trong tình huống: mâu thuẫn công sở, áp lực tài chính, xung đột gia đình.</li>
@@ -716,7 +716,7 @@ const fullContext = contextData + '\n\n' + deepContext;
 
         **KHUNG PHÂN TÍCH CHUYÊN SÂU CHO TRỤC NỘI TÂM – NHÂN CÁCH – THÁI ĐỘ – TRƯỞNG THÀNH:**
 
-⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục PHẢI dài ít nhất 200-300 từ với ví dụ thực tế cụ thể. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
+⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI dài ít nhất 600 từ, chia 4 phần mỗi phần 150 từ: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
 
 <h3>1. LỚP BẢN CHẤT – CORE IDENTITY</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -763,8 +763,8 @@ Người này mang khí chất trầm ổn – quyết liệt – linh hoạt �
 <h3>2. CƠ CHẾ TÂM LÝ – MECHANISM</h3>
 <p>Dựa trên dữ liệu gốc, trích xuất và phân tích khi bình thường (Flow) và khi áp lực (Stress), họ tư duy và phản ứng thế nào? Nội Tâm ${heartVal} là nhu cầu gốc, Thái Độ ${attVal !== 'Z' ? attVal : ''} là cách phản ứng tức thời, Nhân Cách ${persVal !== 'Y' ? persVal : ''} là cách thể hiện ra ngoài.</p>
 <ul>
-<li><strong>Trạng thái Flow:</strong> Khi môi trường thuận lợi, số nào chi phối hành vi? Họ hành động quyết đoán, mềm mỏng, sáng tạo hay phân tích sâu? Ví dụ cụ thể từ thành công công việc, mối quan hệ hạnh phúc. Phải dài ít nhất 200 từ.</li>
-<li><strong>Trạng thái Stress:</strong> Khi áp lực, phản ứng theo xu hướng nào: kiểm soát, né tránh, bùng nổ cảm xúc hay thu mình? Phân tích sâu hậu quả và cách nhận biết, ví dụ từ thất bại dự án, tranh cãi gia đình. Phải dài ít nhất 200 từ.</li>
+<li><strong>Trạng thái Flow:</strong> Khi môi trường thuận lợi, số nào chi phối hành vi? Họ hành động quyết đoán, mềm mỏng, sáng tạo hay phân tích sâu? Ví dụ cụ thể từ thành công công việc, mối quan hệ hạnh phúc. Phải dài ít nhất 600 từ, gồm 4 phần (a)(b)(c)(d) mỗi phần 150 từ.</li>
+<li><strong>Trạng thái Stress:</strong> Khi áp lực, phản ứng theo xu hướng nào: kiểm soát, né tránh, bùng nổ cảm xúc hay thu mình? Phân tích sâu hậu quả và cách nhận biết, ví dụ từ thất bại dự án, tranh cãi gia đình. Phải dài ít nhất 600 từ, gồm 4 phần (a)(b)(c)(d) mỗi phần 150 từ.</li>
 <li><strong>Chi phối lý trí:</strong> Số nào quyết định logic, phân tích, chiến lược? Cách ảnh hưởng đến quyết định lớn: lập kế hoạch tài chính, giải quyết vấn đề phức tạp. Ví dụ thực tế.</li>
 <li><strong>Chi phối cảm xúc:</strong> Số nào điều khiển nỗi sợ, tổn thương, sự nhạy cảm? Cách hình thành phản ứng cảm xúc, ví dụ xử lý thất bại tình cảm, căng thẳng công việc.</li>
 <li><strong>Cơ chế phòng vệ:</strong> Khi bị tổn thương, xu hướng đổ lỗi, tự trách, kiểm soát người khác hay tự cô lập? Mở rộng với ví dụ thực tế và hậu quả lâu dài nếu không điều chỉnh.</li>
@@ -928,12 +928,12 @@ BƯỚC 2 — TỔ HỢP: Xác định quan hệ giữa các số:
 
 BƯỚC 3 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
 
-BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm (MỖI LỚP BẮT BUỘC 200-300 TỪ):
-- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — 200-300 từ
-- Mechanism: Số nào chi phối khi bình thường? Khi stress? — 200-300 từ
-- Power: Lợi thế độc nhất mà từng số riêng lẻ không có — 200-300 từ
-- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — 200-300 từ
-- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — 200-300 từ
+BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm (MỖI LỚP BẮT BUỘC 600 TỪ — CHIA 4 PHẦN MỖI PHẦN 150 TỪ):
+- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — ít nhất 600 từ (4 phần x 150 từ)
+- Mechanism: Số nào chi phối khi bình thường? Khi stress? — ít nhất 600 từ (4 phần x 150 từ)
+- Power: Lợi thế độc nhất mà từng số riêng lẻ không có — ít nhất 600 từ (4 phần x 150 từ)
+- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — ít nhất 600 từ (4 phần x 150 từ)
+- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — ít nhất 600 từ (4 phần x 150 từ)
 
 BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
 
@@ -947,13 +947,18 @@ BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiê
    - SAI: "Thấp → giằng xé, Cao → cân bằng" (chung chung)
    - ĐÚNG: "Khi số 5 kích hoạt sự bồng bột muốn bỏ việc giữa chừng (trích từ challenges: thiếu kiên nhẫn), hãy dùng năng lượng số 4 (kỷ luật, ổn định) để lập kế hoạch 30 ngày trước khi quyết định" (cụ thể)
 
-4. BẮT BUỘC: MỖI điểm phân tích (li) phải dài ít nhất 200-300 từ. Cấu trúc mỗi li: (a) Phân tích năng lượng con số cụ thể 60-80 từ → (b) Diễn giải tương tác/kết hợp giữa các số 60-80 từ → (c) Ví dụ thực tế từ cuộc sống (công việc, tình cảm, tài chính, gia đình) 60-80 từ → (d) Phần chuyển hóa hoặc hậu quả cụ thể 40-60 từ. Nếu li nào dưới 200 từ → BẮT BUỘC bổ sung thêm ví dụ, phân tích sâu hơn, hoặc thêm phần chuyển hóa.
+4. BẮT BUỘC: MỖI điểm phân tích (li) phải dài ít nhất 600 từ tổng, chia thành 4 phần bắt buộc, mỗi phần ít nhất 150 từ:
+   (a) Phân tích năng lượng con số cụ thể (ít nhất 150 từ): Trích xuất keywords, advantages, challenges từ KIẾN THỨC SÂU. Mô tả bản chất năng lượng lõi, xu hướng tâm lý, nhóm động lực (Hành động/Cảm xúc/Sáng tạo/Trí tuệ), ảnh hưởng đến hành vi và quyết định. Giải thích năng lượng này chi phối cuộc sống như thế nào.
+   (b) Diễn giải tương tác/kết hợp giữa các số (ít nhất 150 từ): Phân tích khi kết hợp tạo ra hiệu ứng gì mới — đồng hướng (khuếch đại), bổ trợ (phát triển), hay tương phản (xung đột nhưng tiến hóa). Xác định trục năng lượng tổng thể. Mô tả "bản sắc mới" khi tổ hợp — khác gì từng số riêng lẻ.
+   (c) Ví dụ thực tế từ cuộc sống (ít nhất 150 từ): Đưa tình huống cụ thể trong công việc (cách ra quyết định, quản lý đội nhóm, xử lý áp lực), tình cảm (cách yêu, cách giận, cách xử lý xung đột), tài chính (cách đầu tư, chi tiêu, quản lý rủi ro), gia đình (vai trò, trách nhiệm, cách giao tiếp). Mô tả chi tiết hành vi, phản ứng, hậu quả thực tế.
+   (d) Phần chuyển hóa hoặc hậu quả cụ thể (ít nhất 150 từ): Mô tả phiên bản thấp (lệch hướng) — hành vi tiêu cực cụ thể, vòng lặp tâm lý, hậu quả dài hạn. Phiên bản cao (trưởng thành) — hành vi tích cực cụ thể, phẩm chất phát triển, thành tựu đạt được. Hành động thực tế để chuyển từ thấp sang cao.
+   Nếu li nào dưới 600 từ tổng → BẮT BUỘC bổ sung cho đủ.
 
 5. PHẦN TÌNH YÊU: PHẢI nói rõ người này MUỐN gì, CẦN gì, SỢ gì trong tình yêu — đủ chi tiết để đối phương biết cách cư xử.
 
 6. PHẦN SALE/COACH: PHẢI nói rõ người này bị THU HÚT bởi gì, GHÉT gì từ người tư vấn — đủ chi tiết để sale biết cách tiếp cận.
 
-7. PHẦN BÀI HỌC NHÂN-DUYÊN-QUẢ: Phải dài ít nhất 800 từ tổng, mỗi mục con ít nhất 200-300 từ. Phải có ví dụ lệch hướng CỤ THỂ cho tổ hợp (VD: 3+5 → đào hoa; 1+5 → mạo hiểm tài chính; 2+8 → bị áp chế).
+7. PHẦN BÀI HỌC NHÂN-DUYÊN-QUẢ: Phải dài ít nhất 3000 từ tổng, mỗi mục con ít nhất 600 từ (4 phần x 150 từ). Phải có ví dụ lệch hướng CỤ THỂ cho tổ hợp (VD: 3+5 → đào hoa; 1+5 → mạo hiểm tài chính; 2+8 → bị áp chế).
 
 8. CẤM: 'năng lượng vũ trụ', 'tần số rung động', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
    THAY: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn', 'cống hiến', 'tạo giá trị xã hội'.
@@ -968,7 +973,7 @@ Trước khi trả output, tự hỏi:
 - Có câu nào không chứa số cụ thể không? → THÊM số vào.
 - Phần chuyển hóa có nói rõ "từ hành vi A cụ thể → sang hành vi B cụ thể" không? → Nếu chung chung, VIẾT LẠI.
 - Phần tình yêu có đủ chi tiết để đối phương biết cách cư xử không? → Nếu không, BỔ SUNG.
-- Mỗi li có ít nhất 200-300 từ không? → Nếu dưới 200 từ, BẮT BUỘC mở rộng: thêm ví dụ thực tế, thêm phân tích năng lượng con số, thêm phần chuyển hóa, thêm hậu quả cụ thể. KHÔNG BAO GIỜ cho phép li dưới 200 từ.`;
+- Mỗi li có đủ 4 phần (a)(b)(c)(d) không? Mỗi phần có ít nhất 150 từ không? Tổng mỗi li có ít nhất 600 từ không? → Nếu thiếu phần nào hoặc phần nào dưới 150 từ, BẮT BUỘC bổ sung cho đủ. KHÔNG BAO GIỜ cho phép li dưới 600 từ hoặc thiếu bất kỳ phần nào trong 4 phần.`;
 
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
