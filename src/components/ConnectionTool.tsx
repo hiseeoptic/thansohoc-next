@@ -564,6 +564,9 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis;
             === DỮ LIỆU KIẾN THỨC SÂU VỀ CÁC SỐ (BẮT BUỘC SỬ DỤNG LÀM NỀN TẢNG) ===
             ${deepContext}
 
+            === BẢN ĐỒ TƯƠNG TÁC NĂNG LƯỢNG (BẮT BUỘC THAM CHIẾU KHI PHÂN TÍCH) ===
+            ${interactionAnalysis}
+
             === CÁCH SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU ===
             Khi phân tích MỖI điểm, bạn PHẢI:
             1. Tra keywords/advantages/challenges/balance của từng số trong bộ từ dữ liệu trên
@@ -574,10 +577,11 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis;
 
             ${modifiers}
 
-            === YÊU CẦU ĐỊNH DẠNG ===
+            === YÊU CẦU ĐỊNH DẠNG & CHẤT LƯỢNG ===
             - Trả về HTML sạch (chỉ dùng h3, h4, ul, li, p, strong). KHÔNG dùng markdown.
-            - Mỗi phần h3 phải dài ít nhất 2000-3000 từ tổng cộng với nội dung phân tích sâu.
-            - BẮT BUỘC: Mỗi mục nhỏ (li) phải dài ít nhất 200-300 từ — KHÔNG liệt kê ngắn gọn. Mỗi li PHẢI có 4 phần bắt buộc, mỗi phần ít nhất 150 từ: (1) Phân tích năng lượng con số cụ thể — trích xuất keywords, advantages, challenges từ KIẾN THỨC SÂU, mô tả bản chất năng lượng lõi, xu hướng tâm lý, nhóm động lực, ảnh hưởng đến hành vi và quyết định (ít nhất 150 từ). (2) Diễn giải tương tác/kết hợp giữa các số — phân tích khi kết hợp tạo ra hiệu ứng gì mới, đồng hướng hay xung đột, khuếch đại hay bổ trợ, trục năng lượng tổng thể, bản sắc mới khi tổ hợp (ít nhất 150 từ). (3) Ví dụ thực tế từ cuộc sống — tình huống cụ thể trong công việc, tình cảm, tài chính, gia đình, giao tiếp xã hội, kèm mô tả chi tiết hành vi, phản ứng, hậu quả thực tế (ít nhất 150 từ). (4) Phần chuyển hóa hoặc hậu quả cụ thể — mô tả phiên bản thấp (lệch hướng) vs phiên bản cao (trưởng thành), hành vi cũ cụ thể cần thay đổi, hành vi mới cụ thể cần xây dựng, hành động thực tế kèm theo (ít nhất 150 từ). Nếu li nào dưới 600 từ tổng → BẮT BUỘC mở rộng thêm.
+            - Mỗi phần h3 phải có nội dung phân tích sâu, diễn giải chi tiết.
+            - MỖI mục (li) PHẢI có đủ 4 yếu tố: (a) Năng lượng gốc của số — trích keywords, advantages, challenges từ KIẾN THỨC SÂU. (b) Tương tác khi kết hợp — phân tích hiệu ứng tổ hợp dựa trên BẢN ĐỒ TƯƠNG TÁC. (c) Ví dụ thực tế — tình huống cụ thể trong công việc, tình cảm, tài chính. (d) Chuyển hóa — phiên bản thấp (vô thức) vs phiên bản cao (tỉnh thức), hành động cụ thể.
+            - TRỌNG TÂM: Phân tích CÁCH CÁC SỐ TƯƠNG TÁC với nhau (khuếch đại, bổ trợ, xung đột, làm dịu) — KHÔNG chỉ liệt kê đặc điểm từng số riêng lẻ.
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
 
             === NGÔN NGỮ OUTPUT ===
@@ -993,12 +997,12 @@ BƯỚC 2 — TỔ HỢP: Xác định quan hệ giữa các số:
 
 BƯỚC 3 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
 
-BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm (MỖI LỚP BẮT BUỘC 600 TỪ — CHIA 4 PHẦN MỖI PHẦN 150 TỪ):
-- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — ít nhất 600 từ (4 phần x 150 từ)
-- Mechanism: Số nào chi phối khi bình thường? Khi stress? — ít nhất 600 từ (4 phần x 150 từ)
-- Power: Lợi thế độc nhất mà từng số riêng lẻ không có — ít nhất 600 từ (4 phần x 150 từ)
-- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — ít nhất 600 từ (4 phần x 150 từ)
-- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — ít nhất 600 từ (4 phần x 150 từ)
+BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm (viết CHI TIẾT với ví dụ cụ thể):
+- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — diễn giải sâu
+- Mechanism: Số nào chi phối khi bình thường? Khi stress? — diễn giải sâu
+- Power: Lợi thế độc nhất mà từng số riêng lẻ không có — diễn giải sâu
+- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — diễn giải sâu
+- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — diễn giải sâu
 
 BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
 
@@ -1012,18 +1016,17 @@ BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiê
    - SAI: "Thấp → giằng xé, Cao → cân bằng" (chung chung)
    - ĐÚNG: "Khi số 5 kích hoạt sự bồng bột muốn bỏ việc giữa chừng (trích từ challenges: thiếu kiên nhẫn), hãy dùng năng lượng số 4 (kỷ luật, ổn định) để lập kế hoạch 30 ngày trước khi quyết định" (cụ thể)
 
-4. BẮT BUỘC: MỖI điểm phân tích (li) phải dài ít nhất 600 từ tổng, chia thành 4 phần bắt buộc, mỗi phần ít nhất 150 từ:
-   (a) Phân tích năng lượng con số cụ thể (ít nhất 150 từ): Trích xuất keywords, advantages, challenges từ KIẾN THỨC SÂU. Mô tả bản chất năng lượng lõi, xu hướng tâm lý, nhóm động lực (Hành động/Cảm xúc/Sáng tạo/Trí tuệ), ảnh hưởng đến hành vi và quyết định. Giải thích năng lượng này chi phối cuộc sống như thế nào.
-   (b) Diễn giải tương tác/kết hợp giữa các số (ít nhất 150 từ): Phân tích khi kết hợp tạo ra hiệu ứng gì mới — đồng hướng (khuếch đại), bổ trợ (phát triển), hay tương phản (xung đột nhưng tiến hóa). Xác định trục năng lượng tổng thể. Mô tả "bản sắc mới" khi tổ hợp — khác gì từng số riêng lẻ.
-   (c) Ví dụ thực tế từ cuộc sống (ít nhất 150 từ): Đưa tình huống cụ thể trong công việc (cách ra quyết định, quản lý đội nhóm, xử lý áp lực), tình cảm (cách yêu, cách giận, cách xử lý xung đột), tài chính (cách đầu tư, chi tiêu, quản lý rủi ro), gia đình (vai trò, trách nhiệm, cách giao tiếp). Mô tả chi tiết hành vi, phản ứng, hậu quả thực tế.
-   (d) Phần chuyển hóa hoặc hậu quả cụ thể (ít nhất 150 từ): Mô tả phiên bản thấp (lệch hướng) — hành vi tiêu cực cụ thể, vòng lặp tâm lý, hậu quả dài hạn. Phiên bản cao (trưởng thành) — hành vi tích cực cụ thể, phẩm chất phát triển, thành tựu đạt được. Hành động thực tế để chuyển từ thấp sang cao.
-   Nếu li nào dưới 600 từ tổng → BẮT BUỘC bổ sung cho đủ.
+4. MỖI điểm phân tích (li) PHẢI có 4 yếu tố:
+   (a) Năng lượng gốc: Trích keywords, advantages, challenges từ KIẾN THỨC SÂU. Gọi tên năng lượng lõi.
+   (b) Tương tác tổ hợp: Phân tích cách các số tác động lẫn nhau — khuếch đại, bổ trợ, xung đột, làm dịu. Tham chiếu BẢN ĐỒ TƯƠNG TÁC.
+   (c) Ví dụ thực tế: Tình huống cụ thể trong công việc, tình cảm, tài chính.
+   (d) Chuyển hóa: Phiên bản vô thức (reactive) → phiên bản tỉnh thức (responsive). Hành động cụ thể.
 
 5. PHẦN TÌNH YÊU: PHẢI nói rõ người này MUỐN gì, CẦN gì, SỢ gì trong tình yêu — đủ chi tiết để đối phương biết cách cư xử.
 
 6. PHẦN SALE/COACH: PHẢI nói rõ người này bị THU HÚT bởi gì, GHÉT gì từ người tư vấn — đủ chi tiết để sale biết cách tiếp cận.
 
-7. PHẦN BÀI HỌC NHÂN-DUYÊN-QUẢ: Phải dài ít nhất 3000 từ tổng, mỗi mục con ít nhất 600 từ (4 phần x 150 từ). Phải có ví dụ lệch hướng CỤ THỂ cho tổ hợp (VD: 3+5 → đào hoa; 1+5 → mạo hiểm tài chính; 2+8 → bị áp chế).
+7. PHẦN BÀI HỌC NHÂN-DUYÊN-QUẢ: Phải phân tích chi tiết với ví dụ lệch hướng CỤ THỂ cho tổ hợp (VD: 3+5 → đào hoa; 1+5 → mạo hiểm tài chính; 2+8 → bị áp chế). Lồng ghép nguyên lý Nhân-Quả và tam giác Đạo Đức-Trí Tuệ-Nghị Lực vào phân tích.
 
 8. CẤM: 'năng lượng vũ trụ', 'tần số rung động', 'kiếp trước', 'linh hồn', 'chữa lành', 'phụng sự', 'nghiệp quả'.
    THAY: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn', 'cống hiến', 'tạo giá trị xã hội'.
@@ -1075,7 +1078,7 @@ Trước khi trả output, tự hỏi:
 - Có câu nào không chứa số cụ thể không? → THÊM số vào.
 - Phần chuyển hóa có nói rõ "từ hành vi A cụ thể → sang hành vi B cụ thể" không? → Nếu chung chung, VIẾT LẠI.
 - Phần tình yêu có đủ chi tiết để đối phương biết cách cư xử không? → Nếu không, BỔ SUNG.
-- Mỗi li có đủ 4 phần (a)(b)(c)(d) không? Mỗi phần có ít nhất 150 từ không? Tổng mỗi li có ít nhất 600 từ không? → Nếu thiếu phần nào hoặc phần nào dưới 150 từ, BẮT BUỘC bổ sung cho đủ. KHÔNG BAO GIỜ cho phép li dưới 600 từ hoặc thiếu bất kỳ phần nào trong 4 phần.
+- Mỗi li có đủ 4 yếu tố (năng lượng gốc, tương tác tổ hợp, ví dụ thực tế, chuyển hóa) không? → Nếu thiếu yếu tố nào, BỔ SUNG.
 - Đã phân tích tam giác Đạo Đức – Trí Tuệ – Nghị Lực cho bộ số chưa? → Nếu chưa, BỔ SUNG.
 - Đã chỉ ra con đường chuyển hóa vô thức → tỉnh thức cho từng số chưa? → Nếu chưa, BỔ SUNG.
 - Đã nhận diện chỉ số "làm dịu" trong bộ số chưa? → Nếu có chỉ số làm dịu mà chưa phân tích, BỔ SUNG.`;

@@ -108,7 +108,7 @@ export async function generateAnalyzeResponse(prompt: string, systemInstruction?
         { role: 'user', content: prompt },
       ],
       temperature: 0.4,
-      max_tokens: 16000,
+      max_completion_tokens: 16384,
     });
 
     const content = completion.choices[0]?.message?.content;
