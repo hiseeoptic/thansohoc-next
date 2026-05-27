@@ -45,18 +45,6 @@ export enum NumberType {
   Intelligence = "Trí Tuệ"
 }
 
-// English labels for NumberType
-export const NumberTypeEN: Record<string, string> = {
-  [NumberType.LifePath]: "Life Path",
-  [NumberType.HeartDesire]: "Soul (Heart Desire)",
-  [NumberType.Mission]: "Mission",
-  [NumberType.Personality]: "Personality",
-  [NumberType.Attitude]: "Attitude",
-  [NumberType.Maturity]: "Maturity",
-  [NumberType.BirthDay]: "Birthday",
-  [NumberType.Intelligence]: "Intelligence"
-};
-
 export interface ConnectionAnalysisResult {
   relationship: "Đồng hướng" | "Tương phản" | "Bổ sung" | "Trung tính" | "Lỗi";
   keywords: string;

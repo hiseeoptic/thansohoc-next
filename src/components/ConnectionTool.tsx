@@ -457,22 +457,87 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
           return `### DỮ LIỆU GỐC (Hành vi/Tính cách) của ${input.type} số ${input.value}:\n"${meaning.substring(0, 1000)}..."`;
       }).join('\n\n');
 
-// === PHẦN KIẾN THỨC SÂU VỀ CÁC CON SỐ (THÊM VÀO ĐÂY) ===
+// === PHẦN KIẾN THỨC SÂU VỀ CÁC CON SỐ ===
 const deepContext = activeInputs.map(input => {
   const profile = deepNumberKnowledge[input.value.toString()] || deepNumberKnowledge[input.value];
   if (!profile) return '';
 
   return `### KIẾN THỨC SÂU VỀ SỐ ${input.value} (${profile.name}):
+**Vai trò chỉ số:** ${input.type}
 **Hành tinh:** ${profile.planet}
-**Từ khóa:** ${profile.keywords.join(', ')}
-**Ưu điểm:** ${profile.advantages}
-**Thách thức:** ${profile.challenges}
-**Cân bằng:** ${profile.balance}
-**Gợi ý nghề nghiệp:** ${profile.careerSuggestions}`;
+**Từ khóa năng lượng gốc:** ${profile.keywords.join(', ')}
+**Ưu điểm (advantages):** ${profile.advantages}
+**Thách thức (challenges):** ${profile.challenges}
+**Cân bằng (balance):** ${profile.balance}
+**Gợi ý nghề nghiệp:** ${profile.careerSuggestions}
+**Thông điệp cốt lõi:** ${profile.coreMessage || ''}`;
 }).join('\n\n');
 
-// Kết hợp contextData cũ + deepContext mới
-const fullContext = contextData + '\n\n' + deepContext;
+// === PHÂN TÍCH TƯƠNG TÁC NĂNG LƯỢNG GIỮA CÁC SỐ ===
+const interactionAnalysis = (() => {
+  if (activeInputs.length < 2) return '';
+
+  const profiles = activeInputs.map(i => ({
+    type: i.type,
+    value: i.value,
+    profile: deepNumberKnowledge[i.value.toString()] || deepNumberKnowledge[i.value]
+  })).filter(p => p.profile);
+
+  if (profiles.length < 2) return '';
+
+  // Phân loại nhóm năng lượng
+  const getEnergyGroup = (keywords: string[]) => {
+    const kw = keywords.join(' ').toLowerCase();
+    if (/lãnh đạo|tiên phong|quyết đoán|độc lập|hành động|mục tiêu|quyền lực|thành tựu/.test(kw)) return 'Hành động';
+    if (/yêu thương|nhạy cảm|hòa hợp|kết nối|chia sẻ|quan tâm|gia đình|trách nhiệm|bảo vệ/.test(kw)) return 'Cảm xúc';
+    if (/sáng tạo|biểu đạt|giao tiếp|tự do|phiêu lưu|thay đổi|linh hoạt/.test(kw)) return 'Sáng tạo';
+    if (/trí tuệ|phân tích|chiều sâu|nghiên cứu|triết học|nội tâm|chiêm nghiệm/.test(kw)) return 'Trí tuệ';
+    return 'Tổng hợp';
+  };
+
+  const groups = profiles.map(p => ({
+    ...p,
+    group: getEnergyGroup(p.profile.keywords)
+  }));
+
+  // Tạo bản đồ tương tác
+  const pairs: string[] = [];
+  for (let i = 0; i < groups.length; i++) {
+    for (let j = i + 1; j < groups.length; j++) {
+      const a = groups[i];
+      const b = groups[j];
+      const sameGroup = a.group === b.group;
+      const relType = sameGroup ? 'ĐỒNG HƯỚNG (khuếch đại)' : 'BỔ TRỢ/TƯƠNG PHẢN (cân bằng)';
+
+      pairs.push(`
+--- ${a.type} (số ${a.value}) ↔ ${b.type} (số ${b.value}) ---
+**Quan hệ:** ${relType}
+**Nhóm năng lượng:** ${a.value} = ${a.group} | ${b.value} = ${b.group}
+**Năng lượng gốc ${a.type} (${a.value}):** ${a.profile.keywords.slice(0, 4).join(', ')} → Hướng đến: ${a.profile.coreMessage || a.profile.keywords[0]}
+**Năng lượng gốc ${b.type} (${b.value}):** ${b.profile.keywords.slice(0, 4).join(', ')} → Hướng đến: ${b.profile.coreMessage || b.profile.keywords[0]}
+**Khi hoà hợp:** ${a.profile.advantages.split('\n')[0]} + ${b.profile.advantages.split('\n')[0]} → tạo sức mạnh cộng hưởng
+**Khi xung đột:** ${a.profile.challenges.split('\n')[0]} gặp ${b.profile.challenges.split('\n')[0]} → tạo ma sát nội tại
+**Chìa khóa cân bằng:** ${a.profile.balance.split('\n')[0]} kết hợp ${b.profile.balance.split('\n')[0]}
+${sameGroup ? `⚠️ Cùng nhóm ${a.group}: năng lượng khuếch đại mạnh — ưu điểm rất nổi bật nhưng thách thức cũng nhân đôi. Dễ cực đoan nếu thiếu ý thức.` : `💡 Khác nhóm (${a.group} ↔ ${b.group}): tạo sự đa chiều — ${a.value} bổ sung điều ${b.value} thiếu và ngược lại. VD: ${a.type} số ${a.value} (${a.group}) làm dịu/kích hoạt ${b.type} số ${b.value} (${b.group}).`}`);
+    }
+  }
+
+  return `\n\n=== BẢN ĐỒ TƯƠNG TÁC NĂNG LƯỢNG GIỮA CÁC CHỈ SỐ ===
+⚠️ BẮT BUỘC sử dụng bản đồ tương tác này khi phân tích. Đây là nền tảng để hiểu CÁC SỐ TÁC ĐỘNG LẪN NHAU như thế nào — không chỉ phân tích riêng lẻ.
+Ví dụ: Đường Đời 7 + Nội Tâm 7 = hướng nội rất mạnh, khép kín → nhưng nếu Sứ Mệnh là 5 hoặc 3, năng lượng biểu đạt/tự do sẽ làm dịu sự cô độc, tạo cầu nối ra bên ngoài.
+
+${pairs.join('\n')}
+
+=== NGUYÊN LÝ PHÂN TÍCH TƯƠNG TÁC ===
+Khi phân tích tổ hợp, PHẢI xem xét:
+1. **Vai trò từng chỉ số:** Đường Đời = con đường cuộc đời phải đi; Nội Tâm = khao khát sâu thẳm bên trong; Sứ Mệnh = nhiệm vụ phải hoàn thành; Nhân Cách = cách thế giới nhìn thấy bạn; Thái Độ = phản ứng tức thời; Trưởng Thành = hướng phát triển về sau
+2. **Hiệu ứng hoà hợp:** Khi 2+ số cùng nhóm năng lượng → khuếch đại (VD: ĐĐ 7 + NT 7 = trí tuệ cực mạnh nhưng cô độc cực sâu)
+3. **Hiệu ứng làm dịu:** Khi 1 số khác nhóm xen vào → điều hoà (VD: SM 3 làm dịu sự khép kín của 7+7 bằng năng lượng giao tiếp)
+4. **Hiệu ứng xung đột:** Khi challenges của số này đụng advantages của số kia → giằng xé nội tại (VD: challenges "cái tôi cao" của 1 đụng advantages "khiêm nhường" của 2)`;
+})();
+
+// Kết hợp tất cả
+const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis;
     
       // 2. LẤY RULE ENGINE (Phần này rất quan trọng)
       const modifiers = ruleEngine.getPromptModifiers(
@@ -967,13 +1032,53 @@ BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiê
 
 10. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown. KHÔNG dùng ký tự đặc biệt ngoài emoji cho tiêu đề.
 
+=== KHUNG TRIẾT HỌC PHÁT TRIỂN (Lồng ghép tự nhiên, KHÔNG giảng đạo) ===
+
+1. NGUYÊN LÝ NHÂN – QUẢ (Cause & Effect trong Tâm lý Hành vi):
+   - Mỗi con số mang một "nhân" (xu hướng tư duy, hành vi gốc rễ) → tạo "duyên" (môi trường, cơ hội, thử thách kích hoạt) → sinh "quả" (kết quả cuộc đời).
+   - VD: Số 5 mang nhân "khao khát tự do" → duyên gặp công việc ràng buộc → quả: bỏ việc liên tục HOẶC học cách tự do trong khuôn khổ.
+   - AI PHẢI liên kết challenges của từng số với hậu quả cụ thể nếu không chuyển hóa, và phước lành cụ thể nếu phát triển đúng hướng.
+   - Cách diễn đạt: "Xu hướng hành vi này nếu lặp lại sẽ tạo kết quả tương ứng" — KHÔNG dùng "nghiệp", "kiếp trước".
+
+2. TAM GIÁC PHÁT TRIỂN: Đạo Đức – Trí Tuệ – Nghị Lực:
+   - Đạo Đức (Moral Intelligence): Khả năng phân biệt đúng-sai, sống có nguyên tắc → liên kết với balance và coreMessage của số.
+   - Trí Tuệ (Wisdom): Khả năng nhìn nhận đa chiều, không bị cảm xúc chi phối → liên kết với advantages + keywords phân tích.
+   - Nghị Lực (Perseverance): Sức mạnh nội tại để vượt qua thử thách → liên kết với challenges và cách vượt qua.
+   - AI PHẢI phân tích bộ số đang tra: tam giác này MẠNH ở cạnh nào, YẾU ở cạnh nào? VD: Bộ số thiên Trí tuệ (7, 9) nhưng yếu Nghị lực → cần rèn kỷ luật. Bộ số mạnh Nghị lực (1, 8) nhưng yếu Đạo đức → cần phát triển sự thấu cảm.
+
+3. NGUYÊN LÝ TỈNH THỨC (Conscious Living):
+   - Mỗi con số có phiên bản "vô thức" (reactive — phản ứng tự động) và phiên bản "tỉnh thức" (responsive — lựa chọn có ý thức).
+   - VD: Số 1 vô thức → độc đoán, ép buộc. Số 1 tỉnh thức → dẫn dắt bằng tầm nhìn và gương mẫu.
+   - AI PHẢI chỉ ra con đường chuyển hóa từ vô thức → tỉnh thức cho TỪNG số trong bộ, với hành động cụ thể.
+   - Cách diễn đạt: "Khi nhận ra xu hướng này và chủ động điều chỉnh..." — giọng tâm lý học, KHÔNG giọng tôn giáo.
+
+=== CÁCH PHÂN TÍCH TƯƠNG TÁC NĂNG LƯỢNG (Bắt buộc dùng KIẾN THỨC SÂU) ===
+
+1. VAI TRÒ TỪNG CHỈ SỐ trong bộ số:
+   - Đường Đời: Năng lượng nền tảng, chi phối cách sống và học bài học lớn nhất.
+   - Nội Tâm: Động lực sâu bên trong, nhu cầu cảm xúc cốt lõi, điều thực sự muốn.
+   - Sứ Mệnh: Hướng phát triển, cách tạo giá trị và đóng góp cho xã hội.
+   - Nhân Cách: Cách thể hiện ra bên ngoài, ấn tượng đầu tiên, chiến lược giao tiếp.
+   - Thái Độ: Phản ứng bản năng trước tình huống mới, cách xử lý áp lực.
+   - Trưởng Thành: Điểm hội tụ cuối đời, bài học lớn nhất cần đạt được.
+   - Trí Tuệ: Cách tư duy, xử lý thông tin và ra quyết định.
+
+2. QUY TẮC TƯƠNG TÁC:
+   - Khi 2 chỉ số CÙNG NHÓM năng lượng (VD: Đường đời 7 + Nội tâm 7): Khuếch đại mạnh cả tích cực lẫn tiêu cực. Phân tích cụ thể: mặt tích cực khuếch đại gì? Mặt tiêu cực khuếch đại gì?
+   - Khi 2 chỉ số KHÁC NHÓM BỔ TRỢ (VD: Hành động 1 + Trí tuệ 7): Tạo chiều sâu, bù đắp điểm yếu. Phân tích: số nào bù cho số nào? Cơ chế bù đắp cụ thể?
+   - Khi 2 chỉ số TƯƠNG PHẢN (VD: Ổn định 4 + Tự do 5): Xung đột nội tâm nhưng tiềm năng tiến hóa CAO NHẤT. Phân tích: xung đột biểu hiện thế nào? Nếu hòa giải được → trở thành phiên bản cao ra sao?
+   - CHỈ SỐ LÀM DỊU: Khi 2 số tạo xu hướng cực đoan (VD: Đường đời 7 + Nội tâm 7 = hướng nội nặng), tìm số thứ 3 trong bộ có thể làm dịu (VD: Sứ mệnh 5 hoặc 3 → kéo ra xã hội, giảm cô độc). PHẢI nhận diện và phân tích vai trò "làm dịu" này.
+
 === KIỂM TRA CHẤT LƯỢNG (TỰ ĐÁNH GIÁ TRƯỚC KHI TRẢ KẾT QUẢ) ===
 Trước khi trả output, tự hỏi:
 - Có câu nào giống y nguyên prompt không? → XÓA viết lại.
 - Có câu nào không chứa số cụ thể không? → THÊM số vào.
 - Phần chuyển hóa có nói rõ "từ hành vi A cụ thể → sang hành vi B cụ thể" không? → Nếu chung chung, VIẾT LẠI.
 - Phần tình yêu có đủ chi tiết để đối phương biết cách cư xử không? → Nếu không, BỔ SUNG.
-- Mỗi li có đủ 4 phần (a)(b)(c)(d) không? Mỗi phần có ít nhất 150 từ không? Tổng mỗi li có ít nhất 600 từ không? → Nếu thiếu phần nào hoặc phần nào dưới 150 từ, BẮT BUỘC bổ sung cho đủ. KHÔNG BAO GIỜ cho phép li dưới 600 từ hoặc thiếu bất kỳ phần nào trong 4 phần.`;
+- Mỗi li có đủ 4 phần (a)(b)(c)(d) không? Mỗi phần có ít nhất 150 từ không? Tổng mỗi li có ít nhất 600 từ không? → Nếu thiếu phần nào hoặc phần nào dưới 150 từ, BẮT BUỘC bổ sung cho đủ. KHÔNG BAO GIỜ cho phép li dưới 600 từ hoặc thiếu bất kỳ phần nào trong 4 phần.
+- Đã phân tích tam giác Đạo Đức – Trí Tuệ – Nghị Lực cho bộ số chưa? → Nếu chưa, BỔ SUNG.
+- Đã chỉ ra con đường chuyển hóa vô thức → tỉnh thức cho từng số chưa? → Nếu chưa, BỔ SUNG.
+- Đã nhận diện chỉ số "làm dịu" trong bộ số chưa? → Nếu có chỉ số làm dịu mà chưa phân tích, BỔ SUNG.`;
 
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
