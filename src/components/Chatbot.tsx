@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
 import { Send, X, Bot, User, ChevronUp, ChevronDown, Globe, UserPlus } from 'lucide-react';
-import { generateChatResponse } from '@/actions/openai';
+// Chat uses API route instead of server action for reliability
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import * as Utils from '@/utils/numerologyUtils';
 
@@ -217,15 +217,26 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         **Câu hỏi user:** ${input}
       `;
 
-      console.log('[Chatbot] Gọi Server Action');
+      console.log('[Chatbot] Calling API route');
 
-      const result = await generateChatResponse(
-        messages.concat(userMessage),
-        systemInstruction + '\n\n' + fullContext
-      );
+      const chatMessages = messages.concat(userMessage).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
 
-      if ('error' in result) {
-        throw new Error(result.error);
+      const apiResponse = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: chatMessages,
+          systemInstruction: systemInstruction + '\n\n' + fullContext,
+        }),
+      });
+
+      const result = await apiResponse.json();
+
+      if (!apiResponse.ok || result.error) {
+        throw new Error(result.error || `Server error (${apiResponse.status})`);
       }
 
       if (!result.content) {

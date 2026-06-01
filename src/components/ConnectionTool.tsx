@@ -4,7 +4,7 @@ import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
-import { generateAnalyzeResponse, getAvailableEngines, AIEngine } from '@/actions/openai';
+import { getAvailableEngines, AIEngine } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import { buildFullAnalysis, IndexInput } from '@/utils/numerologyAnalysis';
 
@@ -1123,11 +1123,21 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // Gọi Server Action với system instruction riêng
-      const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction, aiEngine);
+      // Gọi API Route (tránh lỗi serialization của server action với payload lớn)
+      const apiResponse = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          systemInstruction: analyzeSystemInstruction,
+          engine: aiEngine,
+        }),
+      });
 
-      if ('error' in result) {
-        throw new Error(result.error);
+      const result = await apiResponse.json();
+
+      if (!apiResponse.ok || result.error) {
+        throw new Error(result.error || `Server error (${apiResponse.status})`);
       }
 
       const responseText = result.content || (analysisLang === 'en' ? '<p class="text-yellow-400">No analysis content received from AI. Please try again.</p>' : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>');
