@@ -5,7 +5,7 @@ import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult }
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
-import { generateAnalyzeResponse } from '@/actions/openai';
+import { generateAnalyzeResponse, AIEngine } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import { buildFullAnalysis, IndexInput } from '@/utils/numerologyAnalysis';
 
@@ -254,6 +254,13 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
 
   // State chatbot
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
+  // === Hidden AI Engine Switch (password protected) ===
+  const [aiEngine, setAiEngine] = useState<AIEngine>('openai');
+  const [showEngineSwitch, setShowEngineSwitch] = useState(false);
+  const [enginePassword, setEnginePassword] = useState('');
+  const [engineUnlocked, setEngineUnlocked] = useState(false);
+  const enginePasscode = '25021987';
 
   // *** Thêm useEffect để kiểm tra và fetch nếu sheetData rỗng khi component mount ***
   useEffect(() => {
@@ -1106,7 +1113,7 @@ Trước khi trả output, tự hỏi:
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
       // Gọi Server Action với system instruction riêng
-      const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
+      const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction, aiEngine);
 
       if (result.error) {
         throw new Error(result.error);
@@ -1137,7 +1144,56 @@ Trước khi trả output, tự hỏi:
              <h2 className="text-2xl font-bold text-blue-200 flex items-center gap-2">
                 <BrainCircuit className="text-blue-400" /> Matrix Analysis Pro
              </h2>
-             <p className="text-gray-400 text-xs mt-1">AI Engine v4.0: Rule-Based Logic & Behavioral Psychology</p>
+             <p
+               className="text-gray-400 text-xs mt-1 cursor-default select-none"
+               onDoubleClick={() => setShowEngineSwitch(!showEngineSwitch)}
+             >
+               AI Engine v4.0{engineUnlocked ? ` • ${aiEngine === 'claude' ? 'Claude Sonnet' : 'GPT-4o-mini'}` : ''}
+             </p>
+             {/* Hidden engine switch — appears on double-click, requires password */}
+             {showEngineSwitch && !engineUnlocked && (
+               <div className="mt-2 flex items-center gap-2">
+                 <input
+                   type="password"
+                   value={enginePassword}
+                   onChange={(e) => setEnginePassword(e.target.value)}
+                   onKeyDown={(e) => {
+                     if (e.key === 'Enter' && enginePassword === enginePasscode) {
+                       setEngineUnlocked(true);
+                       setShowEngineSwitch(false);
+                       setEnginePassword('');
+                     }
+                   }}
+                   placeholder="••••••••"
+                   className="w-24 px-2 py-1 text-xs rounded bg-black/60 border border-white/10 text-white focus:outline-none focus:border-blue-400/50"
+                 />
+                 <button
+                   onClick={() => {
+                     if (enginePassword === enginePasscode) {
+                       setEngineUnlocked(true);
+                       setShowEngineSwitch(false);
+                       setEnginePassword('');
+                     } else {
+                       setShowEngineSwitch(false);
+                       setEnginePassword('');
+                     }
+                   }}
+                   className="px-2 py-1 text-xs rounded bg-white/10 text-gray-400 hover:text-white"
+                 >OK</button>
+               </div>
+             )}
+             {engineUnlocked && (
+               <div className="mt-1 flex items-center gap-1">
+                 <button
+                   onClick={() => setAiEngine('openai')}
+                   className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'openai' ? 'bg-green-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
+                 >GPT</button>
+                 <button
+                   onClick={() => setAiEngine('claude')}
+                   className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'claude' ? 'bg-purple-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
+                 >Claude</button>
+               </div>
+             )}
            </div>
           
           <div className="flex items-center gap-2">
