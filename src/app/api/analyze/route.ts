@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const maxDuration = 60;
+// Edge Runtime: streaming không bị giới hạn 60s như Serverless
+// Hobby plan: stream lên đến 5 phút, đủ cho Claude phân tích dài
+export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   try {

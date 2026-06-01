@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const maxDuration = 60;
+export const runtime = 'edge';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
