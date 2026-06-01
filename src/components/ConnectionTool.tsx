@@ -1123,18 +1123,29 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // Gọi API Route (tránh lỗi serialization của server action với payload lớn)
+      // Gọi API Route
+      const requestBody = JSON.stringify({
+        prompt,
+        systemInstruction: analyzeSystemInstruction,
+        engine: aiEngine,
+      });
+      console.log(`[Analyze] Payload size: ${(requestBody.length / 1024).toFixed(1)} KB, Engine: ${aiEngine}`);
+
       const apiResponse = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt,
-          systemInstruction: analyzeSystemInstruction,
-          engine: aiEngine,
-        }),
+        body: requestBody,
       });
 
-      const result = await apiResponse.json();
+      // Xử lý response — có thể không phải JSON nếu Vercel trả error page
+      const responseText_raw = await apiResponse.text();
+      let result: any;
+      try {
+        result = JSON.parse(responseText_raw);
+      } catch {
+        console.error('[Analyze] Non-JSON response:', responseText_raw.substring(0, 500));
+        throw new Error(`Server trả về lỗi (${apiResponse.status}). Payload có thể quá lớn.`);
+      }
 
       if (!apiResponse.ok || result.error) {
         throw new Error(result.error || `Server error (${apiResponse.status})`);

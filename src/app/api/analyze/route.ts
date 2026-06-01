@@ -6,7 +6,17 @@ export async function POST(req: NextRequest) {
   try {
     const { prompt, systemInstruction, engine = 'claude' } = await req.json();
 
-    if (engine === 'claude') {
+    // Debug: log available env keys
+    const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
+    const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+    console.log(`[API /analyze] engine=${engine}, hasAnthropicKey=${hasAnthropicKey}, hasOpenAIKey=${hasOpenAIKey}`);
+
+    // Auto-fallback
+    let activeEngine = engine;
+    if (engine === 'claude' && !hasAnthropicKey && hasOpenAIKey) activeEngine = 'openai';
+    if (engine === 'openai' && !hasOpenAIKey && hasAnthropicKey) activeEngine = 'claude';
+
+    if (activeEngine === 'claude') {
       return await handleClaude(prompt, systemInstruction);
     }
     return await handleOpenAI(prompt, systemInstruction);

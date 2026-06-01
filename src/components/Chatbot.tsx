@@ -233,7 +233,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         }),
       });
 
-      const result = await apiResponse.json();
+      const responseText_raw = await apiResponse.text();
+      let result: any;
+      try {
+        result = JSON.parse(responseText_raw);
+      } catch {
+        console.error('[Chatbot] Non-JSON response:', responseText_raw.substring(0, 300));
+        throw new Error(`Lỗi server (${apiResponse.status})`);
+      }
 
       if (!apiResponse.ok || result.error) {
         throw new Error(result.error || `Server error (${apiResponse.status})`);
