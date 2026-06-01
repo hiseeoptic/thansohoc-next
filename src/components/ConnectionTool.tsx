@@ -795,13 +795,86 @@ ${coreInstruction}
 
 </ul>
 
-<h3>7. LỘ TRÌNH PHÁT TRIỂN</h3>
+<h3>7. LỘ TRÌNH PHÁT TRIỂN (Timeline)</h3>
 <ul>
 <li><strong>Giai đoạn Non trẻ:</strong> Trích xuất từ dữ liệu, thường bị chi phối bởi nhu cầu/thói quen nào? Diễn giải sâu với ví dụ từ tuổi trẻ, phân tích cách nó định hình tính cách.</li>
 <li><strong>Giai đoạn Trung niên:</strong> Từ context, cần tập trung phát triển kỹ năng gì (theo Sứ mệnh)? Phân tích chiến lược, ví dụ từ sự nghiệp giữa đời.</li>
 <li><strong>Giai đoạn Trưởng thành:</strong> Sự tích hợp hoàn hảo trông như thế nào? Diễn giải phiên bản tốt nhất, với ví dụ từ người thành công cao tuổi.</li>
 </ul>
             `);
+
+            // PHẦN 3: Sections 8-9 — HƯỚNG DẪN ỨNG XỬ + GÓC NHÌN ĐA CHIỀU (MỚI)
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 3/3 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-2.
+
+<h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
+<p>⚠️ ĐÂY LÀ PHẦN CỰC KỲ THỰC TẾ — PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY vào cuộc sống. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm cụ thể, (c) hành vi TUYỆT ĐỐI KHÔNG nên làm, (d) kịch bản ví dụ thực tế, (e) câu nói/cách tiếp cận mẫu.</p>
+
+<h4>👶 Nếu Đây Là Con Cái Của Bạn (Hướng Dẫn Nuôi Dạy):</h4>
+<ul>
+<li><strong>Hiểu bản chất năng lượng của con:</strong> Trẻ mang bộ số ${activeInputs.map(i => i.value).join(' + ')} có nhu cầu tâm lý gốc là gì? Cần tự do hay cần cấu trúc? Nhạy cảm hay mạnh mẽ? Hướng nội hay hướng ngoại? Dựa trên KIẾN THỨC SÂU để phân tích CỤ THỂ.</li>
+<li><strong>Cách giáo dục phù hợp:</strong> Phong cách dạy con nào hiệu quả nhất? Nghiêm khắc, đồng hành, hay trao quyền? Loại trường học/môi trường nào phù hợp? Hoạt động ngoại khóa nào giúp phát huy năng lượng tích cực?</li>
+<li><strong>Những điều TUYỆT ĐỐI tránh khi dạy con mang bộ số này:</strong> Hành vi nào của cha mẹ sẽ gây tổn thương sâu nhất? So sánh, ép buộc, kiểm soát, bỏ mặc — cái nào nguy hiểm nhất với bộ số này và TẠI SAO? Ví dụ tình huống cụ thể.</li>
+<li><strong>Dấu hiệu con đang lệch hướng & cách can thiệp:</strong> Khi nào biết con đang "sống phiên bản thấp" của bộ số? Biểu hiện cụ thể: thu mình, nổi loạn, lệ thuộc, thiếu kỷ luật? Cách tiếp cận lại: câu nói mẫu, hành động cụ thể.</li>
+<li><strong>Phát huy tài năng bẩm sinh:</strong> Bộ số này cho thấy con có thiên hướng gì? Sáng tạo, lãnh đạo, phân tích, kết nối? Cách tạo môi trường để tài năng nở hoa — hoạt động, sách, trải nghiệm cụ thể nên cho con tiếp xúc.</li>
+</ul>
+
+<h4>🤝 Nếu Đây Là Đối Tác Kinh Doanh Của Bạn:</h4>
+<ul>
+<li><strong>Phong cách làm việc & ra quyết định:</strong> Người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} làm việc theo phong cách nào? Cần kiểm soát hay cần tự do? Ra quyết định nhanh hay cần thời gian suy nghĩ? Ưu tiên kết quả hay quy trình?</li>
+<li><strong>Cách xây dựng lòng tin với đối tác này:</strong> Họ đánh giá cao điều gì nhất ở đối tác? Sự trung thực, năng lực, tốc độ, hay sự ổn định? Bao lâu mới tin tưởng hoàn toàn? Hành vi nào phá vỡ lòng tin ngay lập tức?</li>
+<li><strong>Cách giải quyết xung đột hiệu quả:</strong> Khi bất đồng, họ phản ứng thế nào? Im lặng, đối đầu, rút lui hay thỏa hiệp? Cách tiếp cận đúng: nên nói gì, nên tránh gì, thời điểm nào nên thảo luận. Ví dụ kịch bản mâu thuẫn thực tế.</li>
+<li><strong>Điểm mạnh & điểm yếu khi hợp tác:</strong> Bộ số này mang lại giá trị gì cho dự án chung? Mặt nào cần bổ trợ? Ví dụ phân chia vai trò tối ưu.</li>
+</ul>
+
+<h4>💼 Nếu Đây Là Khách Hàng Của Bạn:</h4>
+<ul>
+<li><strong>Tâm lý mua hàng & ra quyết định:</strong> Người mang bộ số này mua vì lý trí hay cảm xúc? Cần bao nhiêu thông tin trước khi quyết định? Bị ảnh hưởng bởi: giá cả, chất lượng, thương hiệu, câu chuyện, hay sự khan hiếm?</li>
+<li><strong>Cách tiếp cận & tư vấn hiệu quả nhất:</strong> Mở đầu cuộc trò chuyện thế nào? Giọng điệu nào phù hợp (thân thiện, chuyên nghiệp, nhiệt tình, điềm tĩnh)? Cách trình bày sản phẩm: kể chuyện, đưa số liệu, hay cho trải nghiệm? Ví dụ kịch bản tư vấn cụ thể.</li>
+<li><strong>Điều khiến họ TỪ CHỐI & cách xử lý:</strong> Lý do thật đằng sau lời từ chối (sợ rủi ro, chưa tin, chưa thấy giá trị, cần thời gian)? Cách phản hồi đúng tâm lý của bộ số. Ví dụ câu nói xử lý từ chối cụ thể.</li>
+<li><strong>Cách giữ chân & tạo khách hàng trung thành:</strong> Họ rời bỏ vì điều gì? Quay lại vì điều gì? Cách chăm sóc sau bán hàng phù hợp với năng lượng bộ số.</li>
+</ul>
+
+<h4>💕 Nếu Đây Là Người Yêu / Bạn Đời Của Bạn (Phân Tích Sâu):</h4>
+<ul>
+<li><strong>Ngôn ngữ tình yêu cốt lõi:</strong> Dựa trên Nội Tâm và năng lượng bộ số, người này cảm nhận tình yêu qua kênh nào mạnh nhất? Lời nói, hành động, thời gian chất lượng, quà tặng, hay tiếp xúc thể chất? Phân tích CỤ THỂ dựa trên keywords.</li>
+<li><strong>Vòng đời cảm xúc trong mối quan hệ:</strong> Giai đoạn đầu yêu — họ thể hiện thế nào? Giai đoạn ổn định — cần gì để duy trì? Giai đoạn xung đột — phản ứng ra sao? Giai đoạn trưởng thành — tình yêu chuyển hóa thế nào?</li>
+<li><strong>Nỗi sợ sâu nhất trong tình yêu:</strong> Sợ bị bỏ rơi, bị kiểm soát, bị hiểu lầm, bị phản bội, hay sợ mất tự do? Dựa trên challenges cụ thể. Khi nỗi sợ bị kích hoạt → hành vi phòng vệ gì? Cách xoa dịu CỤ THỂ.</li>
+<li><strong>Cách yêu thương đúng cách — hướng dẫn cho đối phương:</strong> 5 điều NÊN làm mỗi ngày. 5 điều TUYỆT ĐỐI không nên làm. Câu nói khiến họ cảm thấy được yêu nhất. Câu nói khiến họ tổn thương nhất. Ví dụ kịch bản cụ thể.</li>
+<li><strong>Khi mối quan hệ gặp khủng hoảng:</strong> Dấu hiệu họ đang chuẩn bị rời đi. Cách hàn gắn đúng tâm lý bộ số — bước cụ thể. Điều kiện để họ tha thứ. Điều kiện khiến họ không bao giờ quay lại.</li>
+</ul>
+
+<h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
+<p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN KHÁC NHAU, mỗi góc nhìn mang đến một tầng hiểu biết mới. KHÔNG lặp lại nội dung các phần trước — mỗi góc nhìn phải đưa ra INSIGHT MỚI.</p>
+
+<h4>🧠 Góc Nhìn Nhà Tâm Lý Học Hành Vi:</h4>
+<ul>
+<li><strong>Mô hình nhận thức – hành vi:</strong> Bộ số ${activeInputs.map(i => i.value).join(' + ')} tạo ra "lược đồ nhận thức" (cognitive schema) gì? Niềm tin cốt lõi vô thức nào chi phối hành vi? VD: "Tôi phải hoàn hảo" (số 4), "Tôi phải tự do" (số 5), "Tôi phải được công nhận" (số 1). Khi tổ hợp → niềm tin kép nào được kích hoạt?</li>
+<li><strong>Vòng lặp kích thích – phản ứng:</strong> Sự kiện kích hoạt (mất việc, xung đột, bị từ chối) → suy nghĩ tự động → cảm xúc → hành vi → hệ quả → củng cố niềm tin. Phân tích vòng lặp CỤ THỂ cho bộ số này. Điểm can thiệp hiệu quả nhất nằm ở đâu?</li>
+<li><strong>Chiến lược trị liệu nhận thức:</strong> Kỹ thuật cụ thể nào giúp phá vỡ vòng lặp? Ghi nhật ký tư duy, đặt câu hỏi Socrates, phơi bày dần, tái cấu trúc nhận thức — kỹ thuật nào phù hợp nhất với năng lượng bộ số? Bài tập thực hành cụ thể hàng ngày.</li>
+</ul>
+
+<h4>☸️ Góc Nhìn Triết Học Phật Giáo:</h4>
+<ul>
+<li><strong>Tam Độc và bộ số này:</strong> Trong Phật giáo, 3 gốc rễ khổ đau là Tham (ham muốn quá mức), Sân (giận dữ, phản kháng), Si (vô minh, ảo tưởng). Bộ số ${activeInputs.map(i => i.value).join(' + ')} thiên về "độc" nào? VD: Số 8 dễ rơi vào Tham (quyền lực, vật chất); Số 1 dễ rơi vào Sân (muốn kiểm soát, nóng giận khi bị cản); Số 7 dễ rơi vào Si (tách biệt thực tế, sống trong thế giới riêng). Khi tổ hợp → "độc" nào được khuếch đại?</li>
+<li><strong>Ba Thiện Căn đối trị:</strong> Vô Tham (buông bỏ, bố thí) đối trị Tham. Vô Sân (từ bi, nhẫn nhục) đối trị Sân. Vô Si (trí tuệ, chánh niệm) đối trị Si. Với bộ số này, phẩm chất nào cần rèn luyện NHẤT? Hành động cụ thể hàng ngày theo lời Phật dạy.</li>
+<li><strong>Chánh niệm ứng dụng:</strong> Khi năng lượng tiêu cực của bộ số bị kích hoạt (VD: số 5 bồng bột, số 2 lệ thuộc, số 8 kiểm soát), kỹ thuật chánh niệm nào giúp "dừng lại và quan sát"? Phương pháp thiền, quán chiếu, hay thực hành từ bi cụ thể cho năng lượng bộ số.</li>
+<li><strong>Nghiệp và chuyển hóa theo Phật giáo:</strong> Bộ số này mang "nghiệp tập" (thói quen tâm thức) gì? Đây KHÔNG phải kiếp trước mà là xu hướng hành vi lặp lại trong đời này. Cách "chuyển nghiệp" = thay đổi hành vi có ý thức. Ví dụ cụ thể: từ phản ứng tự động → hành động có chánh niệm.</li>
+</ul>
+
+<h4>📚 Góc Nhìn Nhà Giáo Dục:</h4>
+<ul>
+<li><strong>Phong cách học tập tối ưu:</strong> Bộ số ${activeInputs.map(i => i.value).join(' + ')} học tốt nhất qua kênh nào? Thị giác (đọc, xem), thính giác (nghe, thảo luận), vận động (trải nghiệm, thực hành), hay logic (phân tích, hệ thống)? Môi trường học tập lý tưởng: cấu trúc hay tự do? Cá nhân hay nhóm?</li>
+<li><strong>Thiết kế lộ trình phát triển bản thân:</strong> Kỹ năng mềm nào cần ưu tiên rèn luyện? Giao tiếp, lãnh đạo, kiên nhẫn, sáng tạo, quản lý cảm xúc? Sách/khóa học/hoạt động cụ thể phù hợp với năng lượng bộ số.</li>
+<li><strong>Vai trò và sứ mệnh trong cộng đồng:</strong> Bộ số này có thể đóng góp gì cho xã hội? Vai trò giáo dục, dẫn dắt, sáng tạo, kết nối, hay phục vụ? Cách phát huy giá trị bản thân để tạo tác động tích cực — ví dụ mô hình cụ thể.</li>
+<li><strong>Trí tuệ cảm xúc (EQ) — điểm cần phát triển:</strong> Bộ số này mạnh hay yếu ở 5 thành phần EQ: tự nhận thức, tự điều chỉnh, động lực, đồng cảm, kỹ năng xã hội? Thành phần nào là "gót chân Achilles"? Bài tập phát triển EQ cụ thể.</li>
+</ul>
+            `);
+
        } else if (comboInfo.comboType === 'innerPersonalityAxis') {
     // PROMPT NÂNG CẤP CHUYÊN SÂU CHO TRỤC NỘI TÂM – NHÂN CÁCH – THÁI ĐỘ – TRƯỞNG THÀNH
     const heartVal = activeInputs.find(i => i.type === NumberType.HeartDesire)?.value || 'X';
@@ -825,7 +898,7 @@ ${innerCoreInstruction}
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
 
 <ul>
-<li><strong>0. TRỤC NĂNG LƯỢNG KẾT HỢP:</strong>
+<li><strong>0. TRỤC NĂNG LƯỢNG KẾT HỢP (Energy Axis):</strong>
 Dựa trên sự kết hợp các chỉ số ${activeInputs.map(i => i.value).join(' + ')}, xác định trục năng lượng tổng thể dạng “X ↔ Y” (ví dụ: 4+5 → Ổn định–Tự do, 2+6 → Yêu thương–Chăm sóc, 1+8 → Lãnh đạo–Quyền lực). Trục này là “lực kéo trung tâm” chi phối toàn bộ bản chất, động lực và hành vi.
 <p>Phân tích bản chất kết hợp: Số ${heartVal} (Nội Tâm) mang năng lượng gì? Số ${persVal !== 'Y' ? persVal + ' (Nhân Cách)' : attVal + ' (Thái Độ)'} mang năng lượng gì? Khi kết hợp: khuếch đại (cùng nhóm), bổ trợ (khác nhóm hỗ trợ), hay xung đột (đối cực)? Không còn là từng số riêng lẻ mà tạo thành “bản sắc mới”.</p>
 <p>Biểu hiện thực tế: Trong công việc họ hành động theo năng lượng nào chiếm ưu thế? Trong cảm xúc bị giằng co giữa nhu cầu nào? Trong quyết định thiên về an toàn, tự do hay kiểm soát? Đưa ví dụ cụ thể từ tình huống đời thực.</p>
@@ -981,6 +1054,78 @@ ${innerCoreInstruction}
 </ul>
     `);
 
+    // PHẦN 3: Sections 8-9 — HƯỚNG DẪN ỨNG XỬ + GÓC NHÌN ĐA CHIỀU (MỚI)
+    promptParts.push(`
+        ${commonInstructions}
+
+${innerCoreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 3/3 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
+
+<h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
+<p>⚠️ PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm, (c) hành vi KHÔNG nên làm, (d) ví dụ kịch bản thực tế.</p>
+
+<h4>👶 Nếu Đây Là Con Cái Của Bạn:</h4>
+<ul>
+<li><strong>Hiểu bản chất năng lượng của con:</strong> Trẻ mang bộ số này có nhu cầu tâm lý gốc là gì? Cần tự do hay cấu trúc? Nhạy cảm hay mạnh mẽ? Phân tích CỤ THỂ dựa trên KIẾN THỨC SÂU.</li>
+<li><strong>Cách giáo dục phù hợp:</strong> Phong cách dạy con nào hiệu quả? Nghiêm khắc, đồng hành, hay trao quyền? Loại trường/môi trường nào phù hợp? Hoạt động ngoại khóa nào phát huy năng lượng tích cực?</li>
+<li><strong>Điều TUYỆT ĐỐI tránh khi dạy con:</strong> So sánh, ép buộc, kiểm soát, bỏ mặc — cái nào nguy hiểm nhất với bộ số này và TẠI SAO? Ví dụ cụ thể.</li>
+<li><strong>Dấu hiệu con đang lệch hướng & cách can thiệp:</strong> Biểu hiện cụ thể: thu mình, nổi loạn, lệ thuộc? Câu nói mẫu và hành động can thiệp cụ thể.</li>
+<li><strong>Phát huy tài năng bẩm sinh:</strong> Con có thiên hướng gì? Cách tạo môi trường nuôi dưỡng — hoạt động, sách, trải nghiệm cụ thể.</li>
+</ul>
+
+<h4>🤝 Nếu Đây Là Đối Tác Kinh Doanh:</h4>
+<ul>
+<li><strong>Phong cách làm việc & ra quyết định:</strong> Cần kiểm soát hay tự do? Ra quyết định nhanh hay chậm? Ưu tiên kết quả hay quy trình?</li>
+<li><strong>Cách xây dựng lòng tin:</strong> Họ đánh giá cao điều gì nhất? Bao lâu mới tin tưởng? Hành vi nào phá vỡ lòng tin ngay lập tức?</li>
+<li><strong>Giải quyết xung đột:</strong> Khi bất đồng phản ứng thế nào? Cách tiếp cận đúng: nên nói gì, tránh gì. Ví dụ kịch bản mâu thuẫn.</li>
+<li><strong>Điểm mạnh & yếu khi hợp tác:</strong> Giá trị mang lại cho dự án chung? Phân chia vai trò tối ưu.</li>
+</ul>
+
+<h4>💼 Nếu Đây Là Khách Hàng:</h4>
+<ul>
+<li><strong>Tâm lý mua hàng:</strong> Mua vì lý trí hay cảm xúc? Bị ảnh hưởng bởi giá, chất lượng, thương hiệu, câu chuyện, hay khan hiếm?</li>
+<li><strong>Cách tiếp cận & tư vấn:</strong> Giọng điệu phù hợp? Cách trình bày sản phẩm? Ví dụ kịch bản tư vấn cụ thể.</li>
+<li><strong>Xử lý từ chối:</strong> Lý do thật đằng sau? Cách phản hồi đúng tâm lý. Câu nói xử lý cụ thể.</li>
+<li><strong>Giữ chân khách hàng:</strong> Rời bỏ vì gì? Quay lại vì gì? Chăm sóc sau bán phù hợp.</li>
+</ul>
+
+<h4>💕 Nếu Đây Là Người Yêu / Bạn Đời (Phân Tích Sâu):</h4>
+<ul>
+<li><strong>Ngôn ngữ tình yêu cốt lõi:</strong> Cảm nhận tình yêu qua kênh nào mạnh nhất? Lời nói, hành động, thời gian, quà tặng, hay tiếp xúc? Phân tích CỤ THỂ dựa trên keywords bộ số.</li>
+<li><strong>Vòng đời cảm xúc:</strong> Giai đoạn đầu yêu → ổn định → xung đột → trưởng thành — mỗi giai đoạn cần gì?</li>
+<li><strong>Nỗi sợ sâu nhất trong tình yêu:</strong> Sợ bị bỏ rơi, kiểm soát, hiểu lầm, phản bội, hay mất tự do? Hành vi phòng vệ khi bị kích hoạt? Cách xoa dịu CỤ THỂ.</li>
+<li><strong>Hướng dẫn cho đối phương:</strong> 5 điều NÊN làm mỗi ngày. 5 điều KHÔNG nên làm. Câu nói khiến họ cảm thấy được yêu nhất vs tổn thương nhất.</li>
+<li><strong>Khi khủng hoảng:</strong> Dấu hiệu chuẩn bị rời đi. Cách hàn gắn đúng tâm lý. Điều kiện tha thứ vs không bao giờ quay lại.</li>
+</ul>
+
+<h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
+<p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN, mỗi góc đưa ra INSIGHT MỚI.</p>
+
+<h4>🧠 Góc Nhìn Nhà Tâm Lý Học Hành Vi:</h4>
+<ul>
+<li><strong>Lược đồ nhận thức:</strong> Bộ số này tạo ra niềm tin cốt lõi vô thức nào? Khi tổ hợp → niềm tin kép nào được kích hoạt? Ví dụ cụ thể.</li>
+<li><strong>Vòng lặp kích thích – phản ứng:</strong> Sự kiện → suy nghĩ tự động → cảm xúc → hành vi → hệ quả. Phân tích vòng lặp CỤ THỂ. Điểm can thiệp hiệu quả nhất?</li>
+<li><strong>Chiến lược trị liệu nhận thức:</strong> Kỹ thuật nào phù hợp nhất? Bài tập thực hành hàng ngày cụ thể.</li>
+</ul>
+
+<h4>☸️ Góc Nhìn Triết Học Phật Giáo:</h4>
+<ul>
+<li><strong>Tam Độc và bộ số:</strong> Bộ số thiên về Tham (ham muốn, bám víu), Sân (giận dữ, phản kháng), hay Si (vô minh, ảo tưởng)? Khi tổ hợp → "độc" nào được khuếch đại? Phân tích CỤ THỂ dựa trên challenges.</li>
+<li><strong>Ba Thiện Căn đối trị:</strong> Vô Tham (buông bỏ, bố thí) đối trị Tham. Vô Sân (từ bi, nhẫn nhục) đối trị Sân. Vô Si (trí tuệ, chánh niệm) đối trị Si. Phẩm chất nào cần rèn NHẤT? Hành động cụ thể hàng ngày.</li>
+<li><strong>Chánh niệm ứng dụng:</strong> Khi năng lượng tiêu cực bị kích hoạt, kỹ thuật chánh niệm nào giúp "dừng lại và quan sát"? Phương pháp thiền, quán chiếu cụ thể cho bộ số.</li>
+<li><strong>Chuyển hóa nghiệp tập:</strong> Xu hướng hành vi lặp lại = "nghiệp tập". Cách chuyển nghiệp = thay đổi hành vi có ý thức. Từ phản ứng tự động → hành động có chánh niệm. Ví dụ cụ thể.</li>
+</ul>
+
+<h4>📚 Góc Nhìn Nhà Giáo Dục:</h4>
+<ul>
+<li><strong>Phong cách học tập tối ưu:</strong> Học qua thị giác, thính giác, vận động, hay logic? Môi trường lý tưởng: cấu trúc hay tự do? Cá nhân hay nhóm?</li>
+<li><strong>Lộ trình phát triển bản thân:</strong> Kỹ năng mềm ưu tiên? Sách/khóa học/hoạt động cụ thể phù hợp năng lượng bộ số.</li>
+<li><strong>Vai trò & sứ mệnh cộng đồng:</strong> Đóng góp gì cho xã hội? Cách phát huy giá trị để tạo tác động tích cực.</li>
+<li><strong>Trí tuệ cảm xúc (EQ):</strong> Mạnh/yếu ở 5 thành phần: tự nhận thức, tự điều chỉnh, động lực, đồng cảm, kỹ năng xã hội? Bài tập phát triển EQ cụ thể.</li>
+</ul>
+    `);
+
         } else {
             // PROMPT CƠ BẢN (FALLBACK / OTHER COMBOS) — chỉ 1 phần, không cần chia
             promptParts.push(`
@@ -1003,7 +1148,10 @@ ${innerCoreInstruction}
         }
 
       // Tạo system instruction riêng cho phân tích — ép GPT tuân theo framework
-      const analyzeSystemInstruction = `Bạn là Chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự với hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng.
+      const analyzeSystemInstruction = `Bạn đồng thời đóng 3 vai trò chuyên gia:
+1. CHUYÊN GIA TÂM LÝ HỌC HÀNH VI — hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng, chuyên phân tích lược đồ nhận thức, vòng lặp hành vi, và chiến lược trị liệu nhận thức.
+2. NHÀ SƯ PHẬT GIÁO — am hiểu sâu về Tam Độc (Tham-Sân-Si), Ba Thiện Căn (Vô Tham-Vô Sân-Vô Si), Chánh niệm, và nguyên lý Nhân-Duyên-Quả. Áp dụng triết học Phật giáo vào phân tích tính cách và chuyển hóa hành vi.
+3. NHÀ GIÁO DỤC — chuyên về phát triển con người toàn diện, trí tuệ cảm xúc (EQ), phong cách học tập, và thiết kế lộ trình phát triển bản thân.
 
 === VAI TRÒ CỦA BẠN ===
 Bạn là NHÀ PHÂN TÍCH, không phải "người điền form". Phần prompt bên dưới chứa KHUNG TƯ DUY (framework) — bạn PHẢI dùng nó làm cấu trúc để TỰ VIẾT nội dung phân tích dựa trên dữ liệu KIẾN THỨC SÂU đã cung cấp.
