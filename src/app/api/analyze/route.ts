@@ -6,10 +6,9 @@ export async function POST(req: NextRequest) {
   try {
     const { prompt, systemInstruction, engine = 'claude' } = await req.json();
 
-    // Debug: log available env keys
     const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
     const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
-    console.log(`[API /analyze] engine=${engine}, hasAnthropicKey=${hasAnthropicKey}, hasOpenAIKey=${hasOpenAIKey}`);
+    console.log(`[API /analyze] engine=${engine}, hasAnthropicKey=${hasAnthropicKey}, hasOpenAIKey=${hasOpenAIKey}, prompt=${prompt.length}chars, system=${systemInstruction.length}chars`);
 
     // Auto-fallback
     let activeEngine = engine;
@@ -17,22 +16,21 @@ export async function POST(req: NextRequest) {
     if (engine === 'openai' && !hasOpenAIKey && hasAnthropicKey) activeEngine = 'claude';
 
     if (activeEngine === 'claude') {
-      return await handleClaude(prompt, systemInstruction);
+      return await streamClaude(prompt, systemInstruction);
     }
-    return await handleOpenAI(prompt, systemInstruction);
+    return await streamOpenAI(prompt, systemInstruction);
   } catch (error: any) {
     console.error('[API /analyze] Error:', error.message, error.stack);
     return NextResponse.json({ error: error.message || 'Unknown error' }, { status: 500 });
   }
 }
 
-async function handleClaude(prompt: string, systemInstruction: string) {
+// ========== Claude Streaming ==========
+async function streamClaude(prompt: string, systemInstruction: string) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'ANTHROPIC_API_KEY is not configured' }, { status: 500 });
   }
-
-  console.log('[API Claude] Starting... prompt:', prompt.length, 'chars, system:', systemInstruction.length, 'chars');
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -47,33 +45,78 @@ async function handleClaude(prompt: string, systemInstruction: string) {
       system: systemInstruction,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.4,
+      stream: true,
     }),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('[API Claude] Error:', response.status, errorBody);
+    console.error('[Claude Stream] Error:', response.status, errorBody);
     return NextResponse.json({ error: `Claude API error (${response.status}): ${errorBody}` }, { status: response.status });
   }
 
-  const data = await response.json();
-  const content = data.content?.[0]?.type === 'text' ? data.content[0].text : null;
+  // Pipe Claude's SSE stream → client
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-  if (!content) {
-    return NextResponse.json({ error: 'No content received from Claude' }, { status: 500 });
-  }
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-  console.log('[API Claude] Success, response length:', content.length);
-  return NextResponse.json({ content });
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
+
+            try {
+              const event = JSON.parse(data);
+              // Claude SSE: content_block_delta has the text chunks
+              if (event.type === 'content_block_delta' && event.delta?.text) {
+                controller.enqueue(encoder.encode(event.delta.text));
+              }
+              // Error from Claude
+              if (event.type === 'error') {
+                console.error('[Claude Stream] Stream error:', event.error);
+                controller.enqueue(encoder.encode(`\n\n[ERROR: ${event.error?.message || 'Unknown stream error'}]`));
+              }
+            } catch {
+              // Skip non-JSON lines
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error('[Claude Stream] Read error:', err.message);
+        controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Transfer-Encoding': 'chunked',
+    },
+  });
 }
 
-async function handleOpenAI(prompt: string, systemInstruction: string) {
+// ========== OpenAI Streaming ==========
+async function streamOpenAI(prompt: string, systemInstruction: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'OPENAI_API_KEY is not configured' }, { status: 500 });
   }
-
-  console.log('[API OpenAI] Starting...');
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -89,22 +132,62 @@ async function handleOpenAI(prompt: string, systemInstruction: string) {
       ],
       temperature: 0.4,
       max_completion_tokens: 16384,
+      stream: true,
     }),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('[API OpenAI] Error:', response.status, errorBody);
+    console.error('[OpenAI Stream] Error:', response.status, errorBody);
     return NextResponse.json({ error: `OpenAI API error (${response.status}): ${errorBody}` }, { status: response.status });
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-  if (!content) {
-    return NextResponse.json({ error: 'No content received from OpenAI' }, { status: 500 });
-  }
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-  console.log('[API OpenAI] Success');
-  return NextResponse.json({ content });
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
+
+            try {
+              const event = JSON.parse(data);
+              const text = event.choices?.[0]?.delta?.content;
+              if (text) {
+                controller.enqueue(encoder.encode(text));
+              }
+            } catch {
+              // Skip non-JSON lines
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error('[OpenAI Stream] Read error:', err.message);
+        controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Transfer-Encoding': 'chunked',
+    },
+  });
 }

@@ -20,16 +20,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (activeEngine === 'claude') {
-      return await handleClaude(messages, systemInstruction);
+      return await streamClaude(messages, systemInstruction);
     }
-    return await handleOpenAI(messages, systemInstruction);
+    return await streamOpenAI(messages, systemInstruction);
   } catch (error: any) {
     console.error('[API /chat] Error:', error.message);
     return NextResponse.json({ error: error.message || 'Unknown error' }, { status: 500 });
   }
 }
 
-async function handleClaude(messages: ChatMessage[], systemInstruction: string) {
+async function streamClaude(messages: ChatMessage[], systemInstruction: string) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'ANTHROPIC_API_KEY is not configured' }, { status: 500 });
@@ -55,26 +55,19 @@ async function handleClaude(messages: ChatMessage[], systemInstruction: string) 
       system: systemInstruction,
       messages: claudeMessages,
       temperature: 0.5,
+      stream: true,
     }),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('[API Claude Chat] Error:', response.status, errorBody);
     return NextResponse.json({ error: `Claude API error (${response.status}): ${errorBody}` }, { status: response.status });
   }
 
-  const data = await response.json();
-  const content = data.content?.[0]?.type === 'text' ? data.content[0].text : null;
-
-  if (!content) {
-    return NextResponse.json({ error: 'No content received from Claude' }, { status: 500 });
-  }
-
-  return NextResponse.json({ content });
+  return pipeSSEStream(response, 'claude');
 }
 
-async function handleOpenAI(messages: ChatMessage[], systemInstruction: string) {
+async function streamOpenAI(messages: ChatMessage[], systemInstruction: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'OPENAI_API_KEY is not configured' }, { status: 500 });
@@ -93,21 +86,72 @@ async function handleOpenAI(messages: ChatMessage[], systemInstruction: string) 
         ...messages,
       ],
       temperature: 0.5,
+      stream: true,
     }),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('[API OpenAI Chat] Error:', response.status, errorBody);
     return NextResponse.json({ error: `OpenAI API error (${response.status}): ${errorBody}` }, { status: response.status });
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  return pipeSSEStream(response, 'openai');
+}
 
-  if (!content) {
-    return NextResponse.json({ error: 'No content received from OpenAI' }, { status: 500 });
-  }
+function pipeSSEStream(response: Response, provider: 'claude' | 'openai') {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-  return NextResponse.json({ content });
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
+
+            try {
+              const event = JSON.parse(data);
+              let text: string | undefined;
+
+              if (provider === 'claude') {
+                if (event.type === 'content_block_delta' && event.delta?.text) {
+                  text = event.delta.text;
+                }
+              } else {
+                text = event.choices?.[0]?.delta?.content;
+              }
+
+              if (text) {
+                controller.enqueue(encoder.encode(text));
+              }
+            } catch {
+              // Skip non-JSON lines
+            }
+          }
+        }
+      } catch (err: any) {
+        controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+    },
+  });
 }

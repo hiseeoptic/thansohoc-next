@@ -233,25 +233,39 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         }),
       });
 
-      const responseText_raw = await apiResponse.text();
-      let result: any;
-      try {
-        result = JSON.parse(responseText_raw);
-      } catch {
-        console.error('[Chatbot] Non-JSON response:', responseText_raw.substring(0, 300));
-        throw new Error(`Lỗi server (${apiResponse.status})`);
+      if (!apiResponse.ok) {
+        let errorMsg = `Server error (${apiResponse.status})`;
+        try {
+          const errJson = JSON.parse(await apiResponse.text());
+          errorMsg = errJson.error || errorMsg;
+        } catch { /* ignore */ }
+        throw new Error(errorMsg);
       }
 
-      if (!apiResponse.ok || result.error) {
-        throw new Error(result.error || `Server error (${apiResponse.status})`);
+      // Đọc streaming response
+      const reader = apiResponse.body!.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = '';
+
+      // Thêm message trống trước, rồi cập nhật realtime
+      const placeholderIdx = messages.length + 1; // index of AI message
+      setMessages(prev => [...prev, { role: 'assistant', content: '...' }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullContent += decoder.decode(value, { stream: true });
+        // Cập nhật message cuối cùng với nội dung mới
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: fullContent };
+          return updated;
+        });
       }
 
-      if (!result.content) {
+      if (!fullContent) {
         throw new Error(chatLang === 'vi' ? 'Không nhận được nội dung từ AI' : 'No content received from AI');
       }
-
-      const aiMessage: Message = { role: 'assistant', content: result.content };
-      setMessages(prev => [...prev, aiMessage]);
 
     } catch (error: any) {
       console.error('[Chatbot] Error:', error);

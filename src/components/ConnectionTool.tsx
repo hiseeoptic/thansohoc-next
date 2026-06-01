@@ -1123,7 +1123,7 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // Gọi API Route
+      // Gọi API Route (streaming) — tránh timeout 504
       const requestBody = JSON.stringify({
         prompt,
         systemInstruction: analyzeSystemInstruction,
@@ -1137,21 +1137,42 @@ Trước khi trả output, tự hỏi:
         body: requestBody,
       });
 
-      // Xử lý response — có thể không phải JSON nếu Vercel trả error page
-      const responseText_raw = await apiResponse.text();
-      let result: any;
-      try {
-        result = JSON.parse(responseText_raw);
-      } catch {
-        console.error('[Analyze] Non-JSON response:', responseText_raw.substring(0, 500));
-        throw new Error(`Server trả về lỗi (${apiResponse.status}). Payload có thể quá lớn.`);
+      if (!apiResponse.ok) {
+        // Có thể là JSON error hoặc HTML error page
+        const errorText = await apiResponse.text();
+        let errorMsg: string;
+        try {
+          const errJson = JSON.parse(errorText);
+          errorMsg = errJson.error || `Server error (${apiResponse.status})`;
+        } catch {
+          errorMsg = `Server error (${apiResponse.status})`;
+        }
+        throw new Error(errorMsg);
       }
 
-      if (!apiResponse.ok || result.error) {
-        throw new Error(result.error || `Server error (${apiResponse.status})`);
+      // Đọc streaming response
+      const reader = apiResponse.body!.getReader();
+      const decoder = new TextDecoder();
+      let responseText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        responseText += chunk;
+
+        // Cập nhật UI realtime khi nhận chunks
+        setAnalysis({
+          ...basicAnalysis,
+          aiContent: responseText,
+        });
       }
 
-      const responseText = result.content || (analysisLang === 'en' ? '<p class="text-yellow-400">No analysis content received from AI. Please try again.</p>' : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>');
+      if (!responseText) {
+        responseText = analysisLang === 'en'
+          ? '<p class="text-yellow-400">No analysis content received from AI. Please try again.</p>'
+          : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>';
+      }
 
       setAnalysis({
         ...basicAnalysis,
