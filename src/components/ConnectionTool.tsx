@@ -7,6 +7,7 @@ import Chatbot from './Chatbot';
 import { OpenAI } from 'openai';
 import { generateAnalyzeResponse } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
+import { buildFullAnalysis, IndexInput } from '@/utils/numerologyAnalysis';
 
 interface ConnectionToolProps {
   sheetData: SheetMeaning[];
@@ -536,8 +537,12 @@ Khi phân tích tổ hợp, PHẢI xem xét:
 4. **Hiệu ứng xung đột:** Khi challenges của số này đụng advantages của số kia → giằng xé nội tại (VD: challenges "cái tôi cao" của 1 đụng advantages "khiêm nhường" của 2)`;
 })();
 
+// === PHÂN TÍCH HỆ THỐNG: Ngũ Hành + Âm Dương + Tương Thích + Liên Kết ===
+const analysisInputs: IndexInput[] = activeInputs.map(i => ({ type: i.type, value: i.value }));
+const systematicAnalysis = buildFullAnalysis(analysisInputs, analysisLang);
+
 // Kết hợp tất cả
-const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis;
+const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '\n\n' + systematicAnalysis;
     
       // 2. LẤY RULE ENGINE (Phần này rất quan trọng)
       const modifiers = ruleEngine.getPromptModifiers(
@@ -566,6 +571,9 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis;
 
             === BẢN ĐỒ TƯƠNG TÁC NĂNG LƯỢNG (BẮT BUỘC THAM CHIẾU KHI PHÂN TÍCH) ===
             ${interactionAnalysis}
+
+            === PHÂN TÍCH HỆ THỐNG: NGŨ HÀNH + ÂM DƯƠNG + TƯƠNG THÍCH + LIÊN KẾT ===
+            ${systematicAnalysis}
 
             === CÁCH SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU ===
             Khi phân tích MỖI điểm, bạn PHẢI:
@@ -990,21 +998,34 @@ Bạn là NHÀ PHÂN TÍCH, không phải "người điền form". Phần prompt
 
 BƯỚC 1 — NHẬN DIỆN: Đọc phần "KIẾN THỨC SÂU" trong prompt, trích xuất keywords, advantages, challenges, balance của TỪNG số.
 
-BƯỚC 2 — TỔ HỢP: Xác định quan hệ giữa các số:
-- Đồng hướng (cùng nhóm → khuếch đại lẫn nhau)
-- Bổ trợ (khác nhóm → bù đắp điểm yếu)
-- Tương phản (đối lập → xung đột NHƯNG tiềm năng tiến hóa cao)
+BƯỚC 2 — NGŨ HÀNH & ÂM DƯƠNG: Đọc phần "PHÂN TÍCH HỆ THỐNG" trong prompt:
+- Ngũ Hành: Mỗi số thuộc hành nào (Kim/Mộc/Thủy/Hỏa/Thổ)? Quan hệ Tương sinh hay Tương khắc?
+  + Tương sinh (nuôi dưỡng): Mộc→Hỏa→Thổ→Kim→Thủy→Mộc
+  + Tương khắc (kiểm soát): Mộc→Thổ→Thủy→Hỏa→Kim→Mộc
+  + Hành nào chiếm ưu thế? Hành nào thiếu? → Ảnh hưởng đến tính cách tổng thể
+- Âm Dương: Bộ số thiên Dương (chủ động) hay Âm (tiếp nhận)? Cân bằng hay lệch?
+- PHẢI đề cập Ngũ Hành và Âm Dương trong bài phân tích một cách tự nhiên, lồng ghép vào nội dung.
 
-BƯỚC 3 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
+BƯỚC 3 — TƯƠNG THÍCH & LIÊN KẾT: Đọc phần "MA TRẬN TƯƠNG THÍCH" và "CHỈ SỐ LIÊN KẾT":
+- Cặp số nào Hòa hợp / Trung tính / Thách thức? → Đây là nền tảng để phân tích xung đột hay bổ trợ.
+- Chỉ số liên kết (Bridge Number) cho biết hành động cụ thể cần thực hiện để hài hòa hai chỉ số.
+- PHẢI sử dụng kết quả tương thích và liên kết khi viết phần phân tích. VD: "Cặp Đường Đời 4 ↔ Nội Tâm 5 có mức tương thích Thách thức với chỉ số liên kết 1 — cần củng cố niềm tin bản thân..."
 
-BƯỚC 4 — PHÂN TÍCH 5 LỚP cho mỗi điểm (viết CHI TIẾT với ví dụ cụ thể):
+BƯỚC 4 — TỔ HỢP: Xác định quan hệ giữa các số:
+- Đồng hướng (cùng nhóm/cùng hành → khuếch đại lẫn nhau)
+- Bổ trợ (khác nhóm/tương sinh → bù đắp điểm yếu)
+- Tương phản (đối lập/tương khắc → xung đột NHƯNG tiềm năng tiến hóa cao)
+
+BƯỚC 5 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
+
+BƯỚC 6 — PHÂN TÍCH 5 LỚP cho mỗi điểm (viết CHI TIẾT với ví dụ cụ thể):
 - Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — diễn giải sâu
 - Mechanism: Số nào chi phối khi bình thường? Khi stress? — diễn giải sâu
 - Power: Lợi thế độc nhất mà từng số riêng lẻ không có — diễn giải sâu
 - Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — diễn giải sâu
 - Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — diễn giải sâu
 
-BƯỚC 5 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
+BƯỚC 7 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
 
 === QUY TẮC VIẾT NỘI DUNG ===
 
@@ -1081,7 +1102,9 @@ Trước khi trả output, tự hỏi:
 - Mỗi li có đủ 4 yếu tố (năng lượng gốc, tương tác tổ hợp, ví dụ thực tế, chuyển hóa) không? → Nếu thiếu yếu tố nào, BỔ SUNG.
 - Đã phân tích tam giác Đạo Đức – Trí Tuệ – Nghị Lực cho bộ số chưa? → Nếu chưa, BỔ SUNG.
 - Đã chỉ ra con đường chuyển hóa vô thức → tỉnh thức cho từng số chưa? → Nếu chưa, BỔ SUNG.
-- Đã nhận diện chỉ số "làm dịu" trong bộ số chưa? → Nếu có chỉ số làm dịu mà chưa phân tích, BỔ SUNG.`;
+- Đã nhận diện chỉ số "làm dịu" trong bộ số chưa? → Nếu có chỉ số làm dịu mà chưa phân tích, BỔ SUNG.
+- Đã đề cập Ngũ Hành (tương sinh/tương khắc) và Âm Dương của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
+- Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction);
