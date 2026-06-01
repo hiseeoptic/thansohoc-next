@@ -2,7 +2,6 @@
 'use server';
 
 import OpenAI from 'openai';
-import Anthropic from '@anthropic-ai/sdk';
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 // === AI Engine Type ===
@@ -11,11 +10,6 @@ export type AIEngine = 'openai' | 'claude';
 // === OpenAI Client ===
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
-
-// === Claude Client ===
-const anthropic = process.env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   : null;
 
 // Log khi khởi tạo
@@ -55,34 +49,15 @@ export async function generateAnalyzeResponse(
 ) {
   const defaultSystem = `Bạn là chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự với hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng.
 
-=== QUY TẮC BẮT BUỘC (KHÔNG ĐƯỢC VI PHẠM) ===
-
-1. BẠN PHẢI PHÂN TÍCH THEO BẢN CHẤT NĂNG LƯỢNG CỦA TỪNG SỐ, KHÔNG ĐƯỢC ĐỌC LẠI HAY PARAPHRASE DỮ LIỆU.
-   - ĐÚNG: "Số 3 mang năng lượng biểu đạt + cảm xúc, số 5 mang năng lượng tự do + trải nghiệm → khi kết hợp tạo ra xu hướng lan tỏa mạnh nhưng thiếu chiều sâu"
-   - SAI: "Người mang số 3 thường sáng tạo, người mang số 5 thường thích tự do" (đây là đọc lại, không phải phân tích)
-
-2. PHẢI SỬ DỤNG DỮ LIỆU "KIẾN THỨC SÂU" VỀ TỪNG SỐ (keywords, advantages, challenges, balance) LÀM NỀN TẢNG phân tích. Trích dẫn cụ thể: "Theo đặc điểm của số X là...", "Số Y cho thấy..."
-
-3. KHI PHÂN TÍCH TỔ HỢP SỐ:
-   - Bước 1: Nhận diện năng lượng lõi của TỪNG số (dựa trên dữ liệu cung cấp)
-   - Bước 2: Phân loại mối quan hệ (đồng hướng / bổ trợ / tương phản)
-   - Bước 3: Tạo trục năng lượng kết hợp (VD: "Ổn định ↔ Tự do")
-   - Bước 4: Phân tích 5 lớp: Core → Mechanism → Power → Shadow → Evolution
-   - Bước 5: Sinh kịch bản 3 trạng thái (đúng hướng / lệch / trưởng thành)
-
-4. TỶ TRỌNG: 80% logic phân tích năng lượng từ dữ liệu + 20% pattern tăng cường.
-
-5. PHẢI ĐƯA VÍ DỤ THỰC TẾ CỤ THỂ cho MỖI điểm phân tích.
-
-6. CẤM thuật ngữ tâm linh. Thay bằng: 'động lực tâm lý', 'xu hướng hành vi', 'giải quyết mâu thuẫn'.
-
+=== QUY TẮC BẮT BUỘC ===
+1. PHÂN TÍCH THEO BẢN CHẤT NĂNG LƯỢNG, KHÔNG đọc lại hay paraphrase dữ liệu.
+2. SỬ DỤNG DỮ LIỆU "KIẾN THỨC SÂU" (keywords, advantages, challenges, balance) LÀM NỀN TẢNG.
+3. KHI PHÂN TÍCH TỔ HỢP: Nhận diện → Phân loại quan hệ → Tạo trục năng lượng → Phân tích 5 lớp → 3 kịch bản.
+4. TỶ TRỌNG: 80% logic phân tích + 20% pattern tăng cường.
+5. ĐƯA VÍ DỤ THỰC TẾ CỤ THỂ cho MỖI điểm.
+6. CẤM thuật ngữ tâm linh. Thay bằng: 'động lực tâm lý', 'xu hướng hành vi'.
 7. GIỌNG VĂN: Thực tế, sắc sảo, tâm lý học hành vi.
-
-8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown.
-
-9. MỖI phần h3 phải dài ít nhất 150-200 từ.
-
-10. PHẦN "BÀI HỌC NHÂN – DUYÊN – QUẢ" phải phân tích tổ hợp số KĨ LƯỠNG.`;
+8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown.`;
 
   try {
     if (engine === 'claude') {
@@ -140,14 +115,14 @@ async function openaiAnalyze(prompt: string, systemInstruction: string) {
 }
 
 // ============================================================
-// Claude implementations
+// Claude implementations (dùng fetch trực tiếp — tương thích Vercel)
 // ============================================================
 async function claudeChat(messages: ChatCompletionMessageParam[], systemInstruction: string) {
-  if (!anthropic) throw new Error('ANTHROPIC_API_KEY is not configured');
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not configured');
 
   console.log('[Claude Chat] Starting...');
 
-  // Convert OpenAI message format to Claude format
   const claudeMessages = messages
     .filter(m => m.role !== 'system')
     .map(m => ({
@@ -155,15 +130,30 @@ async function claudeChat(messages: ChatCompletionMessageParam[], systemInstruct
       content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
     }));
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 8192,
-    system: systemInstruction,
-    messages: claudeMessages,
-    temperature: 0.5,
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8192,
+      system: systemInstruction,
+      messages: claudeMessages,
+      temperature: 0.5,
+    }),
   });
 
-  const content = response.content[0]?.type === 'text' ? response.content[0].text : null;
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error('[Claude Chat] API Error:', response.status, errorBody);
+    throw new Error(`Claude API error (${response.status}): ${errorBody}`);
+  }
+
+  const data = await response.json();
+  const content = data.content?.[0]?.type === 'text' ? data.content[0].text : null;
   if (!content) throw new Error('No content received from Claude');
 
   console.log('[Claude Chat] Success');
@@ -171,21 +161,37 @@ async function claudeChat(messages: ChatCompletionMessageParam[], systemInstruct
 }
 
 async function claudeAnalyze(prompt: string, systemInstruction: string) {
-  if (!anthropic) throw new Error('ANTHROPIC_API_KEY is not configured');
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not configured');
 
   console.log('[Claude Analyze] Starting...');
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 16384,
-    system: systemInstruction,
-    messages: [
-      { role: 'user', content: prompt },
-    ],
-    temperature: 0.4,
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 16384,
+      system: systemInstruction,
+      messages: [
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.4,
+    }),
   });
 
-  const content = response.content[0]?.type === 'text' ? response.content[0].text : null;
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error('[Claude Analyze] API Error:', response.status, errorBody);
+    throw new Error(`Claude API error (${response.status}): ${errorBody}`);
+  }
+
+  const data = await response.json();
+  const content = data.content?.[0]?.type === 'text' ? data.content[0].text : null;
   if (!content) throw new Error('No content received from Claude');
 
   console.log('[Claude Analyze] Success');
