@@ -4,6 +4,9 @@
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
+// Vercel serverless: tăng timeout lên 60s (Hobby max = 60s, Pro max = 300s)
+export const maxDuration = 60;
+
 // === AI Engine Type ===
 export type AIEngine = 'openai' | 'claude';
 
@@ -60,12 +63,15 @@ export async function generateAnalyzeResponse(
 8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown.`;
 
   try {
+    const sysInst = systemInstruction || defaultSystem;
+    console.log(`[${engine} Analyze] Prompt size: ${prompt.length} chars, System: ${sysInst.length} chars, Total: ${prompt.length + sysInst.length} chars`);
+
     if (engine === 'claude') {
-      return await claudeAnalyze(prompt, systemInstruction || defaultSystem);
+      return await claudeAnalyze(prompt, sysInst);
     }
-    return await openaiAnalyze(prompt, systemInstruction || defaultSystem);
+    return await openaiAnalyze(prompt, sysInst);
   } catch (error: any) {
-    console.error(`[${engine} Analyze] Error:`, error.message);
+    console.error(`[${engine} Analyze] Error:`, error.message, error.stack);
     return { error: error.message || 'Lỗi phân tích. Vui lòng thử lại sau.' };
   }
 }

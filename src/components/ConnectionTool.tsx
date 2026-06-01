@@ -1126,10 +1126,11 @@ Trước khi trả output, tự hỏi:
         aiContent: responseText
       });
     } catch (error: any) {
-      console.error('OpenAI Analyze error:', error);
+      const engineName = aiEngine === 'claude' ? 'Claude' : 'OpenAI';
+      console.error(`${engineName} Analyze error:`, error);
       setAnalysis({
         ...basicAnalysis,
-        aiContent: `<p class='text-red-400 font-bold'>⚠️ ${analysisLang === 'en' ? 'OpenAI connection error' : 'Lỗi kết nối OpenAI'}: ${error.message || (analysisLang === 'en' ? 'Please try again later' : 'Vui lòng thử lại sau')}</p>`
+        aiContent: `<p class='text-red-400 font-bold'>⚠️ ${analysisLang === 'en' ? `${engineName} connection error` : `Lỗi kết nối ${engineName}`}: ${error.message || (analysisLang === 'en' ? 'Please try again later' : 'Vui lòng thử lại sau')}</p>`
       });
     } finally {
       setIsAnalyzing(false);
