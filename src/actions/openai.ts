@@ -26,15 +26,23 @@ if (!process.env.ANTHROPIC_API_KEY) {
 export async function generateChatResponse(
   messages: ChatCompletionMessageParam[],
   systemInstruction: string,
-  engine: AIEngine = 'openai'
+  engine: AIEngine = 'claude'
 ) {
+  // Auto-fallback: nếu engine được chọn không có API key → tự chuyển
+  let activeEngine = engine;
+  if (engine === 'openai' && !process.env.OPENAI_API_KEY && process.env.ANTHROPIC_API_KEY) {
+    activeEngine = 'claude';
+  } else if (engine === 'claude' && !process.env.ANTHROPIC_API_KEY && process.env.OPENAI_API_KEY) {
+    activeEngine = 'openai';
+  }
+
   try {
-    if (engine === 'claude') {
+    if (activeEngine === 'claude') {
       return await claudeChat(messages, systemInstruction);
     }
     return await openaiChat(messages, systemInstruction);
   } catch (error: any) {
-    console.error(`[${engine} Chat] Error:`, error.message);
+    console.error(`[${activeEngine} Chat] Error:`, error.message);
     return { error: error.message || 'Lỗi kết nối AI. Vui lòng thử lại sau.' };
   }
 }
@@ -45,7 +53,7 @@ export async function generateChatResponse(
 export async function generateAnalyzeResponse(
   prompt: string,
   systemInstruction?: string,
-  engine: AIEngine = 'openai'
+  engine: AIEngine = 'claude'
 ) {
   const defaultSystem = `Bạn là chuyên gia Tâm lý học Hành vi (Behavioral Psychologist) và Cố vấn Chiến lược Nhân sự với hơn 30 năm kinh nghiệm nghiên cứu số học ứng dụng.
 
@@ -59,16 +67,26 @@ export async function generateAnalyzeResponse(
 7. GIỌNG VĂN: Thực tế, sắc sảo, tâm lý học hành vi.
 8. FORMAT: HTML sạch (h3, h4, ul, li, p, strong). KHÔNG markdown.`;
 
+  // Auto-fallback: nếu engine được chọn không có API key → tự chuyển sang engine còn lại
+  let activeEngine = engine;
+  if (engine === 'openai' && !process.env.OPENAI_API_KEY && process.env.ANTHROPIC_API_KEY) {
+    console.log('[Analyze] OpenAI key missing, auto-fallback to Claude');
+    activeEngine = 'claude';
+  } else if (engine === 'claude' && !process.env.ANTHROPIC_API_KEY && process.env.OPENAI_API_KEY) {
+    console.log('[Analyze] Claude key missing, auto-fallback to OpenAI');
+    activeEngine = 'openai';
+  }
+
   try {
     const sysInst = systemInstruction || defaultSystem;
-    console.log(`[${engine} Analyze] Prompt size: ${prompt.length} chars, System: ${sysInst.length} chars, Total: ${prompt.length + sysInst.length} chars`);
+    console.log(`[${activeEngine} Analyze] Prompt size: ${prompt.length} chars, System: ${sysInst.length} chars, Total: ${prompt.length + sysInst.length} chars`);
 
-    if (engine === 'claude') {
+    if (activeEngine === 'claude') {
       return await claudeAnalyze(prompt, sysInst);
     }
     return await openaiAnalyze(prompt, sysInst);
   } catch (error: any) {
-    console.error(`[${engine} Analyze] Error:`, error.message, error.stack);
+    console.error(`[${activeEngine} Analyze] Error:`, error.message, error.stack);
     return { error: error.message || 'Lỗi phân tích. Vui lòng thử lại sau.' };
   }
 }

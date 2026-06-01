@@ -4,7 +4,7 @@ import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
-import { generateAnalyzeResponse, AIEngine } from '@/actions/openai';
+import { generateAnalyzeResponse, getAvailableEngines, AIEngine } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import { buildFullAnalysis, IndexInput } from '@/utils/numerologyAnalysis';
 
@@ -255,11 +255,23 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   // === Hidden AI Engine Switch (password protected) ===
-  const [aiEngine, setAiEngine] = useState<AIEngine>('openai');
+  const [aiEngine, setAiEngine] = useState<AIEngine>('claude');
   const [showEngineSwitch, setShowEngineSwitch] = useState(false);
   const [enginePassword, setEnginePassword] = useState('');
   const [engineUnlocked, setEngineUnlocked] = useState(false);
   const enginePasscode = '25021987';
+
+  // Auto-detect engine: ưu tiên Claude, fallback OpenAI
+  useEffect(() => {
+    getAvailableEngines().then(engines => {
+      console.log('[Engine] Available:', engines);
+      if (engines.includes('claude')) {
+        setAiEngine('claude');
+      } else if (engines.includes('openai')) {
+        setAiEngine('openai');
+      }
+    });
+  }, []);
 
   // *** Thêm useEffect để kiểm tra và fetch nếu sheetData rỗng khi component mount ***
   useEffect(() => {
