@@ -616,18 +616,22 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
             === BÊN DƯỚI LÀ DÀN Ý PHÂN TÍCH — HÃY DÙNG LÀM KHUNG CẤU TRÚC, TỰ VIẾT NỘI DUNG ===
       `;
 
-      let prompt = "";
+      let promptParts: string[] = [];
 
         if (comboInfo.comboType === 'coreMissionLife') {
-            // PROMPT CŨ CHO TRỤC ĐƯỜNG ĐỜI + NỘI TÂM + SỨ MỆNH
-            prompt = `
+            // CHIA 2 PHẦN ĐỂ VƯỢT GIỚI HẠN TOKEN — MỖI PHẦN 16384 TOKENS
+            const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số). Mỗi mục (li) PHẢI dài ít nhất 400 từ, chia 4 phần: (a) năng lượng gốc, (b) tương tác tổ hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả.`;
+
+            // PHẦN 1: Sections 1-3 (Bản chất + Cơ chế + Hồ sơ tính cách)
+            promptParts.push(`
                 ${commonInstructions}
 
+${coreInstruction}
 
-⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số).
+⚠️ ĐÂY LÀ PHẦN 1/2 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
-<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp (li) PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 1 ví dụ hành vi thực tế, (d) có phần chuyển hóa hoặc hậu quả cụ thể.</p>
+<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau.</p>
 <ul>
 <li><strong>Trục năng lượng kết hợp:</strong> Dựa trên keywords của từng số trong bộ, xác định trục năng lượng dạng “X ↔ Y”. Giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào. Ví dụ biểu hiện trong công việc, cảm xúc, ra quyết định.</li>
 <li><strong>Nhóm động lực chủ đạo:</strong> Bộ số thuộc nhóm Hành động/Cảm xúc/Sáng tạo/Trí tuệ? Nếu đa nhóm → phân tích xung đột hoặc bổ trợ. Ví dụ cụ thể hành vi trong công sở và gia đình.
@@ -651,7 +655,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 </ul>
 
 <h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU</h3>
-<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục (li) PHẢI bám sát keywords, advantages, challenges cụ thể và có 4 yếu tố: năng lượng, tương tác, ví dụ thực tế, chuyển hóa.</p>
+<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào.</p>
 <ul>
 <li><strong>Tư duy:</strong> Logic hay cảm xúc? Thực tế hay lý tưởng? Tư duy chiến lược hay phản ứng tức thời? Ra quyết định dựa trên gì? Khi nào tư duy sáng suốt, khi nào bị cảm xúc chi phối? Ví dụ cụ thể trong công việc.
 <p>🔥 <strong>Chuyển hóa cụ thể:</strong> Từ [hạn chế tư duy cụ thể dựa trên challenges] → chuyển sang [tư duy mới cụ thể dựa trên balance]. Hành động thực tế để chuyển hóa.</p></li>
@@ -662,6 +666,15 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 <li><strong>Điểm mù & nỗi sợ cốt lõi:</strong> Nỗi sợ sâu nhất (thất bại/bị từ chối/mất kiểm soát/mất tự do)? Thói quen tự sabotage? Mặt trái khi lệch hướng? Hậu quả dài hạn nếu không điều chỉnh? Tất cả PHẢI dựa trên challenges cụ thể.</li>
 <li><strong>Bức tranh tổng thể — “Người này là ai”:</strong> Viết 1 đoạn mô tả ngắn gọn nhưng sắc nét về con người mang bộ số này — như thể bạn đang vẽ chân dung tâm lý cho họ. Bao gồm: điểm mạnh nổi bật nhất, điểm yếu nguy hiểm nhất, nhu cầu sâu nhất, nỗi sợ lớn nhất.</li>
 </ul>
+            `);
+
+            // PHẦN 2: Sections 4-5 + ENGINE + BÀI HỌC NHÂN-DUYÊN-QUẢ
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 2/2 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -694,73 +707,119 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 <li><strong>Cách chốt quyết định:</strong> Cho họ cảm giác kiểm soát/an toàn/cơ hội? Xử lý từ chối đúng nỗi sợ gốc. Ví dụ kịch bản chốt cụ thể.</li>
 </ul>
 
-<h4>🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h4>
+<h3>5. PHÂN TÍCH KẾT NỐI CHỈ SỐ CHUYÊN SÂU</h3>
+
+<p><strong>⚠️ CHỈ THỊ QUAN TRỌNG — ĐÂY LÀ LỆNH PHÂN TÍCH, KHÔNG PHẢI TEMPLATE ĐỂ COPY:</strong></p>
+<p>Bạn PHẢI dùng nó như KHUNG TƯ DUY để tự phân tích dựa trên các số cụ thể: ${activeInputs.map(i => i.value).join(', ')}.</p>
+
+<ul>
+<li>
+<strong>Bước 1 — Nhận diện năng lượng lõi:</strong>
+<p>Dựa trên dữ liệu KIẾN THỨC SÂU (keywords, advantages, challenges), xác định CỤ THỂ năng lượng lõi của từng số đang tra cứu. KHÔNG ĐƯỢC viết chung chung — PHẢI gọi tên cụ thể.</p>
+</li>
+
+<li>
+<strong>Bước 2 — Phân loại mối quan hệ giữa các số:</strong>
+<p>Xác định quan hệ: Đồng hướng (cùng nhóm → khuếch đại), Bổ trợ (khác nhóm nhưng hỗ trợ), hay Tương phản (đối lập → xung đột nhưng tiềm năng tiến hóa cao). Giải thích CỤ THỂ tại sao.</p>
+</li>
+
+<li>
+<strong>Bước 3 — Tạo trục năng lượng kết hợp:</strong>
+<p>Tạo trục dạng “X ↔ Y” dựa trên năng lượng thực sự của bộ số. PHẢI giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào trong đời sống thực.</p>
+</li>
+
+<li>
+<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 400 TỪ):</strong>
+<ul>
+<li><strong>Bản chất mới khi kết hợp:</strong> Khi kết hợp các năng lượng lõi, “con người mới” này có bản chất gì? Họ khác gì so với từng số riêng lẻ? Đưa ví dụ cụ thể: cách họ ra quyết định, cách họ yêu, cách họ làm việc.</li>
+<li><strong>Cơ chế vận hành tâm lý:</strong> Khi bình thường, số nào chi phối? Khi căng thẳng, số nào lấn át? Phản ứng cụ thể trong tình huống: mâu thuẫn công sở, áp lực tài chính, xung đột gia đình.</li>
+<li><strong>Sức mạnh tổ hợp:</strong> Tổ hợp này tạo ra lợi thế gì mà từng số riêng lẻ không có? Ứng dụng cụ thể trong kinh doanh, lãnh đạo, sáng tạo, hay kết nối.</li>
+<li><strong>Lệch hướng tiêu cực:</strong> Khi mất cân bằng, tổ hợp này dẫn đến hành vi tiêu cực gì? PHẢI cụ thể: đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức, sa đà tệ nạn... tùy theo bộ số thực tế.</li>
+<li><strong>Phát triển và chuyển hóa:</strong> Kỹ năng cụ thể cần rèn luyện để chuyển từ phiên bản thấp sang cao. Thói quen hàng ngày cần xây dựng.</li>
+</ul>
+</li>
+
+<li>
+<strong>Bước 5 — Sinh kịch bản 3 trạng thái (PHẢI VIẾT CỤ THỂ, KHÔNG CHUNG CHUNG):</strong>
+<ul>
+<li><strong>Khi đúng hướng (phiên bản cao):</strong> Họ trở thành ai? Hành vi cụ thể? Thành tựu đạt được?</li>
+<li><strong>Khi lệch (phiên bản thấp):</strong> Họ rơi vào vòng xoáy gì? Hành vi tự phá hoại cụ thể?</li>
+<li><strong>Khi trưởng thành (cân bằng):</strong> Họ học được gì? Chuyển hóa cụ thể nào?</li>
+</ul>
+</li>
+</ul>
+
+<h3>6. BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h3>
 <p><strong>⚠️ ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT — PHẢI PHÂN TÍCH DỰA TRÊN TỔ HỢP SỐ ${activeInputs.map(i => i.value).join(' + ')}, KHÔNG ĐƯỢC VIẾT CHUNG CHUNG HAY COPY TEMPLATE:</strong></p>
 <ul>
 
 <li>
 <strong>Tổng kết nghiệp tính cách:</strong>
-<p>Dựa trên KIẾN THỨC SÂU: Số ${activeInputs[0]?.value} có keywords gì, challenges gì → tạo xu hướng tâm lý cụ thể nào? Số ${activeInputs[1]?.value || 'tiếp theo'} tạo xu hướng gì? Khi kết hợp → phiên bản cao (tích cực) biểu hiện CỤ THỂ ra sao trong đời sống? Phiên bản thấp (tiêu cực) dẫn đến hành vi gì? PHẢI đưa ví dụ tình huống thực: công việc, tình cảm, tài chính. Giải thích tại sao đây là thói quen tâm thức lặp lại — họ lặp lại khuôn mẫu gì cụ thể?</p>
+<p>Dựa trên KIẾN THỨC SÂU: Số ${activeInputs[0]?.value} có keywords gì, challenges gì → tạo xu hướng tâm lý cụ thể nào? Số ${activeInputs[1]?.value || 'tiếp theo'} tạo xu hướng gì? Khi kết hợp → phiên bản cao (tích cực) biểu hiện CỤ THỂ ra sao trong đời sống? Phiên bản thấp (tiêu cực) dẫn đến hành vi gì? PHẢI đưa ví dụ tình huống thực: công việc, tình cảm, tài chính.</p>
 </li>
 
 <li>
 <strong>Phước phần (tài năng bẩm sinh từ tổ hợp này):</strong>
-<p>Tổ hợp ${activeInputs.map(i => i.value).join(' + ')} mang lại tài năng bẩm sinh cụ thể gì? (dựa trên advantages của từng số) Cơ hội nào mở ra khi dùng đúng? Thế mạnh cạnh tranh so với người khác là gì? Nếu dùng đúng, họ phát triển nhanh ở lĩnh vực nào? Đưa ví dụ nghề nghiệp, vai trò xã hội cụ thể.</p>
+<p>Tổ hợp ${activeInputs.map(i => i.value).join(' + ')} mang lại tài năng bẩm sinh cụ thể gì? Cơ hội nào mở ra khi dùng đúng? Thế mạnh cạnh tranh so với người khác là gì? Đưa ví dụ nghề nghiệp, vai trò xã hội cụ thể.</p>
 </li>
 
 <li>
 <strong>Nghiệp cần chuyển hóa (dựa trên challenges của bộ số):</strong>
-<p>Từ challenges trong KIẾN THỨC SÂU, tổ hợp này dễ rơi vào bẫy tâm lý gì? Kiểm soát quá mức? Lệ thuộc cảm xúc? Sợ hãi thay đổi? Thiếu kỷ luật? PHẢI phân tích CỤ THỂ cho bộ số đang tra: VD nếu 3+5 → dễ đào hoa, quan hệ ngoài luồng, sống cảm xúc thiếu trách nhiệm; nếu 1+5 → liều lĩnh mạo hiểm, dễ mất tiền lớn; nếu 2+8 → dễ bị áp chế trong quan hệ. Mô tả cách sai lầm lặp lại — tự phá cơ hội như thế nào?</p>
+<p>Tổ hợp này dễ rơi vào bẫy tâm lý gì? PHẢI phân tích CỤ THỂ cho bộ số đang tra. Mô tả cách sai lầm lặp lại — tự phá cơ hội như thế nào?</p>
 </li>
 
 <li>
 <strong>Nếu không chuyển hóa — hậu quả cụ thể:</strong>
-<p>Với tổ hợp ${activeInputs.map(i => i.value).join(' + ')}, nếu không nhận ra khuôn mẫu tiêu cực: Sức khỏe tâm lý bị ảnh hưởng cụ thể ra sao? (kiệt sức, trầm cảm, mất phương hướng?) Quan hệ đổ vỡ theo kiểu nào? (bị bỏ rơi, tự đẩy người khác ra, kiểm soát quá mức?) Thất bại lặp lại ở đâu? (sự nghiệp, tài chính, tình cảm?) Đưa ví dụ kịch bản đời sống thực.</p>
+<p>Với tổ hợp ${activeInputs.map(i => i.value).join(' + ')}, nếu không nhận ra khuôn mẫu tiêu cực: Sức khỏe tâm lý bị ảnh hưởng cụ thể ra sao? Quan hệ đổ vỡ theo kiểu nào? Thất bại lặp lại ở đâu? Đưa ví dụ kịch bản đời sống thực.</p>
 </li>
 
 <li>
 <strong>Nếu chuyển hóa — con đường cụ thể:</strong>
-<p>Với bộ số này, chuyển hóa CỤ THỂ nghĩa là gì? Không phải nói chung “phản ứng → quan sát” mà PHẢI nói: “Khi số X khiến bạn muốn [hành vi cũ cụ thể], hãy chuyển sang [hành vi mới cụ thể]”. Ví dụ: “Khi năng lượng số 5 kích hoạt sự bồng bột muốn bỏ việc, hãy dùng năng lượng số 4 để lập kế hoạch 30 ngày trước khi quyết định”. Mỗi chuyển hóa phải có hành động thực tế kèm theo.</p>
+<p>Với bộ số này, chuyển hóa CỤ THỂ nghĩa là gì? PHẢI nói: “Khi số X khiến bạn muốn [hành vi cũ cụ thể], hãy chuyển sang [hành vi mới cụ thể]”. Mỗi chuyển hóa phải có hành động thực tế kèm theo.</p>
 </li>
 
 <li>
 <strong>Chu kỳ nhân – duyên – quả (phân tích cho bộ số cụ thể):</strong>
-<p><strong>Nhân:</strong> Với tổ hợp này, suy nghĩ/niềm tin gốc rễ nào chi phối hành vi? (VD: “Tôi phải kiểm soát mọi thứ” từ số 1, “Tôi cần tự do tuyệt đối” từ số 5). <strong>Duyên:</strong> Môi trường/tình huống nào kích hoạt khuôn mẫu tiêu cực? (VD: áp lực thời hạn, xung đột với sếp, bị từ chối trong tình cảm). <strong>Quả:</strong> Kết quả cuộc đời cụ thể khi khuôn mẫu này lặp đi lặp lại? Phải liên kết trực tiếp với challenges của bộ số.</p>
+<p><strong>Nhân:</strong> Suy nghĩ/niềm tin gốc rễ nào chi phối hành vi? <strong>Duyên:</strong> Môi trường/tình huống nào kích hoạt khuôn mẫu tiêu cực? <strong>Quả:</strong> Kết quả cuộc đời cụ thể khi khuôn mẫu này lặp đi lặp lại?</p>
 </li>
 
 <li>
-<strong>Bài học phát triển (dựa trên balance của từng số trong bộ):</strong>
-<p>Dựa trên phần “balance” trong KIẾN THỨC SÂU của từng số, bài học lớn nhất cho tổ hợp này là gì? Cân bằng giữa điều gì và điều gì CỤ THỂ? Vượt qua nỗi sợ nào CỤ THỂ? Phát triển phẩm chất nào CỤ THỂ? Mỗi bài học phải kèm theo hành động thực tế có thể áp dụng ngay.</p>
+<strong>Bài học phát triển:</strong>
+<p>Bài học lớn nhất cho tổ hợp này là gì? Cân bằng giữa điều gì và điều gì CỤ THỂ? Mỗi bài học phải kèm theo hành động thực tế có thể áp dụng ngay.</p>
 </li>
 
 <li>
-<strong>🔥 Insight tổng kết:</strong>
-<p>Kết luận bằng 2-3 câu sắc sảo, cá nhân hóa cho bộ số ${activeInputs.map(i => i.value).join(' + ')}. Nhấn mạnh: con số không quyết định — nhận thức quyết định. Người tỉnh thức dùng hiểu biết về con số để phát triển chứ không bị con số định nghĩa. Câu này PHẢI liên kết cụ thể với năng lượng của bộ số đang phân tích, KHÔNG phải câu chung chung áp dụng cho mọi bộ số.</p>
+<strong>🔥 Tổng kết sâu sắc:</strong>
+<p>Kết luận bằng 2-3 câu sắc sảo, cá nhân hóa cho bộ số ${activeInputs.map(i => i.value).join(' + ')}. Nhấn mạnh: con số không quyết định — nhận thức quyết định. Câu này PHẢI liên kết cụ thể với năng lượng của bộ số đang phân tích.</p>
 </li>
 
 </ul>
-</li>
 
+<h3>7. LỘ TRÌNH PHÁT TRIỂN</h3>
+<ul>
+<li><strong>Giai đoạn Non trẻ:</strong> Trích xuất từ dữ liệu, thường bị chi phối bởi nhu cầu/thói quen nào? Diễn giải sâu với ví dụ từ tuổi trẻ, phân tích cách nó định hình tính cách.</li>
+<li><strong>Giai đoạn Trung niên:</strong> Từ context, cần tập trung phát triển kỹ năng gì (theo Sứ mệnh)? Phân tích chiến lược, ví dụ từ sự nghiệp giữa đời.</li>
+<li><strong>Giai đoạn Trưởng thành:</strong> Sự tích hợp hoàn hảo trông như thế nào? Diễn giải phiên bản tốt nhất, với ví dụ từ người thành công cao tuổi.</li>
 </ul>
-                <h3>5. LỘ TRÌNH PHÁT TRIỂN</h3>
-                <ul>
-                    <li><strong>Giai đoạn Non trẻ:</strong> Trích xuất từ dữ liệu, thường bị chi phối bởi nhu cầu/thói quen nào? Diễn giải sâu với ví dụ từ tuổi trẻ, phân tích cách nó định hình tính cách.</li>
-                    <li><strong>Giai đoạn Trung niên:</strong> Từ context, cần tập trung phát triển kỹ năng gì (theo Sứ mệnh)? Phân tích chiến lược, ví dụ từ sự nghiệp giữa đời.</li>
-                    <li><strong>Giai đoạn Trưởng thành:</strong> Sự tích hợp hoàn hảo trông như thế nào? Diễn giải phiên bản tốt nhất, với ví dụ từ người thành công cao tuổi.</li>
-                </ul>
-            `;
+            `);
        } else if (comboInfo.comboType === 'innerPersonalityAxis') {
     // PROMPT NÂNG CẤP CHUYÊN SÂU CHO TRỤC NỘI TÂM – NHÂN CÁCH – THÁI ĐỘ – TRƯỞNG THÀNH
     const heartVal = activeInputs.find(i => i.type === NumberType.HeartDesire)?.value || 'X';
     const persVal = activeInputs.find(i => i.type === NumberType.Personality)?.value || 'Y';
     const attVal = activeInputs.find(i => i.type === NumberType.Attitude)?.value || 'Z';
     const matVal = activeInputs.find(i => i.type === NumberType.Maturity)?.value || 'W';
-    prompt = `
+
+    const innerCoreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI dài ít nhất 400 từ, có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.`;
+
+    // PHẦN 1: Sections 1-4
+    promptParts.push(`
         ${commonInstructions}
 
         **KHUNG PHÂN TÍCH CHUYÊN SÂU CHO TRỤC NỘI TÂM – NHÂN CÁCH – THÁI ĐỘ – TRƯỞNG THÀNH:**
 
-⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
+${innerCoreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 1/2. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -859,6 +918,15 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 <p>Bước chuyển hóa: 1. Nhận ra xung đột → 2. Quan sát bản thân → 3. Điều chỉnh hành vi → 4. Tích hợp năng lượng. Không phải ai cũng đi đến bước 4.</p>
 </li>
 </ul>
+    `);
+
+    // PHẦN 2: Sections 5-7
+    promptParts.push(`
+        ${commonInstructions}
+
+${innerCoreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 2/2 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -872,16 +940,16 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
 <h4>🤝 Giao Tiếp & Thuyết Phục:</h4>
 <ul>
-<li><strong>Cách Tiếp Cận (Do's):</strong> Cách mở đầu: đánh vào động lực chính của bộ số. Cách truyền đạt: điều chỉnh ngôn ngữ phù hợp “tần số” (trực tiếp / cảm xúc / sáng tạo / logic). Cách đưa giải pháp: trình bày theo cách dễ chấp nhận (kết quả rõ ràng / sự an toàn / ý tưởng mới / phân tích chiều sâu). Ví dụ giao tiếp, tư vấn, đàm phán cụ thể.</li>
-<li><strong>Điều Cần Tránh (Don'ts):</strong> Tránh kích hoạt điểm tiêu cực (áp lực sai cách, chạm nỗi sợ cốt lõi). Tránh sai phong cách giao tiếp. Tránh thiếu yếu tố họ coi trọng. Hậu quả: im lặng, chống đối, mất niềm tin, rút lui. Ví dụ cụ thể.</li>
+<li><strong>Cách tiếp cận hiệu quả:</strong> Cách mở đầu: đánh vào động lực chính của bộ số. Cách truyền đạt: điều chỉnh ngôn ngữ phù hợp “tần số” (trực tiếp / cảm xúc / sáng tạo / logic). Cách đưa giải pháp: trình bày theo cách dễ chấp nhận. Ví dụ giao tiếp, tư vấn, đàm phán cụ thể.</li>
+<li><strong>Điều cần tránh:</strong> Tránh kích hoạt điểm tiêu cực (áp lực sai cách, chạm nỗi sợ cốt lõi). Tránh sai phong cách giao tiếp. Hậu quả: im lặng, chống đối, mất niềm tin, rút lui. Ví dụ cụ thể.</li>
 <li><strong>Soi vào điểm yếu để thuyết phục:</strong> Nỗi sợ cốt lõi → đưa giải pháp làm họ an toàn/mạnh mẽ. Đòn bẩy thuyết phục: quyền lựa chọn / sự công nhận / sự đảm bảo / tầm nhìn. Ví dụ ứng dụng trong bán hàng, tuyển dụng, dẫn dắt đội nhóm.</li>
 </ul>
 
 <h4>💰 Ứng Dụng Tư Vấn – Bán Hàng – Chốt Quyết Định:</h4>
 <ul>
-<li><strong>Trọng tâm cần đánh vào:</strong> Yếu tố khiến sẵn sàng chi tiền (kết quả, cảm xúc, sự an toàn, giá trị cá nhân, tầm nhìn). Cách xây dựng niềm tin (kết quả thực tế, câu chuyện, dữ liệu, trải nghiệm).</li>
-<li><strong>Cách trình bày sản phẩm/dịch vụ:</strong> Điều chỉnh theo cách ra quyết định (nhanh–chậm, cảm tính–lý trí, linh hoạt–cấu trúc). Đòn bẩy ra quyết định: Quyền lựa chọn, Sự đảm bảo an toàn, Sự khan hiếm/cơ hội, Sự công nhận/nâng tầm.</li>
-<li><strong>Cách xử lý từ chối & Chốt (Closing):</strong> Hiểu lý do thật (sợ rủi ro, chưa tin, chưa thấy giá trị) → xử lý đúng nỗi sợ gốc. Đưa đề nghị: cho cảm giác kiểm soát / tạo sự chắc chắn / mở cơ hội phát triển lớn hơn. Ví dụ kịch bản tư vấn/bán hàng cụ thể.</li>
+<li><strong>Trọng tâm cần đánh vào:</strong> Yếu tố khiến sẵn sàng chi tiền (kết quả, cảm xúc, sự an toàn, giá trị cá nhân, tầm nhìn). Cách xây dựng niềm tin.</li>
+<li><strong>Cách trình bày sản phẩm/dịch vụ:</strong> Điều chỉnh theo cách ra quyết định (nhanh–chậm, cảm tính–lý trí, linh hoạt–cấu trúc). Đòn bẩy ra quyết định.</li>
+<li><strong>Cách xử lý từ chối & chốt:</strong> Hiểu lý do thật → xử lý đúng nỗi sợ gốc. Đưa đề nghị phù hợp. Ví dụ kịch bản tư vấn/bán hàng cụ thể.</li>
 </ul>
 
 <h4>❤️ Tình Cảm & Kết Nối:</h4>
@@ -901,7 +969,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 <li><strong>Nếu chuyển hóa:</strong> Phản ứng → quan sát. Sợ hãi → chấp nhận. Kiểm soát → thấu hiểu. Hành động cụ thể kèm theo.</li>
 <li><strong>Chu kỳ nhân – duyên – quả:</strong> Nhân → suy nghĩ/hành vi gốc rễ. Duyên → môi trường kích hoạt. Quả → kết quả cuộc đời. Liên kết trực tiếp với challenges bộ số.</li>
 <li><strong>Bài học phát triển:</strong> Cân bằng giữa điều gì CỤ THỂ? Vượt qua nỗi sợ nào CỤ THỂ? Phát triển phẩm chất nào CỤ THỂ? Mỗi bài học kèm hành động thực tế.</li>
-<li><strong>🔥 Insight:</strong> Con số không quyết định. Nhận thức quyết định. Tỉnh thức → tạo phước. Câu kết luận CÁ NHÂN HÓA cho bộ số ${activeInputs.map(i => i.value).join(' + ')}.</li>
+<li><strong>🔥 Tổng kết sâu sắc:</strong> Con số không quyết định. Nhận thức quyết định. Câu kết luận CÁ NHÂN HÓA cho bộ số ${activeInputs.map(i => i.value).join(' + ')}.</li>
 </ul>
 
 <h3>7. HƯỚNG PHÁT TRIỂN TRƯỞNG THÀNH</h3>
@@ -911,11 +979,11 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 <li><strong>Bài Học Lớn Nhất:</strong> Kỹ năng cần rèn: quản trị cảm xúc, kỷ luật, lãnh đạo, giao tiếp, linh hoạt. Điều cần buông bỏ để trưởng thành. Thói quen nên xây dựng hàng ngày. Ví dụ từ hành trình cá nhân.</li>
 <li><strong>Chiến lược phát triển dài hạn:</strong> Phát triển chiều sâu nội tâm trước khi mở rộng ảnh hưởng bên ngoài. Lộ trình sự nghiệp hoặc phát triển bản thân cụ thể.</li>
 </ul>
-    `;
+    `);
 
         } else {
-            // PROMPT CƠ BẢN (FALLBACK / OTHER COMBOS)
-            prompt = `
+            // PROMPT CƠ BẢN (FALLBACK / OTHER COMBOS) — chỉ 1 phần, không cần chia
+            promptParts.push(`
                 ${commonInstructions}
 
                 **KHUNG PHÂN TÍCH CƠ BẢN:**
@@ -931,7 +999,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
                 <h3>3. Lời Khuyên Ứng Dụng</h3>
                 <p>Trích xuất và phân tích lời khuyên thực tế để cân bằng cuộc sống và công việc cho bộ số này. Diễn giải sâu từng chiến lược, ví dụ cụ thể từ ứng dụng (sự nghiệp chọn nghề, tài chính lập kế hoạch, mối quan hệ giao tiếp), phân tích lợi ích và cách triển khai từng bước để hóa giải mâu thuẫn.</p>
-            `;
+            `);
         }
 
       // Tạo system instruction riêng cho phân tích — ép GPT tuân theo framework
@@ -1057,49 +1125,57 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // Gọi API Route (streaming) — tránh timeout 504
-      const requestBody = JSON.stringify({
-        prompt,
-        systemInstruction: analyzeSystemInstruction,
-        engine: aiEngine,
-      });
-      console.log(`[Analyze] Payload size: ${(requestBody.length / 1024).toFixed(1)} KB, Engine: ${aiEngine}`);
-
-      const apiResponse = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: requestBody,
-      });
-
-      if (!apiResponse.ok) {
-        // Có thể là JSON error hoặc HTML error page
-        const errorText = await apiResponse.text();
-        let errorMsg: string;
-        try {
-          const errJson = JSON.parse(errorText);
-          errorMsg = errJson.error || `Server error (${apiResponse.status})`;
-        } catch {
-          errorMsg = `Server error (${apiResponse.status})`;
-        }
-        throw new Error(errorMsg);
-      }
-
-      // Đọc streaming response
-      const reader = apiResponse.body!.getReader();
-      const decoder = new TextDecoder();
+      // Gọi API Route (streaming) — MULTI-CALL: gọi tuần tự từng phần, nối kết quả
       let responseText = '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        responseText += chunk;
-
-        // Cập nhật UI realtime khi nhận chunks
-        setAnalysis({
-          ...basicAnalysis,
-          aiContent: responseText,
+      for (let partIdx = 0; partIdx < promptParts.length; partIdx++) {
+        const currentPrompt = promptParts[partIdx];
+        const requestBody = JSON.stringify({
+          prompt: currentPrompt,
+          systemInstruction: analyzeSystemInstruction,
+          engine: aiEngine,
         });
+        console.log(`[Analyze] Part ${partIdx + 1}/${promptParts.length}, Payload: ${(requestBody.length / 1024).toFixed(1)} KB, Engine: ${aiEngine}`);
+
+        const apiResponse = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: requestBody,
+        });
+
+        if (!apiResponse.ok) {
+          const errorText = await apiResponse.text();
+          let errorMsg: string;
+          try {
+            const errJson = JSON.parse(errorText);
+            errorMsg = errJson.error || `Server error (${apiResponse.status})`;
+          } catch {
+            errorMsg = `Server error (${apiResponse.status})`;
+          }
+          throw new Error(errorMsg);
+        }
+
+        // Đọc streaming response cho phần hiện tại
+        const reader = apiResponse.body!.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          responseText += chunk;
+
+          // Cập nhật UI realtime khi nhận chunks
+          setAnalysis({
+            ...basicAnalysis,
+            aiContent: responseText,
+          });
+        }
+
+        // Thêm khoảng cách giữa các phần
+        if (partIdx < promptParts.length - 1) {
+          responseText += '\n\n';
+        }
       }
 
       if (!responseText) {
