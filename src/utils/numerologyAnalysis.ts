@@ -129,36 +129,7 @@ export function getElementRelation(el1: Element, el2: Element): {
 }
 
 // ============================================================
-// 2. ÂM DƯƠNG (Polarity) — Chẵn/Lẻ
-// ============================================================
-export type Polarity = 'Dương' | 'Âm';
-
-export function getPolarity(num: number | string): Polarity {
-  const n = typeof num === 'string' ? parseInt(num) : num;
-  // Số master giữ nguyên tính chất
-  if (n === 11 || n === 33) return 'Dương'; // lẻ
-  if (n === 22) return 'Âm'; // chẵn
-  return n % 2 === 0 ? 'Âm' : 'Dương';
-}
-
-export function getPolarityAnalysis(p1: Polarity, p2: Polarity, lang: 'vi' | 'en' = 'vi'): string {
-  if (p1 === p2 && p1 === 'Dương') {
-    return lang === 'vi'
-      ? 'Cùng Dương (lẻ): Cả hai đều hướng ngoại, chủ động, độc lập. Dễ cạnh tranh nhau nhưng năng lượng hành động rất mạnh.'
-      : 'Both Yang (odd): Both are outward, proactive, independent. May compete but action energy is very strong.';
-  }
-  if (p1 === p2 && p1 === 'Âm') {
-    return lang === 'vi'
-      ? 'Cùng Âm (chẵn): Cả hai đều hướng nội, tiếp nhận, hợp tác. Dễ đồng thuận nhưng có thể thiếu động lực hành động.'
-      : 'Both Yin (even): Both are inward, receptive, cooperative. Easy agreement but may lack action drive.';
-  }
-  return lang === 'vi'
-    ? 'Âm-Dương cân bằng: Một chủ động, một tiếp nhận — tạo sự bổ sung tự nhiên. Đây là tổ hợp có tiềm năng hài hòa cao nhất nếu biết phối hợp.'
-    : 'Yin-Yang balanced: One proactive, one receptive — natural complement. Highest harmony potential when coordinated.';
-}
-
-// ============================================================
-// 3. CHỈ SỐ LIÊN KẾT (Bridge Numbers)
+// 2. CHỈ SỐ LIÊN KẾT (Bridge Numbers)
 // ============================================================
 export interface BridgeResult {
   bridgeNumber: number;
@@ -391,7 +362,7 @@ export function getCompatibility(num1: number | string, num2: number | string): 
 }
 
 // ============================================================
-// 5. PHÂN TÍCH TỔNG HỢP (Full Analysis Builder)
+// 4. PHÂN TÍCH TỔNG HỢP (Full Analysis Builder)
 // ============================================================
 export interface IndexInput {
   type: string;   // "Đường Đời", "Nội Tâm", etc.
@@ -443,41 +414,7 @@ export function buildFullAnalysis(inputs: IndexInput[], lang: 'vi' | 'en' = 'vi'
 
   sections.push(elementSection.join('\n'));
 
-  // --- Section 2: Âm Dương ---
-  const polaritySection: string[] = [];
-  polaritySection.push(lang === 'vi'
-    ? '=== PHÂN TÍCH ÂM DƯƠNG (Polarity) ==='
-    : '=== YIN-YANG POLARITY ANALYSIS ===');
-
-  const polarities = inputs.map(i => ({
-    ...i,
-    polarity: getPolarity(i.value),
-  }));
-
-  const yangCount = polarities.filter(p => p.polarity === 'Dương').length;
-  const yinCount = polarities.filter(p => p.polarity === 'Âm').length;
-
-  polarities.forEach(p => {
-    polaritySection.push(`${p.type} (${p.value}) → ${p.polarity} (${p.polarity === 'Dương' ? 'Yang/Lẻ' : 'Yin/Chẵn'})`);
-  });
-
-  if (yangCount > yinCount + 1) {
-    polaritySection.push(lang === 'vi'
-      ? `⚡ Thiên Dương mạnh (${yangCount}D/${yinCount}Â): Năng lượng hướng ngoại, chủ động, quyết đoán chiếm ưu thế. Cần phát triển thêm khả năng lắng nghe, kiên nhẫn, tiếp nhận.`
-      : `⚡ Strong Yang dominant (${yangCount}Y/${yinCount}N): Outward, proactive, decisive energy dominates. Need to develop listening, patience, receptivity.`);
-  } else if (yinCount > yangCount + 1) {
-    polaritySection.push(lang === 'vi'
-      ? `🌙 Thiên Âm mạnh (${yinCount}Â/${yangCount}D): Năng lượng hướng nội, tiếp nhận, hợp tác chiếm ưu thế. Cần phát triển thêm sự quyết đoán, chủ động, dám hành động.`
-      : `🌙 Strong Yin dominant (${yinCount}N/${yangCount}Y): Inward, receptive, cooperative energy dominates. Need to develop assertiveness, proactivity, boldness.`);
-  } else {
-    polaritySection.push(lang === 'vi'
-      ? `☯️ Âm-Dương cân bằng (${yangCount}D/${yinCount}Â): Bộ số có sự hài hòa tự nhiên giữa hành động và tiếp nhận, giữa lý trí và cảm xúc.`
-      : `☯️ Balanced Yin-Yang (${yangCount}Y/${yinCount}N): The chart has natural harmony between action and reception, logic and emotion.`);
-  }
-
-  sections.push(polaritySection.join('\n'));
-
-  // --- Section 3: Ma trận tương thích ---
+  // --- Section 2: Ma trận tương thích ---
   const compatSection: string[] = [];
   compatSection.push(lang === 'vi'
     ? '=== MA TRẬN TƯƠNG THÍCH CÁC CẶP SỐ ==='
@@ -494,7 +431,7 @@ export function buildFullAnalysis(inputs: IndexInput[], lang: 'vi' | 'en' = 'vi'
 
   sections.push(compatSection.join('\n'));
 
-  // --- Section 4: Chỉ số liên kết (Bridge) ---
+  // --- Section 3: Chỉ số liên kết (Bridge) ---
   const bridgeSection: string[] = [];
   bridgeSection.push(lang === 'vi'
     ? '=== CHỈ SỐ LIÊN KẾT (Bridge Numbers) ==='

@@ -998,13 +998,12 @@ Bạn là NHÀ PHÂN TÍCH, không phải "người điền form". Phần prompt
 
 BƯỚC 1 — NHẬN DIỆN: Đọc phần "KIẾN THỨC SÂU" trong prompt, trích xuất keywords, advantages, challenges, balance của TỪNG số.
 
-BƯỚC 2 — NGŨ HÀNH & ÂM DƯƠNG: Đọc phần "PHÂN TÍCH HỆ THỐNG" trong prompt:
+BƯỚC 2 — NGŨ HÀNH: Đọc phần "PHÂN TÍCH HỆ THỐNG" trong prompt:
 - Ngũ Hành: Mỗi số thuộc hành nào (Kim/Mộc/Thủy/Hỏa/Thổ)? Quan hệ Tương sinh hay Tương khắc?
   + Tương sinh (nuôi dưỡng): Mộc→Hỏa→Thổ→Kim→Thủy→Mộc
   + Tương khắc (kiểm soát): Mộc→Thổ→Thủy→Hỏa→Kim→Mộc
   + Hành nào chiếm ưu thế? Hành nào thiếu? → Ảnh hưởng đến tính cách tổng thể
-- Âm Dương: Bộ số thiên Dương (chủ động) hay Âm (tiếp nhận)? Cân bằng hay lệch?
-- PHẢI đề cập Ngũ Hành và Âm Dương trong bài phân tích một cách tự nhiên, lồng ghép vào nội dung.
+- PHẢI đề cập Ngũ Hành trong bài phân tích một cách tự nhiên, lồng ghép vào nội dung.
 
 BƯỚC 3 — TƯƠNG THÍCH & LIÊN KẾT: Đọc phần "MA TRẬN TƯƠNG THÍCH" và "CHỈ SỐ LIÊN KẾT":
 - Cặp số nào Hòa hợp / Trung tính / Thách thức? → Đây là nền tảng để phân tích xung đột hay bổ trợ.
@@ -1103,7 +1102,7 @@ Trước khi trả output, tự hỏi:
 - Đã phân tích tam giác Đạo Đức – Trí Tuệ – Nghị Lực cho bộ số chưa? → Nếu chưa, BỔ SUNG.
 - Đã chỉ ra con đường chuyển hóa vô thức → tỉnh thức cho từng số chưa? → Nếu chưa, BỔ SUNG.
 - Đã nhận diện chỉ số "làm dịu" trong bộ số chưa? → Nếu có chỉ số làm dịu mà chưa phân tích, BỔ SUNG.
-- Đã đề cập Ngũ Hành (tương sinh/tương khắc) và Âm Dương của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
+- Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
       // Gọi Server Action với system instruction riêng
