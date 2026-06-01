@@ -81,30 +81,22 @@ export default function Home() {
       {/* Footer */}
       <footer className="text-center p-6 sm:p-8 text-gray-500 text-xs border-t border-white/5 mt-auto">
         <p>© {new Date().getFullYear()} Mystic Numerology. Designed with Mystical Energy.</p>
-        <div className="mt-4 flex justify-center gap-3 sm:gap-4 flex-wrap">
+        <div className="mt-4 flex justify-center gap-4 sm:gap-6 flex-wrap">
           <a
             href="https://m.me/nguyenduchoa87"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-blue-600/80 hover:bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-full transition shadow-md hover:shadow-lg text-xs sm:text-sm"
+            className="bg-blue-600/80 hover:bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-full transition shadow-md hover:shadow-lg"
           >
-            {language === 'vi' ? '💬 Messenger' : '💬 Messenger'}
+            {language === 'vi' ? 'Liên hệ Messenger' : 'Contact Messenger'}
           </a>
           <a
-            href="https://wa.me/84931767767"
+            href="https://zalo.me/0931767767"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-emerald-600/80 hover:bg-emerald-600 text-white px-4 sm:px-5 py-2 rounded-full transition shadow-md hover:shadow-lg text-xs sm:text-sm"
+            className="bg-green-600/80 hover:bg-green-600 text-white px-4 sm:px-5 py-2 rounded-full transition shadow-md hover:shadow-lg"
           >
-            {language === 'vi' ? '📱 WhatsApp' : '📱 WhatsApp'}
-          </a>
-          <a
-            href="https://zalo.me/84931767767"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-500/80 hover:bg-blue-500 text-white px-4 sm:px-5 py-2 rounded-full transition shadow-md hover:shadow-lg text-xs sm:text-sm"
-          >
-            {language === 'vi' ? '📲 Zalo' : '📲 Zalo'}
+            {language === 'vi' ? 'Liên hệ Zalo' : 'Contact Zalo'}
           </a>
         </div>
       </footer>
