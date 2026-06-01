@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Edge Runtime: streaming không bị giới hạn 60s như Serverless
-// Hobby plan: stream lên đến 5 phút, đủ cho Claude phân tích dài
-export const runtime = 'edge';
+// Serverless + Streaming: Vercel cho phép stream tối đa 5 PHÚT
+// (Edge chỉ có 30s — ngắn hơn). First byte phải đến trong 60s → OK vì Claude stream ngay.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {

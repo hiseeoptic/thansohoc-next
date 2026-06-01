@@ -610,8 +610,8 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
             - TRỌNG TÂM: Phân tích CÁCH CÁC SỐ TƯƠNG TÁC với nhau (khuếch đại, bổ trợ, xung đột, làm dịu) — KHÔNG chỉ liệt kê đặc điểm từng số riêng lẻ.
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
 
-            === NGÔN NGỮ OUTPUT ===
-            ${analysisLang === 'en' ? 'BẮT BUỘC viết TOÀN BỘ output bằng TIẾNG ANH (English). Tất cả tiêu đề h3, h4, nội dung p, li đều phải bằng tiếng Anh. Giữ nguyên cấu trúc framework nhưng dịch toàn bộ nội dung sang English.' : 'Viết toàn bộ output bằng TIẾNG VIỆT.'}
+            === NGÔN NGỮ OUTPUT — QUY TẮC TUYỆT ĐỐI ===
+            ${analysisLang === 'en' ? 'BẮT BUỘC viết TOÀN BỘ output bằng TIẾNG ANH (English). Tất cả tiêu đề h3, h4, nội dung p, li đều phải bằng tiếng Anh. Giữ nguyên cấu trúc framework nhưng dịch toàn bộ nội dung sang English.' : 'BẮT BUỘC viết TOÀN BỘ bằng TIẾNG VIỆT THUẦN TÚY. KHÔNG được dùng bất kỳ từ tiếng Anh nào — kể cả trong ngoặc đơn, tiêu đề, thuật ngữ chuyên môn. Ví dụ: KHÔNG viết "Core Dynamics", "Flow vs Stress", "Deep Profile", "Actionable Insights", "accountability partner", "impact investing", "retreat", "recharge". PHẢI dịch tất cả sang tiếng Việt: "Bản chất cốt lõi", "Trạng thái thuận lợi và căng thẳng", "Hồ sơ tính cách", "Ứng dụng thực tế", "người đồng hành giám sát", "đầu tư tác động", "nghỉ dưỡng", "nạp năng lượng".'}
 
             === BÊN DƯỚI LÀ DÀN Ý PHÂN TÍCH — HÃY DÙNG LÀM KHUNG CẤU TRÚC, TỰ VIẾT NỘI DUNG ===
       `;
@@ -626,8 +626,8 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 ⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số).
 
-<h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI (Core Dynamics)</h3>
-<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp (li) PHẢI dài ít nhất 600 từ (4 phần x 150 từ mỗi phần) và PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 2 ví dụ hành vi thực tế, (d) có phần chuyển hóa hoặc hậu quả cụ thể. Nếu li nào dưới 200 từ → BẮT BUỘC mở rộng.</p>
+<h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
+<p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau. Mỗi lớp (li) PHẢI: (a) trích dẫn keywords/advantages/challenges cụ thể từ KIẾN THỨC SÂU, (b) phân tích tổ hợp chứ KHÔNG phân tích từng số riêng lẻ, (c) đưa ít nhất 1 ví dụ hành vi thực tế, (d) có phần chuyển hóa hoặc hậu quả cụ thể.</p>
 <ul>
 <li><strong>Trục năng lượng kết hợp:</strong> Dựa trên keywords của từng số trong bộ, xác định trục năng lượng dạng “X ↔ Y”. Giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào. Ví dụ biểu hiện trong công việc, cảm xúc, ra quyết định.</li>
 <li><strong>Nhóm động lực chủ đạo:</strong> Bộ số thuộc nhóm Hành động/Cảm xúc/Sáng tạo/Trí tuệ? Nếu đa nhóm → phân tích xung đột hoặc bổ trợ. Ví dụ cụ thể hành vi trong công sở và gia đình.
@@ -640,18 +640,18 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 <li><strong>Khí chất tổng thể:</strong> Tổ hợp tạo khí chất gì? Ảnh hưởng tương tác hàng ngày ra sao? Ví dụ thực tế.</li>
 </ul>
 
-<h3>2. CƠ CHẾ TÂM LÝ & MÔ HÌNH TƯƠNG TÁC (Mechanism & Interaction)</h3>
+<h3>2. CƠ CHẾ TÂM LÝ & MÔ HÌNH TƯƠNG TÁC</h3>
 <p>Phân tích cơ chế vận hành tâm lý của bộ số ${activeInputs.map(i => i.value).join(' + ')}. PHẢI dựa trên challenges và advantages cụ thể.</p>
 <ul>
-<li><strong>Trạng thái Flow vs Stress:</strong> Khi thuận lợi, số nào chi phối và biểu hiện cụ thể? Khi áp lực, phản ứng cụ thể gì (kiểm soát/né tránh/bùng nổ/thu mình)? Ví dụ tình huống thất bại dự án, tranh cãi gia đình.</li>
+<li><strong>Trạng thái thuận lợi và căng thẳng:</strong> Khi thuận lợi, số nào chi phối và biểu hiện cụ thể? Khi áp lực, phản ứng cụ thể gì (kiểm soát/né tránh/bùng nổ/thu mình)? Ví dụ tình huống thất bại dự án, tranh cãi gia đình.</li>
 <li><strong>Cơ chế phòng vệ & điểm kích hoạt:</strong> Khi tổn thương → đổ lỗi/tự trách/kiểm soát/cô lập? Điều gì dễ khiến mất cân bằng nhất? (dựa trên challenges). Ví dụ tình huống thực.</li>
-<li><strong>Mô hình hành vi lặp lại:</strong> Pattern vô thức nào tái diễn khi xung đột? Vòng lặp cụ thể trong mối quan hệ, công việc.</li>
+<li><strong>Mô hình hành vi lặp lại:</strong> Khuôn mẫu vô thức nào tái diễn khi xung đột? Vòng lặp cụ thể trong mối quan hệ, công việc.</li>
 <li><strong>Xung đột nội tại:</strong> Các số có hỗ trợ hay mâu thuẫn? 3 loại xung đột (nội tâm/hành vi/môi trường). Biểu hiện: mệt mỏi, thiếu động lực, tự nghi ngờ — giải thích TẠI SAO dựa trên tổ hợp số cụ thể.</li>
 <li><strong>Cơ chế cân bằng & hướng dẫn phục hồi:</strong> Khi kiệt sức, quay về thói quen số nào? Cách phá vỡ vòng lặp tiêu cực — hành động cụ thể.</li>
 </ul>
 
-<h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU (Deep Profile)</h3>
-<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục (li) PHẢI dài ít nhất 600 từ (4 phần x 150 từ: năng lượng, tương tác, ví dụ thực tế, chuyển hóa), bám sát keywords, advantages, challenges cụ thể.</p>
+<h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU</h3>
+<p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào. Mỗi mục (li) PHẢI bám sát keywords, advantages, challenges cụ thể và có 4 yếu tố: năng lượng, tương tác, ví dụ thực tế, chuyển hóa.</p>
 <ul>
 <li><strong>Tư duy:</strong> Logic hay cảm xúc? Thực tế hay lý tưởng? Tư duy chiến lược hay phản ứng tức thời? Ra quyết định dựa trên gì? Khi nào tư duy sáng suốt, khi nào bị cảm xúc chi phối? Ví dụ cụ thể trong công việc.
 <p>🔥 <strong>Chuyển hóa cụ thể:</strong> Từ [hạn chế tư duy cụ thể dựa trên challenges] → chuyển sang [tư duy mới cụ thể dựa trên balance]. Hành động thực tế để chuyển hóa.</p></li>
@@ -663,7 +663,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 <li><strong>Bức tranh tổng thể — “Người này là ai”:</strong> Viết 1 đoạn mô tả ngắn gọn nhưng sắc nét về con người mang bộ số này — như thể bạn đang vẽ chân dung tâm lý cho họ. Bao gồm: điểm mạnh nổi bật nhất, điểm yếu nguy hiểm nhất, nhu cầu sâu nhất, nỗi sợ lớn nhất.</li>
 </ul>
 
-<h3>4. ỨNG DỤNG THỰC TẾ (Actionable Insights)</h3>
+<h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
 <h4>🏢 Sự Nghiệp & Kinh Doanh:</h4>
 <p>Phân tích CỤ THỂ cho bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG liệt kê chung theo nhóm — PHẢI phân tích dựa trên tổ hợp thực tế.</p>
@@ -691,58 +691,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 <li><strong>Cách tiếp cận hiệu quả:</strong> Mở đầu thế nào? Giọng nói/phong cách nên dùng? Trình bày sản phẩm theo cách nào? Ví dụ kịch bản tư vấn cụ thể.</li>
 <li><strong>Điểm kích hoạt cảm xúc để mở lòng:</strong> Chạm vào mong muốn gì sẽ khiến họ quan tâm? Nỗi sợ nào có thể khai thác tích cực?</li>
 <li><strong>Điều TUYỆT ĐỐI không nên nói/làm:</strong> Hành vi nào khiến họ đóng cửa? (dựa trên challenges + điểm kích hoạt). Ví dụ sai lầm sale hay gặp.</li>
-<li><strong>Cách chốt quyết định:</strong> Cho họ cảm giác kiểm soát/an toàn/cơ hội? Xử lý từ chối đúng nỗi sợ gốc. Ví dụ kịch bản closing cụ thể.</li>
-</ul>
-<h3>🔥 ENGINE PHÂN TÍCH KẾT NỐI CHỈ SỐ (AI CORE SYSTEM)</h3>
-
-<p><strong>⚠️ CHỈ THỊ QUAN TRỌNG — ĐÂY LÀ LỆNH PHÂN TÍCH, KHÔNG PHẢI TEMPLATE ĐỂ COPY:</strong></p>
-<p>Bạn KHÔNG ĐƯỢC viết lại hay paraphrase nội dung bên dưới. Bạn PHẢI dùng nó như KHUNG TƯ DUY để tự phân tích dựa trên các số cụ thể: ${activeInputs.map(i => i.value).join(', ')}.</p>
-<p>Mỗi điểm phân tích PHẢI: (1) gọi tên năng lượng lõi cụ thể của số đang tra cứu dựa trên KIẾN THỨC SÂU đã cung cấp, (2) phân tích sự tương tác giữa các năng lượng đó, (3) đưa ví dụ hành vi thực tế cụ thể (công việc, tình cảm, tài chính, gia đình).</p>
-
-<ul>
-<li>
-<strong>Bước 1 — Nhận diện năng lượng lõi:</strong>
-<p>Dựa trên dữ liệu KIẾN THỨC SÂU (keywords, advantages, challenges), hãy xác định CỤ THỂ năng lượng lõi của từng số đang tra cứu. Ví dụ: nếu số là 3 → tra keywords thấy “Sáng tạo, Biểu đạt, Giao tiếp” → năng lượng lõi = biểu đạt + cảm xúc + xã hội. KHÔNG ĐƯỢC viết chung chung “Số A đại diện cho năng lượng gì” — PHẢI gọi tên cụ thể.</p>
-</li>
-
-<li>
-<strong>Bước 2 — Phân loại mối quan hệ giữa các số:</strong>
-<p>Sau khi có năng lượng lõi từng số, PHẢI xác định quan hệ: Đồng hướng (cùng nhóm → khuếch đại, VD: cả hai đều thiên cảm xúc), Bổ trợ (khác nhóm nhưng hỗ trợ, VD: trí tuệ + hành động), hay Tương phản (đối lập → xung đột nhưng tiềm năng tiến hóa cao, VD: ổn định vs tự do). Giải thích CỤ THỂ tại sao mối quan hệ đó xảy ra với bộ số đang phân tích.</p>
-</li>
-
-<li>
-<strong>Bước 3 — Tạo trục năng lượng kết hợp:</strong>
-<p>Tạo trục dạng “X ↔ Y” dựa trên năng lượng thực sự của bộ số. VD: Nếu số 4+5 → “Ổn định ↔ Tự do”; nếu số 2+8 → “Kết nối ↔ Quyền lực”. PHẢI giải thích trục này chi phối hành vi, quyết định, cảm xúc như thế nào trong đời sống thực.</p>
-</li>
-
-<li>
-<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 600 TỪ, CHIA 4 PHẦN MỖI PHẦN 150 TỪ):</strong>
-<ul>
-<li><strong>Core (Bản chất mới):</strong> Khi kết hợp các năng lượng lõi, “con người mới” này có bản chất gì? Họ khác gì so với từng số riêng lẻ? Đưa ví dụ cụ thể: cách họ ra quyết định, cách họ yêu, cách họ làm việc.</li>
-<li><strong>Mechanism (Cơ chế vận hành tâm lý):</strong> Khi bình thường, số nào chi phối? Khi stress, số nào lấn át? Phản ứng cụ thể trong tình huống: mâu thuẫn công sở, áp lực tài chính, xung đột gia đình.</li>
-<li><strong>Power (Sức mạnh):</strong> Tổ hợp này tạo ra lợi thế gì mà từng số riêng lẻ không có? Ứng dụng cụ thể trong kinh doanh, lãnh đạo, sáng tạo, hay kết nối.</li>
-<li><strong>Shadow (Lệch hướng):</strong> Khi mất cân bằng, tổ hợp này dẫn đến hành vi tiêu cực gì? PHẢI cụ thể: đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức, sa đà tệ nạn... tùy theo bộ số thực tế.</li>
-<li><strong>Evolution (Phát triển):</strong> Kỹ năng cụ thể cần rèn luyện để chuyển từ phiên bản thấp sang cao. Thói quen hàng ngày cần xây dựng. Ví dụ thực tế từ người đã trưởng thành với bộ số tương tự.</li>
-</ul>
-</li>
-
-<li>
-<strong>Bước 5 — Sinh kịch bản 3 trạng thái (PHẢI VIẾT CỤ THỂ, KHÔNG CHUNG CHUNG):</strong>
-<ul>
-<li><strong>Khi đúng hướng (phiên bản cao):</strong> Họ trở thành ai? Hành vi cụ thể? Thành tựu đạt được? Ví dụ: “Người số X+Y khi trưởng thành sẽ là nhà lãnh đạo có tầm nhìn chiến lược, vừa quyết đoán vừa biết lắng nghe, thành công trong vai trò CEO/founder vì...”</li>
-<li><strong>Khi lệch (phiên bản thấp):</strong> Họ rơi vào vòng xoáy gì? Hành vi tự phá hoại cụ thể? Ví dụ: “Người số X+Y khi lệch sẽ liều lĩnh đầu tư, dễ mất tiền lớn, quan hệ tình cảm không bền vì...”</li>
-<li><strong>Khi trưởng thành (cân bằng):</strong> Họ học được gì? Chuyển hóa cụ thể nào? Ví dụ: “Biến sự nhạy cảm thành trực giác kinh doanh, biến tham vọng thành tầm nhìn phục vụ...”</li>
-</ul>
-</li>
-</ul>
-
-<h3>🔥 ỨNG DỤNG THỰC TẾ TỪ TỔ HỢP SỐ</h3>
-<p><strong>⚠️ PHẢI phân tích CỤ THỂ cho bộ số ${activeInputs.map(i => i.value).join(' + ')}, KHÔNG viết chung chung:</strong></p>
-<ul>
-<li><strong>Hành vi thực tế:</strong> Với tổ hợp này, họ có xu hướng làm nghề gì? Hành động ra sao trong công việc hàng ngày? Ra quyết định dựa trên logic hay cảm xúc? Phân tích dựa trên keywords và challenges của từng số trong bộ.</li>
-<li><strong>Ứng dụng kinh doanh:</strong> Tổ hợp này ra quyết định nhanh hay chậm? Thiên về bán hàng trực tiếp hay xây hệ thống? Dễ mạo hiểm hay thận trọng? Đưa ví dụ ngành nghề cụ thể phù hợp.</li>
-<li><strong>Ứng dụng giáo dục:</strong> Tổ hợp này học tốt qua trải nghiệm hay lý thuyết? Cần môi trường học tập như thế nào? Giáo viên/mentor nên tiếp cận ra sao?</li>
-<li><strong>Sale / Coach:</strong> Khi tư vấn người mang tổ hợp này: cách nói chuyện cụ thể nào hiệu quả? Điểm kích hoạt cảm xúc nào khiến họ mở lòng? Điều gì tuyệt đối KHÔNG nên nói/làm?</li>
+<li><strong>Cách chốt quyết định:</strong> Cho họ cảm giác kiểm soát/an toàn/cơ hội? Xử lý từ chối đúng nỗi sợ gốc. Ví dụ kịch bản chốt cụ thể.</li>
 </ul>
 
 <h4>🔥 BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h4>
@@ -751,7 +700,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 <li>
 <strong>Tổng kết nghiệp tính cách:</strong>
-<p>Dựa trên KIẾN THỨC SÂU: Số ${activeInputs[0]?.value} có keywords gì, challenges gì → tạo xu hướng tâm lý cụ thể nào? Số ${activeInputs[1]?.value || 'tiếp theo'} tạo xu hướng gì? Khi kết hợp → phiên bản cao (tích cực) biểu hiện CỤ THỂ ra sao trong đời sống? Phiên bản thấp (tiêu cực) dẫn đến hành vi gì? PHẢI đưa ví dụ tình huống thực: công việc, tình cảm, tài chính. Giải thích tại sao đây là thói quen tâm thức lặp lại — họ lặp lại pattern gì cụ thể?</p>
+<p>Dựa trên KIẾN THỨC SÂU: Số ${activeInputs[0]?.value} có keywords gì, challenges gì → tạo xu hướng tâm lý cụ thể nào? Số ${activeInputs[1]?.value || 'tiếp theo'} tạo xu hướng gì? Khi kết hợp → phiên bản cao (tích cực) biểu hiện CỤ THỂ ra sao trong đời sống? Phiên bản thấp (tiêu cực) dẫn đến hành vi gì? PHẢI đưa ví dụ tình huống thực: công việc, tình cảm, tài chính. Giải thích tại sao đây là thói quen tâm thức lặp lại — họ lặp lại khuôn mẫu gì cụ thể?</p>
 </li>
 
 <li>
@@ -766,7 +715,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 <li>
 <strong>Nếu không chuyển hóa — hậu quả cụ thể:</strong>
-<p>Với tổ hợp ${activeInputs.map(i => i.value).join(' + ')}, nếu không nhận ra pattern tiêu cực: Sức khỏe tâm lý bị ảnh hưởng cụ thể ra sao? (kiệt sức, trầm cảm, mất phương hướng?) Quan hệ đổ vỡ theo kiểu nào? (bị bỏ rơi, tự đẩy người khác ra, kiểm soát quá mức?) Thất bại lặp lại ở đâu? (sự nghiệp, tài chính, tình cảm?) Đưa ví dụ kịch bản đời sống thực.</p>
+<p>Với tổ hợp ${activeInputs.map(i => i.value).join(' + ')}, nếu không nhận ra khuôn mẫu tiêu cực: Sức khỏe tâm lý bị ảnh hưởng cụ thể ra sao? (kiệt sức, trầm cảm, mất phương hướng?) Quan hệ đổ vỡ theo kiểu nào? (bị bỏ rơi, tự đẩy người khác ra, kiểm soát quá mức?) Thất bại lặp lại ở đâu? (sự nghiệp, tài chính, tình cảm?) Đưa ví dụ kịch bản đời sống thực.</p>
 </li>
 
 <li>
@@ -776,7 +725,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 <li>
 <strong>Chu kỳ nhân – duyên – quả (phân tích cho bộ số cụ thể):</strong>
-<p><strong>Nhân:</strong> Với tổ hợp này, suy nghĩ/niềm tin gốc rễ nào chi phối hành vi? (VD: “Tôi phải kiểm soát mọi thứ” từ số 1, “Tôi cần tự do tuyệt đối” từ số 5). <strong>Duyên:</strong> Môi trường/tình huống nào kích hoạt pattern tiêu cực? (VD: áp lực deadline, xung đột với sếp, bị từ chối trong tình cảm). <strong>Quả:</strong> Kết quả cuộc đời cụ thể khi pattern này lặp đi lặp lại? Phải liên kết trực tiếp với challenges của bộ số.</p>
+<p><strong>Nhân:</strong> Với tổ hợp này, suy nghĩ/niềm tin gốc rễ nào chi phối hành vi? (VD: “Tôi phải kiểm soát mọi thứ” từ số 1, “Tôi cần tự do tuyệt đối” từ số 5). <strong>Duyên:</strong> Môi trường/tình huống nào kích hoạt khuôn mẫu tiêu cực? (VD: áp lực thời hạn, xung đột với sếp, bị từ chối trong tình cảm). <strong>Quả:</strong> Kết quả cuộc đời cụ thể khi khuôn mẫu này lặp đi lặp lại? Phải liên kết trực tiếp với challenges của bộ số.</p>
 </li>
 
 <li>
@@ -793,7 +742,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 </li>
 
 </ul>
-                <h3>5. LỘ TRÌNH PHÁT TRIỂN (Timeline)</h3>
+                <h3>5. LỘ TRÌNH PHÁT TRIỂN</h3>
                 <ul>
                     <li><strong>Giai đoạn Non trẻ:</strong> Trích xuất từ dữ liệu, thường bị chi phối bởi nhu cầu/thói quen nào? Diễn giải sâu với ví dụ từ tuổi trẻ, phân tích cách nó định hình tính cách.</li>
                     <li><strong>Giai đoạn Trung niên:</strong> Từ context, cần tập trung phát triển kỹ năng gì (theo Sứ mệnh)? Phân tích chiến lược, ví dụ từ sự nghiệp giữa đời.</li>
@@ -811,13 +760,13 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
         **KHUNG PHÂN TÍCH CHUYÊN SÂU CHO TRỤC NỘI TÂM – NHÂN CÁCH – THÁI ĐỘ – TRƯỞNG THÀNH:**
 
-⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI dài ít nhất 600 từ, chia 4 phần mỗi phần 150 từ: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
+⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
 
-<h3>1. LỚP BẢN CHẤT – CORE IDENTITY</h3>
+<h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
 
 <ul>
-<li><strong>0. TRỤC NĂNG LƯỢNG KẾT HỢP (Energy Axis):</strong>
+<li><strong>0. TRỤC NĂNG LƯỢNG KẾT HỢP:</strong>
 Dựa trên sự kết hợp các chỉ số ${activeInputs.map(i => i.value).join(' + ')}, xác định trục năng lượng tổng thể dạng “X ↔ Y” (ví dụ: 4+5 → Ổn định–Tự do, 2+6 → Yêu thương–Chăm sóc, 1+8 → Lãnh đạo–Quyền lực). Trục này là “lực kéo trung tâm” chi phối toàn bộ bản chất, động lực và hành vi.
 <p>Phân tích bản chất kết hợp: Số ${heartVal} (Nội Tâm) mang năng lượng gì? Số ${persVal !== 'Y' ? persVal + ' (Nhân Cách)' : attVal + ' (Thái Độ)'} mang năng lượng gì? Khi kết hợp: khuếch đại (cùng nhóm), bổ trợ (khác nhóm hỗ trợ), hay xung đột (đối cực)? Không còn là từng số riêng lẻ mà tạo thành “bản sắc mới”.</p>
 <p>Biểu hiện thực tế: Trong công việc họ hành động theo năng lượng nào chiếm ưu thế? Trong cảm xúc bị giằng co giữa nhu cầu nào? Trong quyết định thiên về an toàn, tự do hay kiểm soát? Đưa ví dụ cụ thể từ tình huống đời thực.</p>
@@ -855,11 +804,11 @@ Người này mang khí chất trầm ổn – quyết liệt – linh hoạt �
 </li>
 </ul>
 
-<h3>2. CƠ CHẾ TÂM LÝ – MECHANISM</h3>
-<p>Dựa trên dữ liệu gốc, trích xuất và phân tích khi bình thường (Flow) và khi áp lực (Stress), họ tư duy và phản ứng thế nào? Nội Tâm ${heartVal} là nhu cầu gốc, Thái Độ ${attVal !== 'Z' ? attVal : ''} là cách phản ứng tức thời, Nhân Cách ${persVal !== 'Y' ? persVal : ''} là cách thể hiện ra ngoài.</p>
+<h3>2. CƠ CHẾ TÂM LÝ</h3>
+<p>Dựa trên dữ liệu gốc, trích xuất và phân tích khi bình thường (thuận lợi) và khi áp lực (căng thẳng), họ tư duy và phản ứng thế nào? Nội Tâm ${heartVal} là nhu cầu gốc, Thái Độ ${attVal !== 'Z' ? attVal : ''} là cách phản ứng tức thời, Nhân Cách ${persVal !== 'Y' ? persVal : ''} là cách thể hiện ra ngoài.</p>
 <ul>
-<li><strong>Trạng thái Flow:</strong> Khi môi trường thuận lợi, số nào chi phối hành vi? Họ hành động quyết đoán, mềm mỏng, sáng tạo hay phân tích sâu? Ví dụ cụ thể từ thành công công việc, mối quan hệ hạnh phúc. Phải dài ít nhất 600 từ, gồm 4 phần (a)(b)(c)(d) mỗi phần 150 từ.</li>
-<li><strong>Trạng thái Stress:</strong> Khi áp lực, phản ứng theo xu hướng nào: kiểm soát, né tránh, bùng nổ cảm xúc hay thu mình? Phân tích sâu hậu quả và cách nhận biết, ví dụ từ thất bại dự án, tranh cãi gia đình. Phải dài ít nhất 600 từ, gồm 4 phần (a)(b)(c)(d) mỗi phần 150 từ.</li>
+<li><strong>Trạng thái thuận lợi:</strong> Khi môi trường thuận lợi, số nào chi phối hành vi? Họ hành động quyết đoán, mềm mỏng, sáng tạo hay phân tích sâu? Ví dụ cụ thể từ thành công công việc, mối quan hệ hạnh phúc.</li>
+<li><strong>Trạng thái căng thẳng:</strong> Khi áp lực, phản ứng theo xu hướng nào: kiểm soát, né tránh, bùng nổ cảm xúc hay thu mình? Phân tích sâu hậu quả và cách nhận biết, ví dụ từ thất bại dự án, tranh cãi gia đình.</li>
 <li><strong>Chi phối lý trí:</strong> Số nào quyết định logic, phân tích, chiến lược? Cách ảnh hưởng đến quyết định lớn: lập kế hoạch tài chính, giải quyết vấn đề phức tạp. Ví dụ thực tế.</li>
 <li><strong>Chi phối cảm xúc:</strong> Số nào điều khiển nỗi sợ, tổn thương, sự nhạy cảm? Cách hình thành phản ứng cảm xúc, ví dụ xử lý thất bại tình cảm, căng thẳng công việc.</li>
 <li><strong>Cơ chế phòng vệ:</strong> Khi bị tổn thương, xu hướng đổ lỗi, tự trách, kiểm soát người khác hay tự cô lập? Mở rộng với ví dụ thực tế và hậu quả lâu dài nếu không điều chỉnh.</li>
@@ -867,7 +816,7 @@ Người này mang khí chất trầm ổn – quyết liệt – linh hoạt �
 <li><strong>Điểm kích hoạt:</strong> Điều gì dễ làm mất cân bằng nhất? Bị kiểm soát? Bị xem thường? Bị bỏ rơi? Thiếu tự do? Diễn giải cách tránh và xử lý, ví dụ cụ thể từ tình huống đời thực.</li>
 </ul>
 
-<h3>3. TƯƠNG TÁC & XUNG ĐỘT – INTERACTION</h3>
+<h3>3. TƯƠNG TÁC & XUNG ĐỘT</h3>
 <ul>
 <li><strong>Độ Đồng Hướng:</strong>
 Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng → khuếch đại (năng lượng cùng chiều, hành động mạnh nhất quán); Bổ trợ → phát triển (khác biệt nhưng hỗ trợ, tạo chiều sâu hiệu quả); Tương phản → xung đột nhưng tiềm năng cao (đối cực, giằng xé nhưng nếu trưởng thành sẽ bứt phá mạnh).
@@ -886,7 +835,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 </li>
 </ul>
 
-<h3>4. HỒ SƠ TÍNH CÁCH – PROFILE</h3>
+<h3>4. HỒ SƠ TÍNH CÁCH</h3>
 <ul>
 <li><strong>Tư Duy:</strong>
 <p>Tổng quan: Logic hay cảm xúc? Thực tế hay lý tưởng? Dựa trên tổ hợp số: Nội Tâm ${heartVal} thiên về gì? Nhân Cách/Thái Độ thiên về gì? Khi kết hợp: Đồng hướng → tư duy rõ ràng nhất quán; Xung đột → dễ giằng co thiếu quyết đoán; Bổ trợ → vừa có chiều sâu vừa linh hoạt.</p>
@@ -900,18 +849,18 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 <p>🔥 Chuyển hóa: Thấp → phản ứng theo cảm xúc. Cao → hành động có ý thức và kiểm soát.</p>
 </li>
 
-<li><strong>Nội lực (Inner Power):</strong>
+<li><strong>Nội lực:</strong>
 <p>Mức độ: Mạnh – yếu – dao động? Đồng hướng → nội lực mạnh ổn định; Xung đột → nội lực dao động; Lệch → dễ mất phương hướng. Nguồn năng lượng chính: Được “nạp” từ thành tựu / kết nối / tự do / tri thức / giá trị? Điểm suy yếu: Khi nào mất năng lượng?</p>
 <p>🔥 Chuyển hóa nội lực: Thấp → phụ thuộc môi trường. Trung → nhận ra điểm yếu. Cao → tự tạo năng lượng từ bên trong. Đây là yếu tố quyết định bền vững hay dễ gục ngã.</p>
 </li>
 
-<li><strong>🔥 Chuyển hóa tổng thể (Integration):</strong>
+<li><strong>🔥 Chuyển hóa tổng thể:</strong>
 <p>Trạng thái chưa trưởng thành: Tư duy cứng nhắc/cảm tính, Hành vi phản ứng/thiếu kiểm soát, Nội lực phụ thuộc bên ngoài. Trạng thái trưởng thành: Tư duy linh hoạt, hành vi ổn định, nội lực vững vàng, biết khi nào nên hành động khi nào nên dừng.</p>
 <p>Bước chuyển hóa: 1. Nhận ra xung đột → 2. Quan sát bản thân → 3. Điều chỉnh hành vi → 4. Tích hợp năng lượng. Không phải ai cũng đi đến bước 4.</p>
 </li>
 </ul>
 
-<h3>5. ỨNG DỤNG THỰC TẾ – ACTIONABLE INSIGHTS</h3>
+<h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
 <h4>🏢 Sự Nghiệp & Kinh Doanh:</h4>
 <ul>
@@ -942,23 +891,8 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 <li><strong>Dấu hiệu rạn nứt:</strong> Nhận biết khi bắt đầu thay đổi (lạnh nhạt, né tránh, kiểm soát hơn, mất kết nối). Cách tiếp cận lại cụ thể.</li>
 </ul>
 
-<h3>6. ENGINE PHÂN TÍCH KẾT NỐI CHỈ SỐ (AI CORE SYSTEM)</h3>
-<p>⚠️ AI KHÔNG phân tích kiểu “3 + 5 = đào hoa”. PHẢI phân tích theo bản chất năng lượng cụ thể từ KIẾN THỨC SÂU.</p>
-<ul>
-<li><strong>Bước 1 — Nhận diện năng lượng lõi:</strong> Tra keywords, advantages, challenges từ KIẾN THỨC SÂU cho từng số. Gọi tên CỤ THỂ năng lượng lõi.</li>
-<li><strong>Bước 2 — Phân loại mối quan hệ:</strong> Đồng hướng (cùng nhóm → khuếch đại), Bổ trợ (khác nhóm → phát triển), Tương phản (đối lập → xung đột nhưng tiến hóa).</li>
-<li><strong>Bước 3 — Tạo trục năng lượng:</strong> Dạng “X ↔ Y”. Giải thích trục chi phối hành vi, quyết định, cảm xúc trong đời sống thực.</li>
-<li><strong>Bước 4 — Phân tích 5 lớp (MỖI LỚP ÍT NHẤT 200 TỪ):</strong>
-Core (bản chất mới khi kết hợp) → Mechanism (cơ chế vận hành tâm lý) → Power (sức mạnh tổ hợp tạo ra) → Shadow (lệch hướng: hành vi tiêu cực CỤ THỂ) → Evolution (kỹ năng cần rèn, thói quen xây dựng).</li>
-<li><strong>Bước 5 — Sinh kịch bản 3 trạng thái:</strong>
-Khi đúng hướng (phiên bản cao): Trở thành ai? Thành tựu? Ví dụ cụ thể.
-Khi lệch (phiên bản thấp): Vòng xoáy gì? Hành vi tự phá hoại? Ví dụ cụ thể.
-Khi trưởng thành (cân bằng): Học được gì? Chuyển hóa cụ thể nào?</li>
-</ul>
-
-<p><strong>Pattern tăng cường (20% — KHÔNG hard-code):</strong> Lệch hướng từng số (1→độc đoán, 2→lệ thuộc, 3→hời hợt, 4→bảo thủ, 5→sa đà, 6→kiểm soát tình cảm, 7→cô lập, 8→tham vọng cực đoan, 9→lý tưởng hóa). Combo dễ lệch (3+5→đào hoa, 1+5→liều lĩnh, 2+5→yêu sai người, 2+8→bị áp chế, 4+5→giằng xé, 7+5→nghĩ nhiều không hành động). Chỉ dùng để làm sắc nét, KHÔNG thay logic phân tích. Tỷ trọng: 80% logic phân tích năng lượng, 20% pattern tăng cường.</p>
-
-<h3>7. BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h3>
+<h3>6. BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h3>
+<p><strong>Khuôn mẫu lệch hướng tham khảo (20% — KHÔNG thay logic phân tích):</strong> Lệch hướng từng số (1→độc đoán, 2→lệ thuộc, 3→hời hợt, 4→bảo thủ, 5→sa đà, 6→kiểm soát tình cảm, 7→cô lập, 8→tham vọng cực đoan, 9→lý tưởng hóa). Tổ hợp dễ lệch (3+5→đào hoa, 1+5→liều lĩnh, 2+5→yêu sai người, 2+8→bị áp chế, 4+5→giằng xé, 7+5→nghĩ nhiều không hành động).</p>
 <ul>
 <li><strong>Tổng kết nghiệp tính cách:</strong> Nội Tâm ${heartVal} tạo xu hướng gì? Nhân Cách/Thái Độ tạo xu hướng gì? Khi kết hợp: Tích cực → phiên bản cao. Tiêu cực → phiên bản thấp. Đây là thói quen tâm thức lặp lại.</li>
 <li><strong>Phước phần:</strong> Tài năng – cơ hội – thế mạnh bẩm sinh từ tổ hợp. Nếu dùng đúng → phát triển nhanh ở lĩnh vực nào?</li>
@@ -970,7 +904,7 @@ Khi trưởng thành (cân bằng): Học được gì? Chuyển hóa cụ thể
 <li><strong>🔥 Insight:</strong> Con số không quyết định. Nhận thức quyết định. Tỉnh thức → tạo phước. Câu kết luận CÁ NHÂN HÓA cho bộ số ${activeInputs.map(i => i.value).join(' + ')}.</li>
 </ul>
 
-<h3>8. HƯỚNG PHÁT TRIỂN TRƯỞNG THÀNH (Growth Path)</h3>
+<h3>7. HƯỚNG PHÁT TRIỂN TRƯỞNG THÀNH</h3>
 <ul>
 <li><strong>Phiên Bản Cao Nhất:</strong> Khi tích hợp tất cả tầng, trở thành ai trong xã hội? Vai trò lớn nhất có thể đảm nhận? Diễn giải sâu với ví dụ cụ thể.</li>
 <li><strong>Nếu Lệch Hướng:</strong> Trạng thái tiêu cực kéo dài dẫn đến điều gì? Kiệt sức, cô lập, kiểm soát, mất phương hướng? Phân tích hậu quả cụ thể.</li>
@@ -1036,11 +970,11 @@ BƯỚC 4 — TỔ HỢP: Xác định quan hệ giữa các số:
 BƯỚC 5 — TRỤC NĂNG LƯỢNG: Tạo trục dạng "X ↔ Y" (VD: "Ổn định ↔ Tự do") dựa trên keywords thực. Giải thích trục này chi phối hành vi ra sao.
 
 BƯỚC 6 — PHÂN TÍCH 5 LỚP cho mỗi điểm (viết CHI TIẾT với ví dụ cụ thể):
-- Core: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — diễn giải sâu
-- Mechanism: Số nào chi phối khi bình thường? Khi stress? — diễn giải sâu
-- Power: Lợi thế độc nhất mà từng số riêng lẻ không có — diễn giải sâu
-- Shadow: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — diễn giải sâu
-- Evolution: Kỹ năng cần rèn luyện + thói quen hàng ngày — diễn giải sâu
+- Bản chất: Bản chất mới khi kết hợp (khác gì từng số riêng lẻ?) — diễn giải sâu
+- Cơ chế: Số nào chi phối khi bình thường? Khi căng thẳng? — diễn giải sâu
+- Sức mạnh: Lợi thế độc nhất mà từng số riêng lẻ không có — diễn giải sâu
+- Lệch hướng: Hành vi tiêu cực CỤ THỂ khi mất cân bằng (đào hoa, mạo hiểm tài chính, lệ thuộc cảm xúc, kiểm soát quá mức...) — diễn giải sâu
+- Phát triển: Kỹ năng cần rèn luyện + thói quen hàng ngày — diễn giải sâu
 
 BƯỚC 7 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiên bản thấp) | Trưởng thành (cân bằng) — mỗi kịch bản có ví dụ hành vi CỤ THỂ.
 
@@ -1075,19 +1009,19 @@ BƯỚC 7 — 3 KỊCH BẢN: Đúng hướng (phiên bản cao) | Lệch (phiê
 
 === KHUNG TRIẾT HỌC PHÁT TRIỂN (Lồng ghép tự nhiên, KHÔNG giảng đạo) ===
 
-1. NGUYÊN LÝ NHÂN – QUẢ (Cause & Effect trong Tâm lý Hành vi):
+1. NGUYÊN LÝ NHÂN – QUẢ (trong Tâm lý Hành vi):
    - Mỗi con số mang một "nhân" (xu hướng tư duy, hành vi gốc rễ) → tạo "duyên" (môi trường, cơ hội, thử thách kích hoạt) → sinh "quả" (kết quả cuộc đời).
    - VD: Số 5 mang nhân "khao khát tự do" → duyên gặp công việc ràng buộc → quả: bỏ việc liên tục HOẶC học cách tự do trong khuôn khổ.
    - AI PHẢI liên kết challenges của từng số với hậu quả cụ thể nếu không chuyển hóa, và phước lành cụ thể nếu phát triển đúng hướng.
    - Cách diễn đạt: "Xu hướng hành vi này nếu lặp lại sẽ tạo kết quả tương ứng" — KHÔNG dùng "nghiệp", "kiếp trước".
 
 2. TAM GIÁC PHÁT TRIỂN: Đạo Đức – Trí Tuệ – Nghị Lực:
-   - Đạo Đức (Moral Intelligence): Khả năng phân biệt đúng-sai, sống có nguyên tắc → liên kết với balance và coreMessage của số.
-   - Trí Tuệ (Wisdom): Khả năng nhìn nhận đa chiều, không bị cảm xúc chi phối → liên kết với advantages + keywords phân tích.
-   - Nghị Lực (Perseverance): Sức mạnh nội tại để vượt qua thử thách → liên kết với challenges và cách vượt qua.
+   - Đạo Đức: Khả năng phân biệt đúng-sai, sống có nguyên tắc → liên kết với balance và coreMessage của số.
+   - Trí Tuệ: Khả năng nhìn nhận đa chiều, không bị cảm xúc chi phối → liên kết với advantages + keywords phân tích.
+   - Nghị Lực: Sức mạnh nội tại để vượt qua thử thách → liên kết với challenges và cách vượt qua.
    - AI PHẢI phân tích bộ số đang tra: tam giác này MẠNH ở cạnh nào, YẾU ở cạnh nào? VD: Bộ số thiên Trí tuệ (7, 9) nhưng yếu Nghị lực → cần rèn kỷ luật. Bộ số mạnh Nghị lực (1, 8) nhưng yếu Đạo đức → cần phát triển sự thấu cảm.
 
-3. NGUYÊN LÝ TỈNH THỨC (Conscious Living):
+3. NGUYÊN LÝ TỈNH THỨC:
    - Mỗi con số có phiên bản "vô thức" (reactive — phản ứng tự động) và phiên bản "tỉnh thức" (responsive — lựa chọn có ý thức).
    - VD: Số 1 vô thức → độc đoán, ép buộc. Số 1 tỉnh thức → dẫn dắt bằng tầm nhìn và gương mẫu.
    - AI PHẢI chỉ ra con đường chuyển hóa từ vô thức → tỉnh thức cho TỪNG số trong bộ, với hành động cụ thể.
