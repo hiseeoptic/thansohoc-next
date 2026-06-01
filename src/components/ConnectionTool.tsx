@@ -1115,7 +1115,7 @@ Trước khi trả output, tự hỏi:
       // Gọi Server Action với system instruction riêng
       const result = await generateAnalyzeResponse(prompt, analyzeSystemInstruction, aiEngine);
 
-      if (result.error) {
+      if ('error' in result) {
         throw new Error(result.error);
       }
 

@@ -225,7 +225,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         systemInstruction + '\n\n' + fullContext
       );
 
-      if (result.error) {
+      if ('error' in result) {
         throw new Error(result.error);
       }
 
