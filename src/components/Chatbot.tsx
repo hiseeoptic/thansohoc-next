@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CalculationResult, SheetMeaning } from '@/types';
 import { getMeaning } from '@/services/googleSheetService';
 import { Send, X, Bot, User, ChevronUp, ChevronDown, Globe, UserPlus } from 'lucide-react';
-import { OpenAI } from 'openai';
 import { generateChatResponse } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import * as Utils from '@/utils/numerologyUtils';

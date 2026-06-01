@@ -9,6 +9,9 @@ const quicksand = Quicksand({
   variable: '--font-quicksand',
 });
 
+// Vercel serverless: tăng timeout lên 60s (Hobby max = 60s)
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   title: 'Mystic Numerology - Thần Số Học Master',
   description: 'Tra cứu Thần số học chuyên sâu: Đường đời, Sứ mệnh, Nội tâm, Phân tích kết nối...',

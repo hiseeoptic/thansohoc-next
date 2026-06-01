@@ -4,9 +4,6 @@
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
-// Vercel serverless: tăng timeout lên 60s (Hobby max = 60s, Pro max = 300s)
-export const maxDuration = 60;
-
 // === AI Engine Type ===
 export type AIEngine = 'openai' | 'claude';
 

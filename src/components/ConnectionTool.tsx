@@ -4,7 +4,6 @@ import { analyzeConnectionLogic } from '@/utils/numerologyUtils';
 import { ConnectionAnalysisResult, NumberType, SheetMeaning, CalculationResult } from '@/types';
 import { fetchMeanings, getMeaning } from '../services/googleSheetService';
 import Chatbot from './Chatbot';
-import { OpenAI } from 'openai';
 import { generateAnalyzeResponse, AIEngine } from '@/actions/openai';
 import { deepNumberKnowledge } from '@/utils/deepNumberKnowledge';
 import { buildFullAnalysis, IndexInput } from '@/utils/numerologyAnalysis';
