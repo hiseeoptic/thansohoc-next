@@ -628,7 +628,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/3 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/4 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
 <p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau.</p>
@@ -674,7 +674,7 @@ ${coreInstruction}
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/3 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -803,13 +803,13 @@ ${coreInstruction}
 </ul>
             `);
 
-            // PHẦN 3: Sections 8-9 — HƯỚNG DẪN ỨNG XỬ + GÓC NHÌN ĐA CHIỀU (MỚI)
+            // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ
             promptParts.push(`
                 ${commonInstructions}
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 3/3 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-2.
+⚠️ ĐÂY LÀ PHẦN 3/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-2.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 <p>⚠️ ĐÂY LÀ PHẦN CỰC KỲ THỰC TẾ — PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY vào cuộc sống. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm cụ thể, (c) hành vi TUYỆT ĐỐI KHÔNG nên làm, (d) kịch bản ví dụ thực tế, (e) câu nói/cách tiếp cận mẫu.</p>
@@ -847,6 +847,16 @@ ${coreInstruction}
 <li><strong>Cách yêu thương đúng cách — hướng dẫn cho đối phương:</strong> 5 điều NÊN làm mỗi ngày. 5 điều TUYỆT ĐỐI không nên làm. Câu nói khiến họ cảm thấy được yêu nhất. Câu nói khiến họ tổn thương nhất. Ví dụ kịch bản cụ thể.</li>
 <li><strong>Khi mối quan hệ gặp khủng hoảng:</strong> Dấu hiệu họ đang chuẩn bị rời đi. Cách hàn gắn đúng tâm lý bộ số — bước cụ thể. Điều kiện để họ tha thứ. Điều kiện khiến họ không bao giờ quay lại.</li>
 </ul>
+
+            `);
+
+            // PHẦN 4: Section 9 — GÓC NHÌN ĐA CHIỀU
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 4/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-3.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 <p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN KHÁC NHAU, mỗi góc nhìn mang đến một tầng hiểu biết mới. KHÔNG lặp lại nội dung các phần trước — mỗi góc nhìn phải đưa ra INSIGHT MỚI.</p>
@@ -892,7 +902,7 @@ ${coreInstruction}
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/3. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/4. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -999,7 +1009,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/3 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -1054,13 +1064,13 @@ ${innerCoreInstruction}
 </ul>
     `);
 
-    // PHẦN 3: Sections 8-9 — HƯỚNG DẪN ỨNG XỬ + GÓC NHÌN ĐA CHIỀU (MỚI)
+    // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ
     promptParts.push(`
         ${commonInstructions}
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 3/3 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
+⚠️ ĐÂY LÀ PHẦN 3/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 <p>⚠️ PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm, (c) hành vi KHÔNG nên làm, (d) ví dụ kịch bản thực tế.</p>
@@ -1098,6 +1108,16 @@ ${innerCoreInstruction}
 <li><strong>Hướng dẫn cho đối phương:</strong> 5 điều NÊN làm mỗi ngày. 5 điều KHÔNG nên làm. Câu nói khiến họ cảm thấy được yêu nhất vs tổn thương nhất.</li>
 <li><strong>Khi khủng hoảng:</strong> Dấu hiệu chuẩn bị rời đi. Cách hàn gắn đúng tâm lý. Điều kiện tha thứ vs không bao giờ quay lại.</li>
 </ul>
+
+    `);
+
+    // PHẦN 4: Section 9 — GÓC NHÌN ĐA CHIỀU
+    promptParts.push(`
+        ${commonInstructions}
+
+${innerCoreInstruction}
+
+⚠️ ĐÂY LÀ PHẦN 4/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 <p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN, mỗi góc đưa ra INSIGHT MỚI.</p>
