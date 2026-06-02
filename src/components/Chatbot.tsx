@@ -230,6 +230,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ sharedResults, sheetData, onClose, la
         body: JSON.stringify({
           messages: chatMessages,
           systemInstruction: systemInstruction + '\n\n' + fullContext,
+          engine: 'gemini', // Chatbot luôn dùng Gemini
         }),
       });
 

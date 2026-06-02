@@ -253,10 +253,18 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const CACHE_PREFIX = 'analysis_cache_';
   const CACHE_EXPIRY_DAYS = 30;
 
-  const getCacheKey = (comboType: string, values: number[], engine: string) => {
+  // Chuẩn hoá tên: bỏ dấu, viết hoa, gộp khoảng trắng → cùng người = cùng key
+  const normalizeName = (raw: string | undefined): string => {
+    if (!raw) return 'ANON';
+    return raw.normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toUpperCase().trim().replace(/\s+/g, '_');
+  };
+
+  const getCacheKey = (comboType: string, values: number[], engine: string, userName: string | undefined) => {
     const sorted = [...values].sort((a, b) => a - b);
-    // Key bao gồm ENGINE → mỗi engine có cache riêng, chuyển engine sẽ gọi API mới
-    return `${CACHE_PREFIX}${engine}_${comboType}_${sorted.join('_')}`;
+    const nameKey = normalizeName(userName);
+    // Key = engine + tên người + loại tổ hợp + bộ số. Cùng tên + bộ số → lấy lại bài cũ, KHÔNG gọi API.
+    return `${CACHE_PREFIX}${engine}_${nameKey}_${comboType}_${sorted.join('_')}`;
   };
 
   const getFromCache = (cacheKey: string): string | null => {
@@ -470,7 +478,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     }
   };
 
-  const handleDeepAnalyze = async () => {
+  const handleDeepAnalyze = async (forceRefresh: boolean = false) => {
   // *** Kiểm tra thuê bao trước khi phân tích ***
   if (!phone) {
     setSubscriptionMessage(analysisLang === 'en' ? 'Please enter a subscription code to verify.' : 'Vui lòng nhập mã thuê bao để xác thực.');
@@ -1408,15 +1416,22 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // *** CACHE CHECK — cache RIÊNG theo từng engine ***
-      const cacheKey = getCacheKey(comboInfo.comboType, activeInputs.map(i => i.value), aiEngine);
-      const cachedContent = getFromCache(cacheKey);
+      // *** CACHE CHECK — cache RIÊNG theo TÊN người dùng + bộ số + engine ***
+      const cacheKey = getCacheKey(comboInfo.comboType, activeInputs.map(i => i.value), aiEngine, sharedResults?.name);
+      if (forceRefresh) {
+        try { localStorage.removeItem(cacheKey); } catch {}
+        console.log(`[Cache CLEARED] ${cacheKey} — Phân tích lại theo yêu cầu`);
+      }
+      const cachedContent = forceRefresh ? null : getFromCache(cacheKey);
 
       if (cachedContent) {
         console.log(`[Cache HIT] ${cacheKey} — Trả kết quả từ cache, KHÔNG gọi API`);
+        const cacheBanner = analysisLang === 'en'
+          ? `<p class="text-xs text-green-400/80 italic mb-3">⚡ Cached result for "${sharedResults?.name || 'this user'}" + this number set (no API cost). Click <strong>"Force refresh"</strong> below to regenerate.</p>`
+          : `<p class="text-xs text-green-400/80 italic mb-3">⚡ Kết quả lưu sẵn cho "${sharedResults?.name || 'người dùng này'}" + bộ số này (không tốn API). Bấm <strong>"Phân tích lại"</strong> bên dưới nếu muốn tạo mới.</p>`;
         setAnalysis({
           ...basicAnalysis,
-          aiContent: cachedContent,
+          aiContent: cacheBanner + cachedContent,
         });
         setIsAnalyzing(false);
         return; // ← Thoát sớm, tiết kiệm 100% chi phí API
@@ -1810,26 +1825,39 @@ Trước khi trả output, tự hỏi:
              <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -z-10"></div>
         </div>
 
-        {/* Action Button */}
-        <button 
-            onClick={handleDeepAnalyze}
-            disabled={isAnalyzing}
-            className={`w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all duration-500 ${isAnalyzing ? 'opacity-70 cursor-wait' : ''}`}
-        >
-            <div className="flex items-center justify-center gap-3 relative z-10">
-                {isAnalyzing ? (
-                    <>
-                        <RefreshCw size={20} className="animate-spin" />
-                        <span>{analysisLang === 'vi' ? 'Đang kích hoạt Deep Engine & Mapping dữ liệu...' : 'Activating Deep Engine & Data Mapping...'}</span>
-                    </>
-                ) : (
-                    <>
-                        <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
-                        <span>{analysisLang === 'vi' ? 'Kích Hoạt Phân Tích Chuyên Sâu' : 'Activate Deep Analysis'}</span>
-                    </>
-                )}
-            </div>
-        </button>
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row gap-2">
+          <button
+              onClick={() => handleDeepAnalyze(false)}
+              disabled={isAnalyzing}
+              className={`flex-1 relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all duration-500 ${isAnalyzing ? 'opacity-70 cursor-wait' : ''}`}
+          >
+              <div className="flex items-center justify-center gap-3 relative z-10">
+                  {isAnalyzing ? (
+                      <>
+                          <RefreshCw size={20} className="animate-spin" />
+                          <span>{analysisLang === 'vi' ? 'Đang kích hoạt Deep Engine & Mapping dữ liệu...' : 'Activating Deep Engine & Data Mapping...'}</span>
+                      </>
+                  ) : (
+                      <>
+                          <Sparkles size={20} className="group-hover:text-yellow-300 transition-colors" />
+                          <span>{analysisLang === 'vi' ? 'Kích Hoạt Phân Tích Chuyên Sâu' : 'Activate Deep Analysis'}</span>
+                      </>
+                  )}
+              </div>
+          </button>
+          {/* Nút "Phân tích lại": xoá cache + gọi API mới. Chỉ hiện khi đã có kết quả. */}
+          {analysis && !isAnalyzing && (
+            <button
+              onClick={() => handleDeepAnalyze(true)}
+              title={analysisLang === 'vi' ? 'Bỏ qua cache, tạo bản phân tích mới (tốn API)' : 'Bypass cache, regenerate (uses API)'}
+              className="md:w-auto px-4 py-4 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"
+            >
+              <RefreshCw size={16} />
+              <span>{analysisLang === 'vi' ? 'Phân tích lại' : 'Force refresh'}</span>
+            </button>
+          )}
+        </div>
 
         {/* Results Area */}
         {analysis && (

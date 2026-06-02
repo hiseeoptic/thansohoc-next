@@ -60,6 +60,7 @@ const Calculator: React.FC<CalculatorProps> = ({ setSharedResults, language, she
     const { peaks, challenges } = Utils.calculatePeaksAndChallenges(birthdate, lifePath);
 
     const calcResult: CalculationResult = {
+      name: name.trim().toUpperCase(), // chuẩn hoá để cache khớp ổn định
       lifePath,
       heartDesire: Utils.calculateHeartDesire(name),
       intelligenceNumber: Utils.calculateIntelligenceNumber(name),

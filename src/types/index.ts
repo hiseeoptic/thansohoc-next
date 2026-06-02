@@ -1,4 +1,5 @@
 export interface CalculationResult {
+  name?: string; // Tên người dùng — dùng làm khóa cache để tránh gọi API lại cho cùng người
   lifePath: number;
   heartDesire: number;
   intelligenceNumber: number;
