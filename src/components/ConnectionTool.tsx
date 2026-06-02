@@ -859,12 +859,14 @@ ${coreInstruction}
             `);
 
             // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ
+            const practicalInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết "Số A", "chỉ số X" — PHẢI thay bằng số thực tế. Mỗi mục (li) viết 100-200 từ, súc tích nhưng cụ thể. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC trong khung — KHÔNG ĐƯỢC bỏ sót mục nào. Ưu tiên tính ỨNG DỤNG THỰC TẾ: ví dụ cụ thể, câu nói mẫu, hành động có thể làm ngay.`;
+
             promptParts.push(`
                 ${commonInstructions}
 
-${coreInstruction}
+${practicalInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 3/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-2.
+⚠️ ĐÂY LÀ PHẦN 3/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). PHẢI HOÀN THÀNH TẤT CẢ 4 mục (Con cái, Đối tác, Khách hàng, Người yêu). KHÔNG viết quá dài mỗi mục — ưu tiên ĐỦ hơn là DÀI. KHÔNG lặp lại nội dung đã viết ở phần 1-2.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 <p>⚠️ ĐÂY LÀ PHẦN CỰC KỲ THỰC TẾ — PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY vào cuộc sống. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm cụ thể, (c) hành vi TUYỆT ĐỐI KHÔNG nên làm, (d) kịch bản ví dụ thực tế, (e) câu nói/cách tiếp cận mẫu.</p>
@@ -909,9 +911,9 @@ ${coreInstruction}
             promptParts.push(`
                 ${commonInstructions}
 
-${coreInstruction}
+${practicalInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 4/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT, THẬT DÀI. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1-3.
+⚠️ ĐÂY LÀ PHẦN 4/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước). PHẢI HOÀN THÀNH TẤT CẢ 3 góc nhìn (Tâm lý học, Phật giáo, Giáo dục). KHÔNG viết quá dài — ưu tiên ĐỦ hơn là DÀI. KHÔNG lặp lại nội dung đã viết ở phần 1-3.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 <p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN KHÁC NHAU, mỗi góc nhìn mang đến một tầng hiểu biết mới. KHÔNG lặp lại nội dung các phần trước — mỗi góc nhìn phải đưa ra INSIGHT MỚI.</p>
@@ -1120,12 +1122,14 @@ ${innerCoreInstruction}
     `);
 
     // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ
+    const innerPracticalInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết "Số A", "chỉ số X". Mỗi mục (li) viết 100-200 từ, súc tích nhưng cụ thể. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — KHÔNG ĐƯỢC bỏ sót. Ưu tiên tính ỨNG DỤNG THỰC TẾ. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.`;
+
     promptParts.push(`
         ${commonInstructions}
 
-${innerCoreInstruction}
+${innerPracticalInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 3/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
+⚠️ ĐÂY LÀ PHẦN 3/4 (tiếp nối phần trước). PHẢI HOÀN THÀNH TẤT CẢ 4 mục (Con cái, Đối tác, Khách hàng, Người yêu). KHÔNG viết quá dài — ưu tiên ĐỦ hơn là DÀI. KHÔNG lặp lại nội dung đã viết.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 <p>⚠️ PHẢI viết cụ thể đến mức người đọc có thể ÁP DỤNG NGAY. Mỗi mối quan hệ PHẢI có: (a) đặc điểm tâm lý cần hiểu, (b) hành vi NÊN làm, (c) hành vi KHÔNG nên làm, (d) ví dụ kịch bản thực tế.</p>
@@ -1170,9 +1174,9 @@ ${innerCoreInstruction}
     promptParts.push(`
         ${commonInstructions}
 
-${innerCoreInstruction}
+${innerPracticalInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 4/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. KHÔNG tóm tắt. KHÔNG lặp lại nội dung đã viết.
+⚠️ ĐÂY LÀ PHẦN 4/4 (tiếp nối phần trước). PHẢI HOÀN THÀNH TẤT CẢ 3 góc nhìn (Tâm lý học, Phật giáo, Giáo dục). KHÔNG viết quá dài — ưu tiên ĐỦ hơn là DÀI. KHÔNG lặp lại nội dung đã viết.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 <p>⚠️ PHẢI phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} từ 3 GÓC NHÌN, mỗi góc đưa ra INSIGHT MỚI.</p>
