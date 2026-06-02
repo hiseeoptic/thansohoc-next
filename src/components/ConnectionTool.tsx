@@ -619,7 +619,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
       let promptParts: string[] = [];
 
         if (comboInfo.comboType === 'coreMissionLife') {
-            // CHIA 2 PHẦN ĐỂ VƯỢT GIỚI HẠN TOKEN — MỖI PHẦN 16384 TOKENS
+            // CHIA 3 PHẦN ĐỂ VƯỢT GIỚI HẠN TOKEN — MỖI PHẦN 16384 TOKENS
             const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số). Mỗi mục (li) PHẢI dài ít nhất 400 từ, chia 4 phần: (a) năng lượng gốc, (b) tương tác tổ hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả.`;
 
             // PHẦN 1: Sections 1-3 (Bản chất + Cơ chế + Hồ sơ tính cách)
@@ -628,7 +628,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/2 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/3 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
 <p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau.</p>
@@ -674,7 +674,7 @@ ${coreInstruction}
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/2 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/3 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -892,7 +892,7 @@ ${coreInstruction}
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/2. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/3. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
 
 <h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -999,7 +999,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/2 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/3 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
 
 <h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
