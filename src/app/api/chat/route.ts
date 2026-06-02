@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
     let activeEngine = engine;
 
     if (engine === 'auto') {
-      if (hasOpenAIKey) activeEngine = 'openai';
-      else if (hasGeminiKey) activeEngine = 'gemini';
+      if (hasGeminiKey) activeEngine = 'gemini';
+      else if (hasOpenAIKey) activeEngine = 'openai';
       else if (hasAnthropicKey) activeEngine = 'claude';
       else return NextResponse.json({ error: 'No API keys configured' }, { status: 500 });
     }

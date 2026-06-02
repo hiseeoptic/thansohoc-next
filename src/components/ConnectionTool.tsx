@@ -307,20 +307,21 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   // === Hidden AI Engine Switch (password protected) ===
-  const [aiEngine, setAiEngine] = useState<AIEngine>('claude');
+  // Mặc định Gemini (chất lượng cao nhất, output 65K không bị cắt). OpenAI/Claude chỉ dùng qua nút admin.
+  const [aiEngine, setAiEngine] = useState<AIEngine>('gemini');
   const [showEngineSwitch, setShowEngineSwitch] = useState(false);
   const [enginePassword, setEnginePassword] = useState('');
   const [engineUnlocked, setEngineUnlocked] = useState(false);
   const enginePasscodes = ['25021987', '0208'];
 
-  // Auto-detect engine: ưu tiên RẺ NHẤT (openai → gemini → claude)
+  // Auto-detect engine: ƯU TIÊN GEMINI → OpenAI → Claude
   useEffect(() => {
     getAvailableEngines().then(engines => {
       console.log('[Engine] Available:', engines);
-      if (engines.includes('openai')) {
-        setAiEngine('openai');
-      } else if (engines.includes('gemini')) {
+      if (engines.includes('gemini')) {
         setAiEngine('gemini');
+      } else if (engines.includes('openai')) {
+        setAiEngine('openai');
       } else if (engines.includes('claude')) {
         setAiEngine('claude');
       }
@@ -1571,13 +1572,13 @@ Trước khi trả output, tự hỏi:
              {engineUnlocked && (
                <div className="mt-1 flex items-center gap-1">
                  <button
+                   onClick={() => setAiEngine('gemini')}
+                   className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'gemini' ? 'bg-blue-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
+                 >Gemini ~4K₫ (Mặc định)</button>
+                 <button
                    onClick={() => setAiEngine('openai')}
                    className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'openai' ? 'bg-green-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
                  >GPT ~3K₫</button>
-                 <button
-                   onClick={() => setAiEngine('gemini')}
-                   className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'gemini' ? 'bg-blue-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
-                 >Gemini ~4K₫</button>
                  <button
                    onClick={() => setAiEngine('claude')}
                    className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'claude' ? 'bg-purple-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
