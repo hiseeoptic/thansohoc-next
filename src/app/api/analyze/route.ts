@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const maxDuration = 60;
+// 300s = 5 phút (gói Vercel Pro). Sonnet viết tiếng Việt chậm nên cần nhiều thời gian.
+// Gói Hobby bị giới hạn 60s → Sonnet sẽ bị cắt, nên dùng GPT/Gemini (nhanh hơn) trên Hobby.
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
@@ -106,6 +108,8 @@ async function streamClaude(prompt: string, systemInstruction: string, engineLab
             } catch {}
           }
         }
+        // Stream kết thúc TỰ NHIÊN (Claude viết xong, không bị timeout) → gửi marker
+        controller.enqueue(encoder.encode('<!--PART_OK-->'));
       } catch (err: any) {
         controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
       } finally {
@@ -169,6 +173,7 @@ async function streamOpenAI(prompt: string, systemInstruction: string, engineLab
             } catch {}
           }
         }
+        controller.enqueue(encoder.encode('<!--PART_OK-->'));
       } catch (err: any) {
         controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
       } finally {
@@ -230,6 +235,7 @@ async function streamGemini(prompt: string, systemInstruction: string, engineLab
             } catch {}
           }
         }
+        controller.enqueue(encoder.encode('<!--PART_OK-->'));
       } catch (err: any) {
         controller.enqueue(encoder.encode(`\n\n[ERROR: ${err.message}]`));
       } finally {

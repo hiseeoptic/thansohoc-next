@@ -253,9 +253,10 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const CACHE_PREFIX = 'analysis_cache_';
   const CACHE_EXPIRY_DAYS = 30;
 
-  const getCacheKey = (comboType: string, values: number[]) => {
+  const getCacheKey = (comboType: string, values: number[], engine: string) => {
     const sorted = [...values].sort((a, b) => a - b);
-    return `${CACHE_PREFIX}${comboType}_${sorted.join('_')}`;
+    // Key bao gồm ENGINE → mỗi engine có cache riêng, chuyển engine sẽ gọi API mới
+    return `${CACHE_PREFIX}${engine}_${comboType}_${sorted.join('_')}`;
   };
 
   const getFromCache = (cacheKey: string): string | null => {
@@ -1329,8 +1330,8 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
-      // *** CACHE CHECK — Kiểm tra xem bộ số này đã phân tích trước đó chưa ***
-      const cacheKey = getCacheKey(comboInfo.comboType, activeInputs.map(i => i.value));
+      // *** CACHE CHECK — cache RIÊNG theo từng engine ***
+      const cacheKey = getCacheKey(comboInfo.comboType, activeInputs.map(i => i.value), aiEngine);
       const cachedContent = getFromCache(cacheKey);
 
       if (cachedContent) {
@@ -1342,10 +1343,14 @@ Trước khi trả output, tự hỏi:
         setIsAnalyzing(false);
         return; // ← Thoát sớm, tiết kiệm 100% chi phí API
       }
-      console.log(`[Cache MISS] ${cacheKey} — Gọi API mới`);
+      console.log(`[Cache MISS] ${cacheKey} — Gọi API mới (engine=${aiEngine})`);
+
+      // Marker mà API gửi khi 1 phần stream XONG TỰ NHIÊN (không bị timeout)
+      const COMPLETE_MARKER = '<!--PART_OK-->';
 
       // Gọi API Route (streaming) — MULTI-CALL: gọi tuần tự từng phần, nối kết quả
       let responseText = '';
+      let allPartsComplete = true; // false nếu bất kỳ phần nào bị cắt giữa chừng
 
       for (let partIdx = 0; partIdx < promptParts.length; partIdx++) {
         const currentPrompt = promptParts[partIdx];
@@ -1362,6 +1367,12 @@ Trước khi trả output, tự hỏi:
           body: requestBody,
         });
 
+        // Xác nhận engine THỰC SỰ được dùng (chống trừ nhầm tiền)
+        const engineUsed = apiResponse.headers.get('X-Engine-Used');
+        if (engineUsed && engineUsed !== aiEngine) {
+          console.warn(`[Engine MISMATCH] Yêu cầu ${aiEngine} nhưng server dùng ${engineUsed}`);
+        }
+
         if (!apiResponse.ok) {
           const errorText = await apiResponse.text();
           let errorMsg: string;
@@ -1377,24 +1388,31 @@ Trước khi trả output, tự hỏi:
         // Đọc streaming response cho phần hiện tại
         const reader = apiResponse.body!.getReader();
         const decoder = new TextDecoder();
+        let partText = '';
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-          responseText += chunk;
+          partText += chunk;
 
-          // Cập nhật UI realtime khi nhận chunks
+          // Cập nhật UI realtime — ẩn marker khỏi hiển thị
           setAnalysis({
             ...basicAnalysis,
-            aiContent: responseText,
+            aiContent: (responseText + partText).split(COMPLETE_MARKER).join(''),
           });
         }
 
-        // Thêm khoảng cách giữa các phần
-        if (partIdx < promptParts.length - 1) {
-          responseText += '\n\n';
+        // Kiểm tra phần này có hoàn chỉnh không (có marker = stream kết thúc tự nhiên)
+        if (partText.includes(COMPLETE_MARKER)) {
+          partText = partText.split(COMPLETE_MARKER).join('');
+        } else {
+          allPartsComplete = false;
+          console.warn(`[Part ${partIdx + 1}] BỊ CẮT — không nhận được marker hoàn thành (có thể timeout)`);
         }
+
+        responseText += partText;
+        if (partIdx < promptParts.length - 1) responseText += '\n\n';
       }
 
       if (!responseText) {
@@ -1403,10 +1421,12 @@ Trước khi trả output, tự hỏi:
           : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>';
       }
 
-      // *** LƯU CACHE sau khi phân tích xong ***
-      if (responseText && !responseText.includes('[ERROR')) {
+      // *** CHỈ LƯU CACHE khi TẤT CẢ các phần hoàn chỉnh ***
+      if (responseText && !responseText.includes('[ERROR') && allPartsComplete) {
         saveToCache(cacheKey, responseText);
         console.log(`[Cache SAVED] ${cacheKey} — ${(responseText.length / 1024).toFixed(1)} KB`);
+      } else if (!allPartsComplete) {
+        console.warn('[Cache SKIPPED] Nội dung bị cắt — KHÔNG lưu cache để lần sau chạy lại');
       }
 
       setAnalysis({
