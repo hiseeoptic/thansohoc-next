@@ -684,7 +684,8 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
         if (comboInfo.comboType === 'coreMissionLife') {
             // CHIA 3 PHẦN ĐỂ VƯỢT GIỚI HẠN TOKEN — MỖI PHẦN 16384 TOKENS
-            const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số). Mỗi mục (li) viết chi tiết 250-400 từ, chia 4 phần: (a) năng lượng gốc, (b) tương tác tổ hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không được bỏ sót.`;
+            const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ.
+⚠️ GIỚI HẠN ĐỘ DÀI QUAN TRỌNG: Mỗi mục (li) viết SÚC TÍCH 130-180 từ. PHẢI HOÀN THÀNH ĐỦ TẤT CẢ CÁC MỤC trong phần này rồi mới dừng — KHÔNG viết lan man dài dòng khiến không kịp hoàn thành. Viết ĐỦ Ý quan trọng hơn viết DÀI.`;
 
             // PHẦN 1: Sections 1-3 (Bản chất + Cơ chế + Hồ sơ tính cách)
             promptParts.push(`
@@ -692,7 +693,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/4 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT cho 3 phần dưới đây. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không bỏ sót mục nào.
+⚠️ Hãy viết THẬT CHI TIẾT cho phần dưới đây. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không bỏ sót mục nào.
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
 <p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau.</p>
@@ -707,6 +708,15 @@ ${coreInstruction}
 <li><strong>Mức độ đồng bộ nội–ngoại:</strong> Nội tâm có trùng với biểu hiện không? 3 trạng thái: đồng bộ/lệch nhẹ/lệch mạnh. Hậu quả khi lệch. Hướng dẫn cân bằng cụ thể.</li>
 <li><strong>Khí chất tổng thể:</strong> Tổ hợp tạo khí chất gì? Ảnh hưởng tương tác hàng ngày ra sao? Ví dụ thực tế.</li>
 </ul>
+            `);
+
+            // PHẦN: Section 2 — Cơ chế tâm lý
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>2. CƠ CHẾ TÂM LÝ & MÔ HÌNH TƯƠNG TÁC</h3>
 <p>Phân tích cơ chế vận hành tâm lý của bộ số ${activeInputs.map(i => i.value).join(' + ')}. PHẢI dựa trên challenges và advantages cụ thể.</p>
@@ -717,6 +727,15 @@ ${coreInstruction}
 <li><strong>Xung đột nội tại:</strong> Các số có hỗ trợ hay mâu thuẫn? 3 loại xung đột (nội tâm/hành vi/môi trường). Biểu hiện: mệt mỏi, thiếu động lực, tự nghi ngờ — giải thích TẠI SAO dựa trên tổ hợp số cụ thể.</li>
 <li><strong>Cơ chế cân bằng & hướng dẫn phục hồi:</strong> Khi kiệt sức, quay về thói quen số nào? Cách phá vỡ vòng lặp tiêu cực — hành động cụ thể.</li>
 </ul>
+            `);
+
+            // PHẦN: Section 3 — Hồ sơ tính cách
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>3. HỒ SƠ TÍNH CÁCH CHUYÊN SÂU</h3>
 <p>⚠️ Phần này CỰC KỲ QUAN TRỌNG — phải vẽ ra được “chân dung tâm lý” rõ nét để người đọc NHÌN THẤY được người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} là người như thế nào.</p>
@@ -738,7 +757,7 @@ ${coreInstruction}
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ Tiếp nối phần trước. Viết chi tiết, HOÀN THÀNH ĐỦ các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -760,8 +779,17 @@ ${coreInstruction}
 <li><strong>Dấu hiệu rạn nứt & cách hàn gắn:</strong> Khi nào biết họ bắt đầu xa cách? Cách tiếp cận lại cụ thể.</li>
 <li><strong>Hướng đi đúng trong tình cảm:</strong> Lời khuyên cụ thể để xây dựng mối quan hệ bền vững với người mang bộ số này.</li>
 </ul>
+            `);
 
-<h4>🤝 Gợi Ý Cho Sale/Coach/Tư Vấn:</h4>
+            // PHẦN: Section 4 (tiếp) — Sale/Coach/Tư vấn
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ Tiếp nối phần trước (mục 4. Ứng dụng thực tế). Viết chi tiết phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
+
+<h4>🤝 Gợi Ý Cho Sale/Coach/Tư Vấn (Ứng dụng thực tế — tiếp):</h4>
 <p>⚠️ PHẢI cho biết: người mang bộ số ${activeInputs.map(i => i.value).join(' + ')} THÍCH gì, MONG MUỐN gì từ dịch vụ — để sale biết cách tư vấn có lợi.</p>
 <ul>
 <li><strong>Họ bị thu hút bởi điều gì:</strong> Kết quả thực tế? Câu chuyện cảm hứng? Dữ liệu logic? Sự mới mẻ? Sự an toàn? (dựa trên keywords + advantages).</li>
@@ -770,6 +798,15 @@ ${coreInstruction}
 <li><strong>Điều TUYỆT ĐỐI không nên nói/làm:</strong> Hành vi nào khiến họ đóng cửa? (dựa trên challenges + điểm kích hoạt). Ví dụ sai lầm sale hay gặp.</li>
 <li><strong>Cách chốt quyết định:</strong> Cho họ cảm giác kiểm soát/an toàn/cơ hội? Xử lý từ chối đúng nỗi sợ gốc. Ví dụ kịch bản chốt cụ thể.</li>
 </ul>
+            `);
+
+            // PHẦN: Section 5 — ENGINE 5 bước
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết phần dưới đây, HOÀN THÀNH ĐỦ cả 5 bước. KHÔNG lặp lại nội dung đã viết.
 
 <h3>5. PHÂN TÍCH KẾT NỐI CHỈ SỐ CHUYÊN SÂU</h3>
 
@@ -793,7 +830,7 @@ ${coreInstruction}
 </li>
 
 <li>
-<strong>Bước 4 — Phân tích 5 lớp (PHẢI VIẾT ĐẦY ĐỦ, MỖI LỚP ÍT NHẤT 400 TỪ):</strong>
+<strong>Bước 4 — Phân tích 5 lớp (mỗi lớp 120-160 từ, SÚC TÍCH, đủ cả 5 lớp):</strong>
 <ul>
 <li><strong>Bản chất mới khi kết hợp:</strong> Khi kết hợp các năng lượng lõi, “con người mới” này có bản chất gì? Họ khác gì so với từng số riêng lẻ? Đưa ví dụ cụ thể: cách họ ra quyết định, cách họ yêu, cách họ làm việc.</li>
 <li><strong>Cơ chế vận hành tâm lý:</strong> Khi bình thường, số nào chi phối? Khi căng thẳng, số nào lấn át? Phản ứng cụ thể trong tình huống: mâu thuẫn công sở, áp lực tài chính, xung đột gia đình.</li>
@@ -812,6 +849,15 @@ ${coreInstruction}
 </ul>
 </li>
 </ul>
+            `);
+
+            // PHẦN: Section 6 + 7 — Nhân-Duyên-Quả + Lộ trình
+            promptParts.push(`
+                ${commonInstructions}
+
+${coreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết 2 phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>6. BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h3>
 <p><strong>⚠️ ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT — PHẢI PHÂN TÍCH DỰA TRÊN TỔ HỢP SỐ ${activeInputs.map(i => i.value).join(' + ')}, KHÔNG ĐƯỢC VIẾT CHUNG CHUNG HAY COPY TEMPLATE:</strong></p>
@@ -867,67 +913,71 @@ ${coreInstruction}
 </ul>
             `);
 
-            // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ (template rút gọn để vừa 16384 tokens)
+            // PHẦN: Section 8a — Con cái + Đối tác
             promptParts.push(`
                 ${commonInstructions}
 
-⚠️ GIỚI HẠN CỨNG: TỔNG PHẦN NÀY TỐI ĐA 4000 TỪ. Viết súc tích, mỗi subsection tối đa 800 từ. PHẢI hoàn thành ĐỦ 4 subsection. KHÔNG copy template — tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}.
-
-⚠️ PHẦN 3/4 — tiếp nối phần trước. KHÔNG lặp lại nội dung đã viết.
+⚠️ Tiếp nối phần trước. Viết súc tích, mỗi mục 150-200 từ, HOÀN THÀNH ĐỦ 2 nhóm dưới đây. Tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG lặp lại nội dung đã viết.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 
-<h4>👶 Con Cái — Hướng dẫn nuôi dạy (tối đa 800 từ):</h4>
+<h4>👶 Con Cái — Hướng dẫn nuôi dạy:</h4>
 <ul>
 <li><strong>Bản chất & cách giáo dục:</strong> Nhu cầu tâm lý gốc của trẻ mang bộ số này, phong cách dạy con phù hợp, môi trường/hoạt động tốt nhất.</li>
 <li><strong>Điều cấm kỵ & dấu hiệu lệch hướng:</strong> Hành vi cha mẹ gây tổn thương nhất, biểu hiện khi con sống "phiên bản thấp", cách can thiệp với câu nói mẫu.</li>
 </ul>
 
-<h4>🤝 Đối Tác Kinh Doanh (tối đa 800 từ):</h4>
+<h4>🤝 Đối Tác Kinh Doanh:</h4>
 <ul>
 <li><strong>Phong cách & lòng tin:</strong> Cách làm việc, ra quyết định, điều họ đánh giá cao nhất ở đối tác, hành vi phá vỡ lòng tin.</li>
 <li><strong>Xung đột & hợp tác:</strong> Cách phản ứng khi bất đồng, cách tiếp cận đúng, phân chia vai trò tối ưu.</li>
 </ul>
+            `);
 
-<h4>💼 Khách Hàng (tối đa 800 từ):</h4>
+            // PHẦN: Section 8b — Khách hàng + Người yêu
+            promptParts.push(`
+                ${commonInstructions}
+
+⚠️ Tiếp nối phần trước (mục 8. Hướng dẫn ứng xử). Viết súc tích, mỗi mục 150-200 từ, HOÀN THÀNH ĐỦ 2 nhóm dưới đây. KHÔNG lặp lại nội dung đã viết.
+
+<h4>💼 Khách Hàng (Hướng dẫn ứng xử — tiếp):</h4>
 <ul>
 <li><strong>Tâm lý mua hàng:</strong> Mua vì lý trí hay cảm xúc, cách tiếp cận và tư vấn hiệu quả, giọng điệu phù hợp.</li>
 <li><strong>Xử lý từ chối & giữ chân:</strong> Lý do thật khi từ chối, câu nói xử lý cụ thể, cách chăm sóc sau bán.</li>
 </ul>
 
-<h4>💕 Người Yêu / Bạn Đời (tối đa 800 từ):</h4>
+<h4>💕 Người Yêu / Bạn Đời:</h4>
 <ul>
 <li><strong>Ngôn ngữ tình yêu & nỗi sợ:</strong> Kênh cảm nhận tình yêu mạnh nhất, nỗi sợ sâu nhất trong tình yêu, hành vi phòng vệ.</li>
 <li><strong>Hướng dẫn thực tế:</strong> 3 điều NÊN làm, 3 điều KHÔNG nên làm, câu nói khiến họ yêu nhất vs tổn thương nhất, cách hàn gắn khi khủng hoảng.</li>
 </ul>
-
             `);
 
-            // PHẦN 4: Section 9 — GÓC NHÌN ĐA CHIỀU (template rút gọn)
+            // PHẦN: Section 9 — GÓC NHÌN ĐA CHIỀU
             promptParts.push(`
                 ${commonInstructions}
 
-⚠️ GIỚI HẠN CỨNG: TỔNG PHẦN NÀY TỐI ĐA 3500 TỪ. Viết súc tích, mỗi góc nhìn tối đa 1000 từ. PHẢI hoàn thành ĐỦ 3 góc nhìn. KHÔNG copy template — tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}.
+⚠️ Tiếp nối phần trước. Viết súc tích, mỗi góc nhìn 200-300 từ, HOÀN THÀNH ĐỦ cả 3 góc nhìn. Tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG lặp lại nội dung đã viết.
 
 ⚠️ PHẦN 4/4 — tiếp nối phần trước. KHÔNG lặp lại nội dung đã viết.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 
-<h4>🧠 Tâm Lý Học Hành Vi (tối đa 1000 từ):</h4>
+<h4>🧠 Tâm Lý Học Hành Vi:</h4>
 <ul>
 <li><strong>Lược đồ nhận thức:</strong> Niềm tin cốt lõi vô thức mà bộ số này tạo ra, niềm tin kép khi tổ hợp.</li>
 <li><strong>Vòng lặp hành vi:</strong> Kích hoạt → suy nghĩ tự động → cảm xúc → hành vi → hệ quả. Phân tích cụ thể + điểm can thiệp.</li>
 <li><strong>Chiến lược trị liệu:</strong> Kỹ thuật phù hợp nhất (nhật ký tư duy, câu hỏi Socrates, tái cấu trúc nhận thức) + bài tập hàng ngày.</li>
 </ul>
 
-<h4>☸️ Triết Học Phật Giáo (tối đa 1000 từ):</h4>
+<h4>☸️ Triết Học Phật Giáo:</h4>
 <ul>
 <li><strong>Tam Độc:</strong> Bộ số thiên về Tham, Sân hay Si? Khi tổ hợp → "độc" nào khuếch đại?</li>
 <li><strong>Ba Thiện Căn & Chánh niệm:</strong> Phẩm chất cần rèn nhất (Vô Tham/Vô Sân/Vô Si), kỹ thuật chánh niệm cụ thể khi năng lượng tiêu cực bị kích hoạt.</li>
 <li><strong>Chuyển hóa nghiệp tập:</strong> Thói quen tâm thức lặp lại, cách chuyển từ phản ứng tự động → hành động có chánh niệm.</li>
 </ul>
 
-<h4>📚 Nhà Giáo Dục (tối đa 1000 từ):</h4>
+<h4>📚 Nhà Giáo Dục:</h4>
 <ul>
 <li><strong>Phong cách học tập:</strong> Kênh học tốt nhất (thị giác/thính giác/vận động/logic), môi trường lý tưởng.</li>
 <li><strong>Lộ trình phát triển:</strong> Kỹ năng mềm ưu tiên, sách/khóa học cụ thể, vai trò trong cộng đồng.</li>
@@ -943,7 +993,8 @@ ${coreInstruction}
     const attVal = activeInputs.find(i => i.type === NumberType.Attitude)?.value || 'Z';
     const matVal = activeInputs.find(i => i.type === NumberType.Maturity)?.value || 'W';
 
-    const innerCoreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ. Mỗi mục (li) viết chi tiết 250-400 từ, có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không được bỏ sót.`;
+    const innerCoreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
+⚠️ GIỚI HẠN ĐỘ DÀI QUAN TRỌNG: Mỗi mục (li) viết SÚC TÍCH 130-180 từ. PHẢI HOÀN THÀNH ĐỦ TẤT CẢ CÁC MỤC trong phần này rồi mới dừng — KHÔNG viết lan man khiến không kịp hoàn thành. Viết ĐỦ Ý quan trọng hơn viết DÀI.`;
 
     // PHẦN 1: Sections 1-4
     promptParts.push(`
@@ -953,7 +1004,7 @@ ${coreInstruction}
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/4. Hãy viết THẬT CHI TIẾT cho 4 phần dưới đây. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không bỏ sót mục nào.
+⚠️ Hãy viết THẬT CHI TIẾT cho 2 phần dưới đây. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — không bỏ sót mục nào.
 
 <h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -1008,6 +1059,15 @@ Người này mang khí chất trầm ổn – quyết liệt – linh hoạt �
 <li><strong>Mô hình hành vi lặp lại:</strong> Phản xạ vô thức nào thường xuyên tái diễn khi gặp xung đột? Phân tích vòng lặp, ví dụ từ hành vi lặp lại trong mối quan hệ hoặc công việc.</li>
 <li><strong>Điểm kích hoạt:</strong> Điều gì dễ làm mất cân bằng nhất? Bị kiểm soát? Bị xem thường? Bị bỏ rơi? Thiếu tự do? Diễn giải cách tránh và xử lý, ví dụ cụ thể từ tình huống đời thực.</li>
 </ul>
+    `);
+
+    // PHẦN: Section 3 + 4 — Tương tác + Hồ sơ tính cách
+    promptParts.push(`
+        ${commonInstructions}
+
+${innerCoreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết 2 phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>3. TƯƠNG TÁC & XUNG ĐỘT</h3>
 <ul>
@@ -1060,7 +1120,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước). Hãy viết THẬT CHI TIẾT. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ Tiếp nối phần trước. Viết chi tiết, HOÀN THÀNH ĐỦ các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -1092,6 +1152,15 @@ ${innerCoreInstruction}
 <li><strong>Không nên làm gì:</strong> Hành vi dễ tổn thương sâu sắc hoặc mất niềm tin (kiểm soát, bỏ rơi, thiếu tôn trọng — cụ thể từ challenges bộ số).</li>
 <li><strong>Dấu hiệu rạn nứt:</strong> Nhận biết khi bắt đầu thay đổi (lạnh nhạt, né tránh, kiểm soát hơn, mất kết nối). Cách tiếp cận lại cụ thể.</li>
 </ul>
+    `);
+
+    // PHẦN: Section 6 + 7 — Nhân-Duyên-Quả + Trưởng thành
+    promptParts.push(`
+        ${commonInstructions}
+
+${innerCoreInstruction}
+
+⚠️ Tiếp nối phần trước. Viết chi tiết 2 phần dưới đây, HOÀN THÀNH ĐỦ tất cả các mục. KHÔNG lặp lại nội dung đã viết.
 
 <h3>6. BÀI HỌC NHÂN – DUYÊN – QUẢ & CHUYỂN HÓA TÍNH CÁCH</h3>
 <p><strong>Khuôn mẫu lệch hướng tham khảo (20% — KHÔNG thay logic phân tích):</strong> Lệch hướng từng số (1→độc đoán, 2→lệ thuộc, 3→hời hợt, 4→bảo thủ, 5→sa đà, 6→kiểm soát tình cảm, 7→cô lập, 8→tham vọng cực đoan, 9→lý tưởng hóa). Tổ hợp dễ lệch (3+5→đào hoa, 1+5→liều lĩnh, 2+5→yêu sai người, 2+8→bị áp chế, 4+5→giằng xé, 7+5→nghĩ nhiều không hành động).</p>
@@ -1116,66 +1185,69 @@ ${innerCoreInstruction}
     `);
 
     // PHẦN 3: Section 8 — HƯỚNG DẪN ỨNG XỬ (template rút gọn)
+    // PHẦN: Section 8a — Con cái + Đối tác
     promptParts.push(`
         ${commonInstructions}
 
-⚠️ GIỚI HẠN CỨNG: TỔNG PHẦN NÀY TỐI ĐA 4000 TỪ. Viết súc tích, mỗi subsection tối đa 800 từ. PHẢI hoàn thành ĐỦ 4 subsection. KHÔNG copy template — tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}. PHẢI phân tích TƯƠNG TÁC giữa các số.
-
-⚠️ PHẦN 3/4 — tiếp nối phần trước. KHÔNG lặp lại nội dung đã viết.
+⚠️ Tiếp nối phần trước. Viết súc tích, mỗi mục 150-200 từ, HOÀN THÀNH ĐỦ 2 nhóm dưới đây. Tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG lặp lại nội dung đã viết.
 
 <h3>8. HƯỚNG DẪN ỨNG XỬ VỚI NGƯỜI MANG BỘ SỐ ${activeInputs.map(i => i.value).join(' + ')}</h3>
 
-<h4>👶 Con Cái — Hướng dẫn nuôi dạy (tối đa 800 từ):</h4>
+<h4>👶 Con Cái — Hướng dẫn nuôi dạy:</h4>
 <ul>
 <li><strong>Bản chất & cách giáo dục:</strong> Nhu cầu tâm lý gốc, phong cách dạy con phù hợp, môi trường/hoạt động tốt nhất.</li>
 <li><strong>Điều cấm kỵ & dấu hiệu lệch hướng:</strong> Hành vi cha mẹ gây tổn thương nhất, biểu hiện khi con sống "phiên bản thấp", cách can thiệp với câu nói mẫu.</li>
 </ul>
 
-<h4>🤝 Đối Tác Kinh Doanh (tối đa 800 từ):</h4>
+<h4>🤝 Đối Tác Kinh Doanh:</h4>
 <ul>
 <li><strong>Phong cách & lòng tin:</strong> Cách làm việc, ra quyết định, điều đánh giá cao nhất ở đối tác, hành vi phá vỡ lòng tin.</li>
 <li><strong>Xung đột & hợp tác:</strong> Phản ứng khi bất đồng, cách tiếp cận đúng, phân chia vai trò tối ưu.</li>
 </ul>
+    `);
 
-<h4>💼 Khách Hàng (tối đa 800 từ):</h4>
+    // PHẦN: Section 8b — Khách hàng + Người yêu
+    promptParts.push(`
+        ${commonInstructions}
+
+⚠️ Tiếp nối phần trước (mục 8. Hướng dẫn ứng xử). Viết súc tích, mỗi mục 150-200 từ, HOÀN THÀNH ĐỦ 2 nhóm dưới đây. KHÔNG lặp lại nội dung đã viết.
+
+<h4>💼 Khách Hàng (Hướng dẫn ứng xử — tiếp):</h4>
 <ul>
 <li><strong>Tâm lý mua hàng:</strong> Mua vì lý trí hay cảm xúc, cách tiếp cận và tư vấn hiệu quả.</li>
 <li><strong>Xử lý từ chối & giữ chân:</strong> Lý do thật khi từ chối, câu nói xử lý cụ thể, cách chăm sóc sau bán.</li>
 </ul>
 
-<h4>💕 Người Yêu / Bạn Đời (tối đa 800 từ):</h4>
+<h4>💕 Người Yêu / Bạn Đời:</h4>
 <ul>
 <li><strong>Ngôn ngữ tình yêu & nỗi sợ:</strong> Kênh cảm nhận tình yêu mạnh nhất, nỗi sợ sâu nhất, hành vi phòng vệ.</li>
 <li><strong>Hướng dẫn thực tế:</strong> 3 điều NÊN, 3 điều KHÔNG nên, câu nói yêu nhất vs tổn thương nhất, cách hàn gắn khi khủng hoảng.</li>
 </ul>
-
     `);
 
-    // PHẦN 4: Section 9 — GÓC NHÌN ĐA CHIỀU (template rút gọn)
+    // PHẦN: Section 9 — GÓC NHÌN ĐA CHIỀU
     promptParts.push(`
         ${commonInstructions}
 
-⚠️ GIỚI HẠN CỨNG: TỔNG PHẦN NÀY TỐI ĐA 3500 TỪ. Viết súc tích, mỗi góc nhìn tối đa 1000 từ. PHẢI hoàn thành ĐỦ 3 góc nhìn. KHÔNG copy template — tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}.
-
-⚠️ PHẦN 4/4 — tiếp nối phần trước. KHÔNG lặp lại nội dung đã viết.
+⚠️ Tiếp nối phần trước. Viết súc tích, mỗi góc nhìn 200-300 từ, HOÀN THÀNH ĐỦ cả 3 góc nhìn. Tự phân tích dựa trên năng lượng bộ số ${activeInputs.map(i => i.value).join(' + ')}. KHÔNG lặp lại nội dung đã viết.
 
 <h3>9. GÓC NHÌN CHUYỂN HÓA ĐA CHIỀU</h3>
 
-<h4>🧠 Tâm Lý Học Hành Vi (tối đa 1000 từ):</h4>
+<h4>🧠 Tâm Lý Học Hành Vi:</h4>
 <ul>
 <li><strong>Lược đồ nhận thức:</strong> Niềm tin cốt lõi vô thức mà bộ số tạo ra, niềm tin kép khi tổ hợp.</li>
 <li><strong>Vòng lặp hành vi:</strong> Kích hoạt → suy nghĩ → cảm xúc → hành vi → hệ quả. Phân tích cụ thể + điểm can thiệp.</li>
 <li><strong>Chiến lược trị liệu:</strong> Kỹ thuật phù hợp nhất + bài tập hàng ngày.</li>
 </ul>
 
-<h4>☸️ Triết Học Phật Giáo (tối đa 1000 từ):</h4>
+<h4>☸️ Triết Học Phật Giáo:</h4>
 <ul>
 <li><strong>Tam Độc:</strong> Bộ số thiên về Tham, Sân hay Si? Khi tổ hợp → "độc" nào khuếch đại?</li>
 <li><strong>Ba Thiện Căn & Chánh niệm:</strong> Phẩm chất cần rèn nhất, kỹ thuật chánh niệm cụ thể khi năng lượng tiêu cực bị kích hoạt.</li>
 <li><strong>Chuyển hóa nghiệp tập:</strong> Thói quen tâm thức lặp lại, cách chuyển từ phản ứng tự động → hành động có chánh niệm.</li>
 </ul>
 
-<h4>📚 Nhà Giáo Dục (tối đa 1000 từ):</h4>
+<h4>📚 Nhà Giáo Dục:</h4>
 <ul>
 <li><strong>Phong cách học tập:</strong> Kênh học tốt nhất, môi trường lý tưởng.</li>
 <li><strong>Lộ trình phát triển:</strong> Kỹ năng mềm ưu tiên, sách/khóa học cụ thể, vai trò trong cộng đồng.</li>
