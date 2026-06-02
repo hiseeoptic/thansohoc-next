@@ -42,8 +42,8 @@ async function streamClaude(prompt: string, systemInstruction: string) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 32768,
       system: systemInstruction,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.4,
@@ -127,13 +127,13 @@ async function streamOpenAI(prompt: string, systemInstruction: string) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4.1-mini',
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: prompt },
       ],
       temperature: 0.4,
-      max_completion_tokens: 16384,
+      max_completion_tokens: 32768,
       stream: true,
     }),
   });
