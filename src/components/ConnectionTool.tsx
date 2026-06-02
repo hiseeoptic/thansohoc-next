@@ -310,7 +310,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const [showEngineSwitch, setShowEngineSwitch] = useState(false);
   const [enginePassword, setEnginePassword] = useState('');
   const [engineUnlocked, setEngineUnlocked] = useState(false);
-  const enginePasscode = '25021987';
+  const enginePasscodes = ['25021987', '0208'];
 
   // Auto-detect engine: ưu tiên RẺ NHẤT (openai → gemini → claude)
   useEffect(() => {
@@ -423,10 +423,11 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     const trimmedCode = code.trim();
     const isEn = analysisLang === 'en';
     // Bypass codes
-    if (['8888', 'admin', 'vip'].includes(trimmedCode)) {
-       setSubscriptionMessage(isEn ? 'Authentication successful (Backup/Test mode).' : 'Xác thực thành công (Chế độ Dự phòng/Test).');
+    if (['8888', 'admin', 'vip', '0208'].includes(trimmedCode)) {
+       const isAdmin = trimmedCode === '0208';
+       setSubscriptionMessage(isEn ? `Authentication successful (${isAdmin ? 'Admin' : 'Test'} mode).` : `Xác thực thành công (${isAdmin ? 'Quản trị viên' : 'Chế độ Dự phòng/Test'}).`);
        setIsValidSubscription(true);
-       setUserBalance(999999); // Unlimited for test
+       setUserBalance(999999); // Unlimited
        return true;
     }
 
@@ -1446,7 +1447,7 @@ Trước khi trả output, tự hỏi:
                    value={enginePassword}
                    onChange={(e) => setEnginePassword(e.target.value)}
                    onKeyDown={(e) => {
-                     if (e.key === 'Enter' && enginePassword === enginePasscode) {
+                     if (e.key === 'Enter' && enginePasscodes.includes(enginePassword)) {
                        setEngineUnlocked(true);
                        setShowEngineSwitch(false);
                        setEnginePassword('');
@@ -1457,7 +1458,7 @@ Trước khi trả output, tự hỏi:
                  />
                  <button
                    onClick={() => {
-                     if (enginePassword === enginePasscode) {
+                     if (enginePasscodes.includes(enginePassword)) {
                        setEngineUnlocked(true);
                        setShowEngineSwitch(false);
                        setEnginePassword('');
