@@ -42,8 +42,8 @@ async function streamClaude(prompt: string, systemInstruction: string) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 32768,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 8192,
       system: systemInstruction,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.4,
