@@ -288,11 +288,16 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
 
   // *** CHI PHÍ ƯỚC TÍNH ***
   const COST_PER_ANALYSIS: Record<string, number> = {
-    claude: 22000,  // ~$0.86 × 25,500 VND
-    openai: 1000,   // ~$0.04 × 25,500 VND
+    claude: 26000,
+    openai: 2900,
+    gemini: 4200,
   };
 
-  const PRICE_PER_ANALYSIS = 20000; // Giá thu từ khách hàng (VND)
+  const PRICE_PER_ANALYSIS: Record<string, number> = {
+    claude: 30000,
+    openai: 5000,
+    gemini: 7000,
+  };
 
   // State ngôn ngữ phân tích (tách biệt với language prop của app)
   const [analysisLang, setAnalysisLang] = useState<'vi' | 'en'>(language);
@@ -307,14 +312,16 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
   const [engineUnlocked, setEngineUnlocked] = useState(false);
   const enginePasscode = '25021987';
 
-  // Auto-detect engine: ưu tiên Claude, fallback OpenAI
+  // Auto-detect engine: ưu tiên RẺ NHẤT (openai → gemini → claude)
   useEffect(() => {
     getAvailableEngines().then(engines => {
       console.log('[Engine] Available:', engines);
-      if (engines.includes('claude')) {
-        setAiEngine('claude');
-      } else if (engines.includes('openai')) {
+      if (engines.includes('openai')) {
         setAiEngine('openai');
+      } else if (engines.includes('gemini')) {
+        setAiEngine('gemini');
+      } else if (engines.includes('claude')) {
+        setAiEngine('claude');
       }
     });
   }, []);
@@ -1406,7 +1413,7 @@ Trước khi trả output, tự hỏi:
         aiContent: responseText
       });
     } catch (error: any) {
-      const engineName = aiEngine === 'claude' ? 'Claude' : 'OpenAI';
+      const engineName = aiEngine === 'claude' ? 'Claude' : aiEngine === 'gemini' ? 'Gemini' : 'OpenAI';
       console.error(`${engineName} Analyze error:`, error);
       setAnalysis({
         ...basicAnalysis,
@@ -1429,7 +1436,7 @@ Trước khi trả output, tự hỏi:
                className="text-gray-400 text-xs mt-1 cursor-default select-none"
                onDoubleClick={() => setShowEngineSwitch(!showEngineSwitch)}
              >
-               AI Engine v4.0{engineUnlocked ? ` • ${aiEngine === 'claude' ? 'Claude Sonnet' : 'GPT-4o-mini'}` : ''}
+               AI Engine v5.0{engineUnlocked ? ` • ${aiEngine === 'claude' ? 'Claude Sonnet 4' : aiEngine === 'gemini' ? 'Gemini 2.5 Flash' : 'GPT-4.1 Mini'}` : ''}
              </p>
              {/* Hidden engine switch — appears on double-click, requires password */}
              {showEngineSwitch && !engineUnlocked && (
@@ -1468,11 +1475,15 @@ Trước khi trả output, tự hỏi:
                  <button
                    onClick={() => setAiEngine('openai')}
                    className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'openai' ? 'bg-green-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
-                 >GPT</button>
+                 >GPT ~3K₫</button>
+                 <button
+                   onClick={() => setAiEngine('gemini')}
+                   className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'gemini' ? 'bg-blue-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
+                 >Gemini ~4K₫</button>
                  <button
                    onClick={() => setAiEngine('claude')}
                    className={`px-2 py-0.5 text-[10px] rounded transition-all ${aiEngine === 'claude' ? 'bg-purple-600/80 text-white' : 'bg-white/5 text-gray-500 hover:text-gray-300'}`}
-                 >Claude</button>
+                 >Claude ~26K₫</button>
                </div>
              )}
            </div>
@@ -1640,13 +1651,13 @@ Trước khi trả output, tự hỏi:
         <span className="text-white font-bold">{userBalance.toLocaleString('vi-VN')}₫</span>
       </div>
       <div className="flex justify-between items-center mt-1">
-        <span className="text-blue-300">📊 Chi phí/bài ({aiEngine === 'claude' ? 'Claude' : 'OpenAI'}):</span>
-        <span className="text-yellow-300 font-medium">{PRICE_PER_ANALYSIS.toLocaleString('vi-VN')}₫</span>
+        <span className="text-blue-300">📊 Chi phí/bài ({aiEngine === 'claude' ? 'Claude Sonnet' : aiEngine === 'gemini' ? 'Gemini Flash' : 'GPT-4.1 Mini'}):</span>
+        <span className="text-yellow-300 font-medium">{(PRICE_PER_ANALYSIS[aiEngine] || 5000).toLocaleString('vi-VN')}₫</span>
       </div>
       <div className="flex justify-between items-center mt-1">
         <span className="text-blue-300">📝 Số bài còn phân tích được:</span>
-        <span className={`font-bold ${Math.floor(userBalance / PRICE_PER_ANALYSIS) > 0 ? 'text-green-400' : 'text-red-400'}`}>
-          {Math.floor(userBalance / PRICE_PER_ANALYSIS)} bài
+        <span className={`font-bold ${Math.floor(userBalance / (PRICE_PER_ANALYSIS[aiEngine] || 5000)) > 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {Math.floor(userBalance / (PRICE_PER_ANALYSIS[aiEngine] || 5000))} bài
         </span>
       </div>
     </div>
