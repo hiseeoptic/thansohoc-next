@@ -246,7 +246,53 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
 
   // *** Thêm state cho dữ liệu subscriptions từ Sheet ***
   // Giải thích: Lưu dữ liệu từ Sheet Subscriptions để check local (không dùng AppScript).
-  const [subscriptions, setSubscriptions] = useState<{ phone: string; regDate: string }[]>([]);
+  const [subscriptions, setSubscriptions] = useState<{ phone: string; regDate: string; balance: number }[]>([]);
+  const [userBalance, setUserBalance] = useState<number | null>(null); // Số dư tài khoản (VND)
+
+  // *** CACHE SYSTEM — Lưu kết quả phân tích để không gọi API lại ***
+  const CACHE_PREFIX = 'analysis_cache_';
+  const CACHE_EXPIRY_DAYS = 30;
+
+  const getCacheKey = (comboType: string, values: number[]) => {
+    const sorted = [...values].sort((a, b) => a - b);
+    return `${CACHE_PREFIX}${comboType}_${sorted.join('_')}`;
+  };
+
+  const getFromCache = (cacheKey: string): string | null => {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
+      const { content, timestamp } = JSON.parse(cached);
+      const age = Date.now() - timestamp;
+      if (age > CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000) {
+        localStorage.removeItem(cacheKey);
+        return null;
+      }
+      return content;
+    } catch { return null; }
+  };
+
+  const saveToCache = (cacheKey: string, content: string) => {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify({ content, timestamp: Date.now() }));
+    } catch (e) {
+      // localStorage full — clear oldest caches
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(CACHE_PREFIX));
+      if (keys.length > 0) {
+        keys.sort();
+        localStorage.removeItem(keys[0]);
+        try { localStorage.setItem(cacheKey, JSON.stringify({ content, timestamp: Date.now() })); } catch {}
+      }
+    }
+  };
+
+  // *** CHI PHÍ ƯỚC TÍNH ***
+  const COST_PER_ANALYSIS: Record<string, number> = {
+    claude: 22000,  // ~$0.86 × 25,500 VND
+    openai: 1000,   // ~$0.04 × 25,500 VND
+  };
+
+  const PRICE_PER_ANALYSIS = 20000; // Giá thu từ khách hàng (VND)
 
   // State ngôn ngữ phân tích (tách biệt với language prop của app)
   const [analysisLang, setAnalysisLang] = useState<'vi' | 'en'>(language);
@@ -322,10 +368,13 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
         const csvText = await response.text();
         
         // Parse CSV manual (dòng đầu header, bỏ qua)
+        // Cột: phone, regDate, balance (tùy chọn)
         const lines = csvText.split('\n').map(line => line.trim());
         const subs = lines.slice(1).filter(line => line).map(line => {
-          const [phone, regDate] = line.split(',').map(cell => cell.trim().replace(/"/g, ''));
-          return { phone, regDate };
+          const cells = line.split(',').map(cell => cell.trim().replace(/"/g, ''));
+          const [phone, regDate, balanceStr] = cells;
+          const balance = balanceStr ? parseInt(balanceStr) || 0 : 0;
+          return { phone, regDate, balance };
         });
         
         setSubscriptions(subs);
@@ -370,6 +419,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     if (['8888', 'admin', 'vip'].includes(trimmedCode)) {
        setSubscriptionMessage(isEn ? 'Authentication successful (Backup/Test mode).' : 'Xác thực thành công (Chế độ Dự phòng/Test).');
        setIsValidSubscription(true);
+       setUserBalance(999999); // Unlimited for test
        return true;
     }
 
@@ -378,6 +428,7 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
     if (!sub) {
       setSubscriptionMessage(isEn ? 'Code does not exist or is not registered.' : 'Mã không tồn tại hoặc chưa đăng ký.');
       setIsValidSubscription(false);
+      setUserBalance(null);
       return false;
     }
 
@@ -389,18 +440,22 @@ const ConnectionTool: React.FC<ConnectionToolProps> = ({ sheetData: initialSheet
       const expiryDate = new Date(regDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       if (now <= expiryDate) {
-        setSubscriptionMessage(isEn ? 'Subscription valid ✓' : 'Thuê bao hợp lệ ✓');
+        setUserBalance(sub.balance);
+        const balanceInfo = sub.balance > 0 ? ` | Số dư: ${sub.balance.toLocaleString('vi-VN')}₫` : '';
+        setSubscriptionMessage(isEn ? `Subscription valid ✓${balanceInfo}` : `Thuê bao hợp lệ ✓${balanceInfo}`);
         setIsValidSubscription(true);
         return true;
       } else {
         setSubscriptionMessage(isEn ? 'Subscription expired. Please renew!' : 'Thuê bao đã hết hạn. Vui lòng gia hạn!');
         setIsValidSubscription(false);
+        setUserBalance(null);
         return false;
       }
     } catch (error) {
       console.error('Error checking subscription:', error);
       setSubscriptionMessage(isEn ? 'Error verifying code. Please try again.' : 'Lỗi kiểm tra mã. Vui lòng thử lại.');
       setIsValidSubscription(false);
+      setUserBalance(null);
       return false;
     }
   };
@@ -1293,6 +1348,21 @@ Trước khi trả output, tự hỏi:
 - Đã đề cập Ngũ Hành (tương sinh/tương khắc) của bộ số chưa? → Nếu chưa, PHẢI lồng ghép.
 - Đã sử dụng kết quả MA TRẬN TƯƠNG THÍCH và CHỈ SỐ LIÊN KẾT trong phân tích chưa? → Nếu chưa, BỔ SUNG.`;
 
+      // *** CACHE CHECK — Kiểm tra xem bộ số này đã phân tích trước đó chưa ***
+      const cacheKey = getCacheKey(comboInfo.comboType, activeInputs.map(i => i.value));
+      const cachedContent = getFromCache(cacheKey);
+
+      if (cachedContent) {
+        console.log(`[Cache HIT] ${cacheKey} — Trả kết quả từ cache, KHÔNG gọi API`);
+        setAnalysis({
+          ...basicAnalysis,
+          aiContent: cachedContent,
+        });
+        setIsAnalyzing(false);
+        return; // ← Thoát sớm, tiết kiệm 100% chi phí API
+      }
+      console.log(`[Cache MISS] ${cacheKey} — Gọi API mới`);
+
       // Gọi API Route (streaming) — MULTI-CALL: gọi tuần tự từng phần, nối kết quả
       let responseText = '';
 
@@ -1350,6 +1420,12 @@ Trước khi trả output, tự hỏi:
         responseText = analysisLang === 'en'
           ? '<p class="text-yellow-400">No analysis content received from AI. Please try again.</p>'
           : '<p class="text-yellow-400">Không nhận được nội dung phân tích từ AI. Vui lòng thử lại.</p>';
+      }
+
+      // *** LƯU CACHE sau khi phân tích xong ***
+      if (responseText && !responseText.includes('[ERROR')) {
+        saveToCache(cacheKey, responseText);
+        console.log(`[Cache SAVED] ${cacheKey} — ${(responseText.length / 1024).toFixed(1)} KB`);
       }
 
       setAnalysis({
@@ -1582,6 +1658,25 @@ Trước khi trả output, tự hỏi:
     <p className={`mt-3 font-medium ${isValidSubscription ? 'text-green-400' : 'text-red-400'}`}>
       {subscriptionMessage}
     </p>
+  )}
+  {/* Hiển thị chi phí ước tính và số dư */}
+  {isValidSubscription && userBalance !== null && userBalance !== 999999 && (
+    <div className="mt-3 p-3 bg-blue-900/30 rounded-xl border border-blue-500/20 text-sm">
+      <div className="flex justify-between items-center">
+        <span className="text-blue-300">💰 Số dư tài khoản:</span>
+        <span className="text-white font-bold">{userBalance.toLocaleString('vi-VN')}₫</span>
+      </div>
+      <div className="flex justify-between items-center mt-1">
+        <span className="text-blue-300">📊 Chi phí/bài ({aiEngine === 'claude' ? 'Claude' : 'OpenAI'}):</span>
+        <span className="text-yellow-300 font-medium">{PRICE_PER_ANALYSIS.toLocaleString('vi-VN')}₫</span>
+      </div>
+      <div className="flex justify-between items-center mt-1">
+        <span className="text-blue-300">📝 Số bài còn phân tích được:</span>
+        <span className={`font-bold ${Math.floor(userBalance / PRICE_PER_ANALYSIS) > 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {Math.floor(userBalance / PRICE_PER_ANALYSIS)} bài
+        </span>
+      </div>
+    </div>
   )}
 </div>
 
