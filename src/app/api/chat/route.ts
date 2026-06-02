@@ -51,7 +51,7 @@ async function streamClaude(messages: ChatMessage[], systemInstruction: string) 
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
+      max_tokens: 16384,
       system: systemInstruction,
       messages: claudeMessages,
       temperature: 0.5,
