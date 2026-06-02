@@ -675,7 +675,8 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
         if (comboInfo.comboType === 'coreMissionLife') {
             // CHIA 3 PHẦN ĐỂ VƯỢT GIỚI HẠN TOKEN — MỖI PHẦN 16384 TOKENS
-            const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: Toàn bộ nội dung dưới đây là KHUNG PHÂN TÍCH — AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế. Mỗi phần PHẢI có ví dụ hành vi cụ thể. Phần chuyển hóa PHẢI nói rõ: từ hành vi gì CỤ THỂ → chuyển sang hành vi gì CỤ THỂ (dựa trên challenges → balance của từng số). Mỗi mục (li) PHẢI dài ít nhất 400 từ, chia 4 phần: (a) năng lượng gốc, (b) tương tác tổ hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả.`;
+            const coreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X” — PHẢI thay bằng số thực tế.
+⚠️ GIỚI HẠN ĐỘ DÀI: Mỗi mục (li) viết 150-250 từ, chia 4 phần: (a) năng lượng gốc, (b) tương tác tổ hợp, (c) ví dụ thực tế, (d) chuyển hóa. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC trong phần này — nếu gần hết token thì rút gọn các mục còn lại chứ KHÔNG ĐƯỢC bỏ sót mục nào. Viết ĐỦ quan trọng hơn viết DÀI.`;
 
             // PHẦN 1: Sections 1-3 (Bản chất + Cơ chế + Hồ sơ tính cách)
             promptParts.push(`
@@ -683,7 +684,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/4 CỦA BÀI PHÂN TÍCH. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 3 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/4. GIỚI HẠN: tổng phần này tối đa 3500 từ. Viết chi tiết nhưng súc tích. PHẢI hoàn thành ĐỦ 3 phần dưới đây, mỗi mục 150-250 từ. Nếu gần hết token → rút gọn mục cuối, KHÔNG để bị cắt giữa câu.
 
 <h3>1. BẢN CHẤT & ĐỘNG LỰC CỐT LÕI</h3>
 <p>Phân tích bộ số ${activeInputs.map(i => i.value).join(' + ')} theo các lớp sau.</p>
@@ -729,7 +730,7 @@ ${coreInstruction}
 
 ${coreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/4 CỦA BÀI PHÂN TÍCH (tiếp nối phần trước đã viết xong sections 1-3). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước). GIỚI HẠN: tổng tối đa 3500 từ. Viết chi tiết nhưng súc tích, mỗi mục 150-250 từ. PHẢI hoàn thành ĐỦ tất cả sections. KHÔNG lặp lại phần 1. Nếu gần hết token → rút gọn, KHÔNG để bị cắt giữa câu.
 
 <h3>4. ỨNG DỤNG THỰC TẾ</h3>
 
@@ -934,7 +935,8 @@ ${coreInstruction}
     const attVal = activeInputs.find(i => i.type === NumberType.Attitude)?.value || 'Z';
     const matVal = activeInputs.find(i => i.type === NumberType.Maturity)?.value || 'W';
 
-    const innerCoreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. Mỗi mục (li) PHẢI dài ít nhất 400 từ, có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa/hậu quả. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.`;
+    const innerCoreInstruction = `⚠️ CHỈ THỊ BẮT BUỘC: AI PHẢI tự phân tích dựa trên năng lượng cụ thể của bộ số ${activeInputs.map(i => i.value).join(' + ')} từ DỮ LIỆU KIẾN THỨC SÂU. KHÔNG copy template. KHÔNG viết “Số A”, “chỉ số X”. PHẢI phân tích TƯƠNG TÁC giữa các số chứ KHÔNG liệt kê từng số riêng lẻ.
+⚠️ GIỚI HẠN ĐỘ DÀI: Mỗi mục (li) viết 150-250 từ, có 4 yếu tố: (a) năng lượng con số, (b) tương tác kết hợp, (c) ví dụ thực tế, (d) chuyển hóa. PHẢI HOÀN THÀNH TẤT CẢ CÁC MỤC — nếu gần hết token thì rút gọn chứ KHÔNG bỏ sót. Viết ĐỦ quan trọng hơn viết DÀI.`;
 
     // PHẦN 1: Sections 1-4
     promptParts.push(`
@@ -944,7 +946,7 @@ ${coreInstruction}
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 1/4. Hãy viết THẬT CHI TIẾT, THẬT DÀI cho 4 phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn.
+⚠️ ĐÂY LÀ PHẦN 1/4. GIỚI HẠN: tổng tối đa 3500 từ. Viết chi tiết nhưng súc tích, mỗi mục 150-250 từ. PHẢI hoàn thành ĐỦ 4 phần dưới đây. Nếu gần hết token → rút gọn mục cuối, KHÔNG để bị cắt giữa câu.
 
 <h3>1. LỚP BẢN CHẤT</h3>
 <p>Bạn có lõi Nội tâm ${heartVal}, thể hiện qua Nhân cách ${persVal}, phản ứng bằng Thái Độ ${attVal}${matVal !== 'W' ? ` và đang hướng tới Trưởng thành ${matVal}` : ''}. Phân tích sự kết hợp này tạo ra mẫu người có tính cách gốc là gì, với ví dụ thực tế từ cuộc sống hàng ngày, công việc, mối quan hệ.</p>
@@ -1051,7 +1053,7 @@ Phân tích các chỉ số hỗ trợ hay mâu thuẫn nhau: Đồng hướng �
 
 ${innerCoreInstruction}
 
-⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước đã viết xong sections 1-4). Hãy viết THẬT CHI TIẾT, THẬT DÀI cho các phần dưới đây. KHÔNG tóm tắt. KHÔNG rút gọn. KHÔNG lặp lại nội dung đã viết ở phần 1.
+⚠️ ĐÂY LÀ PHẦN 2/4 (tiếp nối phần trước). GIỚI HẠN: tổng tối đa 3500 từ. Viết chi tiết nhưng súc tích, mỗi mục 150-250 từ. PHẢI hoàn thành ĐỦ tất cả sections. KHÔNG lặp lại phần 1. Nếu gần hết token → rút gọn, KHÔNG để bị cắt giữa câu.
 
 <h3>5. ỨNG DỤNG THỰC TẾ</h3>
 
