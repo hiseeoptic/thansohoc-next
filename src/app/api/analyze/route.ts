@@ -66,7 +66,7 @@ async function streamClaude(prompt: string, systemInstruction: string, engineLab
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 32768,
+      max_tokens: 8192,
       system: systemInstruction,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.4,

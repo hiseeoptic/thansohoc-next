@@ -637,11 +637,16 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
       // QUAN TRỌNG: Inject cả contextData (Google Sheet) + deepContext (kiến thức sâu về số) vào prompt
       const commonInstructions = `
             === NHIỆM VỤ ===
-            Phân tích tổ hợp số ${activeInputs.map(i => `${i.type}: ${i.value}`).join(', ')} theo đúng framework bên dưới.
+            Bạn đang viết MỘT PHẦN NHỎ trong bài phân tích tổ hợp số ${activeInputs.map(i => `${i.type}: ${i.value}`).join(', ')}.
 
-            ⛔ CẢNH BÁO: Phần bên dưới chứa KHUNG CẤU TRÚC (framework) với các thẻ HTML. Đây là DÀN Ý để bạn PHÂN TÍCH, KHÔNG PHẢI template để điền vào. Bạn PHẢI:
-            - Đọc mỗi mục trong dàn ý
-            - Tra cứu dữ liệu KIẾN THỨC SÂU bên dưới để tìm keywords, advantages, challenges, balance của từng số
+            ⛔⛔ QUY TẮC SỐ 1 — QUAN TRỌNG NHẤT, TUYỆT ĐỐI TUÂN THỦ:
+            - Bạn CHỈ ĐƯỢC viết DUY NHẤT (các) mục có tiêu đề được liệt kê ở CUỐI prompt này (sau dòng "BÊN DƯỚI LÀ PHẦN DUY NHẤT CẦN VIẾT").
+            - TUYỆT ĐỐI KHÔNG viết bất kỳ mục/tiêu đề nào KHÁC. KHÔNG tự bịa thêm tiêu đề mới (ví dụ KHÔNG tự tạo "Phân tích tương tác năng lượng", "Sự nghiệp & Tài chính", "Lộ trình phát triển"... nếu chúng KHÔNG có trong phần được giao).
+            - KHÔNG viết lại toàn bộ bài phân tích. KHÔNG nhắc lại các mục đã thuộc về phần khác.
+            - Viết xong (các) mục được giao thì DỪNG NGAY LẬP TỨC, không viết thêm gì.
+
+            ⛔ Phần khung bên dưới là DÀN Ý để bạn TỰ PHÂN TÍCH, KHÔNG PHẢI template để điền vào. Bạn PHẢI:
+            - Tra cứu dữ liệu KIẾN THỨC SÂU bên dưới để tìm từ khóa, ưu điểm, thách thức, trạng thái cân bằng của từng số (dữ liệu gốc ghi bằng tiếng Anh nhưng BẠN PHẢI viết ra bằng TIẾNG VIỆT).
             - TỰ VIẾT nội dung phân tích MỚI HOÀN TOÀN cho bộ số ${activeInputs.map(i => i.value).join(' + ')}
             - KHÔNG copy/paraphrase bất kỳ câu nào từ dàn ý. Dàn ý nói "Phân tích X" thì bạn phải TỰ phân tích X, không viết lại "Phân tích X".
 
@@ -659,7 +664,7 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
 
             === CÁCH SỬ DỤNG DỮ LIỆU KIẾN THỨC SÂU ===
             Khi phân tích MỖI điểm, bạn PHẢI:
-            1. Tra keywords/advantages/challenges/balance của từng số trong bộ từ dữ liệu trên
+            1. Tra từ khóa / ưu điểm / thách thức / trạng thái cân bằng của từng số trong bộ từ dữ liệu trên (KHI VIẾT RA phải dùng tiếng Việt, KHÔNG dùng từ tiếng Anh)
             2. Nhận diện năng lượng lõi: VD số 5 có keywords "Tự do, Phiêu lưu, Thay đổi" → năng lượng lõi = trải nghiệm + không ràng buộc
             3. Phân tích TỔ HỢP: khi năng lượng số ${activeInputs[0]?.value} gặp năng lượng số ${activeInputs[1]?.value || activeInputs[0]?.value} → tạo ra hiệu ứng gì MỚI?
             4. Trích dẫn rõ ràng: "Số ${activeInputs[0]?.value} với đặc điểm [trích từ keywords]..." + "Kết hợp số ${activeInputs[1]?.value || ''} có [trích từ advantages]..." + "Xung đột xảy ra vì [trích từ challenges]..."
@@ -675,9 +680,9 @@ const fullContext = contextData + '\n\n' + deepContext + interactionAnalysis + '
             - TUYỆT ĐỐI tuân thủ toàn bộ quy tắc trong Rule Engine.
 
             === NGÔN NGỮ OUTPUT — QUY TẮC TUYỆT ĐỐI ===
-            ${analysisLang === 'en' ? 'BẮT BUỘC viết TOÀN BỘ output bằng TIẾNG ANH (English). Tất cả tiêu đề h3, h4, nội dung p, li đều phải bằng tiếng Anh. Giữ nguyên cấu trúc framework nhưng dịch toàn bộ nội dung sang English.' : 'BẮT BUỘC viết TOÀN BỘ bằng TIẾNG VIỆT THUẦN TÚY. KHÔNG được dùng bất kỳ từ tiếng Anh nào — kể cả trong ngoặc đơn, tiêu đề, thuật ngữ chuyên môn. Ví dụ: KHÔNG viết "Core Dynamics", "Flow vs Stress", "Deep Profile", "Actionable Insights", "accountability partner", "impact investing", "retreat", "recharge". PHẢI dịch tất cả sang tiếng Việt: "Bản chất cốt lõi", "Trạng thái thuận lợi và căng thẳng", "Hồ sơ tính cách", "Ứng dụng thực tế", "người đồng hành giám sát", "đầu tư tác động", "nghỉ dưỡng", "nạp năng lượng".'}
+            ${analysisLang === 'en' ? 'BẮT BUỘC viết TOÀN BỘ output bằng TIẾNG ANH (English). Tất cả tiêu đề h3, h4, nội dung p, li đều phải bằng tiếng Anh. Giữ nguyên cấu trúc framework nhưng dịch toàn bộ nội dung sang English.' : 'BẮT BUỘC viết TOÀN BỘ bằng TIẾNG VIỆT THUẦN TÚY. KHÔNG được dùng BẤT KỲ từ tiếng Anh nào — kể cả trong ngoặc đơn, tiêu đề, thuật ngữ chuyên môn.\n⛔ ĐẶC BIỆT: TUYỆT ĐỐI KHÔNG dùng các từ tiếng Anh sau (dù dữ liệu gốc ghi bằng tiếng Anh) — PHẢI dịch sang tiếng Việt: "keywords"→"từ khóa", "advantages"→"ưu điểm", "challenges"→"thách thức", "balance"→"trạng thái cân bằng", "pattern"→"khuôn mẫu", "mindfulness"→"chánh niệm", "impact investing"→"đầu tư tác động", "accountability partner"→"người đồng hành giám sát", "startup"→"công ty khởi nghiệp", "deadline"→"hạn chót", "think-tank"→"nhóm chuyên gia cố vấn", "awkward"→"ngượng ngùng", "ultimatum"→"tối hậu thư", "mentor"→"người cố vấn", "insight"→"sự thấu hiểu".\nKHÔNG viết kiểu "theo advantages của số 9" hay "challenges của số 7" — PHẢI viết "theo ưu điểm của số 9", "thách thức của số 7".'}
 
-            === BÊN DƯỚI LÀ DÀN Ý PHÂN TÍCH — HÃY DÙNG LÀM KHUNG CẤU TRÚC, TỰ VIẾT NỘI DUNG ===
+            === BÊN DƯỚI LÀ PHẦN DUY NHẤT CẦN VIẾT (chỉ viết đúng các mục có tiêu đề dưới đây, viết xong thì DỪNG) ===
       `;
 
       let promptParts: string[] = [];
